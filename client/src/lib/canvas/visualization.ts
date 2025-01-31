@@ -17,6 +17,8 @@ interface RevenueStats {
   commitRevenue: number;
   expansionRevenue: number;
   adoptionRevenue: number;
+  partnerCosts: number;
+  netRevenue: number;
 }
 
 export class Visualization {
@@ -48,7 +50,9 @@ export class Visualization {
       totalRevenue: 0,
       commitRevenue: 0,
       expansionRevenue: 0,
-      adoptionRevenue: 0
+      adoptionRevenue: 0,
+      partnerCosts: 0,
+      netRevenue: 0
     };
 
     this.animate = this.animate.bind(this);
@@ -172,7 +176,9 @@ export class Visualization {
       totalRevenue: 0,
       commitRevenue: 0,
       expansionRevenue: 0,
-      adoptionRevenue: 0
+      adoptionRevenue: 0,
+      partnerCosts: 0,
+      netRevenue: 0
     };
   }
 
@@ -345,12 +351,24 @@ export class Visualization {
   }
 
   executePartnerAction(action: string) {
+    const costs: Record<string, number> = {
+      'seo_listicle': 100,
+      'youtube_walkthrough': 100,
+      'reference_call': 200,
+      'onboarding_services': 200,
+      'solution_management': 300
+    };
+
+    // Add cost to partner costs
+    this.revenue.partnerCosts += costs[action] || 0;
+    // Update net revenue
+    this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
+
     switch (action) {
       case 'seo_listicle':
         this.funnel.createEducationSelectionHoles();
         break;
       case 'youtube_walkthrough':
-        // Create separate holes for YouTube video
         const walls = this.funnel.getWallsBetweenStages('Education', 'Selection');
         walls.forEach(wall => {
           this.funnel.openHolesInWall(wall, 1);

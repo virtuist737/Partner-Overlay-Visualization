@@ -13,6 +13,14 @@ const STAGES = [
   { name: 'Expansion' },
 ];
 
+const PARTNER_ACTIONS = [
+  { name: 'SEO Listicle', action: 'seo_listicle', cost: 100 },
+  { name: 'YouTube Video', action: 'youtube_walkthrough', cost: 100 },
+  { name: 'Customer Reference Call', action: 'reference_call', cost: 200 },
+  { name: 'Onboarding Services', action: 'onboarding_services', cost: 200 },
+  { name: 'Management Services', action: 'solution_management', cost: 300 },
+];
+
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [visualization, setVisualization] = useState<Visualization | null>(null);
@@ -22,7 +30,10 @@ export default function Home() {
   const [revenue, setRevenue] = useState<any>({
     totalRevenue: 0,
     commitRevenue: 0,
-    expansionRevenue: 0
+    expansionRevenue: 0,
+    adoptionRevenue: 0,
+    partnerCosts: 0,
+    netRevenue: 0,
   });
 
   useEffect(() => {
@@ -34,7 +45,8 @@ export default function Home() {
         if (viz) {
           setStats(viz.getStageStats());
           setConversionRates(viz.getConversionRates());
-          setRevenue(viz.getRevenueStats());
+          const revStats = viz.getRevenueStats();
+          setRevenue(revStats);
         }
         requestAnimationFrame(updateStats);
       };
@@ -55,35 +67,7 @@ export default function Home() {
 
   const handlePartnerAction = (action: string) => {
     if (!visualization) return;
-
-    if (action === 'seo_listicle') {
-      const walls = visualization.funnel.getWallsBetweenStages('Awareness', 'Education');
-      walls.forEach(wall => {
-        visualization.funnel.openHolesInWall(wall, 1);
-      });
-    } else if (action === 'reference_call') {
-      const walls = visualization.funnel.getWallsBetweenStages('Selection', 'Commit');
-      walls.forEach(wall => {
-        visualization.funnel.openHolesInWall(wall, 1);
-      });
-    } else if (action === 'onboarding_services') {
-      const walls = visualization.funnel.getWallsBetweenStages('Commit', 'Onboarding');
-      walls.forEach(wall => {
-        visualization.funnel.openHolesInWall(wall, 1);
-      });
-    } else if (action === 'solution_management') {
-      const onboardingAdoptionWalls = visualization.funnel.getWallsBetweenStages('Onboarding', 'Adoption');
-      onboardingAdoptionWalls.forEach(wall => {
-        visualization.funnel.openHolesInWall(wall, 1);
-      });
-
-      const adoptionExpansionWalls = visualization.funnel.getWallsBetweenStages('Adoption', 'Expansion');
-      adoptionExpansionWalls.forEach(wall => {
-        visualization.funnel.openHolesInWall(wall, 1);
-      });
-    } else {
-      visualization.executePartnerAction(action);
-    }
+    visualization.executePartnerAction(action);
   };
 
   const formatCurrency = (amount: number) => {
@@ -100,7 +84,6 @@ export default function Home() {
       setShowingCustomers(false);
     }
   }, [stats, visualization, showingCustomers]);
-
 
   return (
     <div className="flex-1 flex items-stretch p-4 max-h-[100vh]">
@@ -136,7 +119,7 @@ export default function Home() {
           </Button>
           <Button
             onClick={() => {
-              window.location.reload(true);
+              window.location.reload();
             }}
             variant="destructive"
           >
@@ -149,41 +132,19 @@ export default function Home() {
               <CardContent className="p-6">
                 <h2 className="text-lg font-semibold mb-2">Partner Actions</h2>
                 <div className="flex flex-wrap gap-2">
-                  <Button
-                    onClick={() => handlePartnerAction('seo_listicle')}
-                    variant="outline"
-                    className="flex-grow"
-                  >
-                    SEO Listicle
-                  </Button>
-                  <Button
-                    onClick={() => handlePartnerAction('youtube_walkthrough')}
-                    variant="outline"
-                    className="flex-grow"
-                  >
-                    YouTube Video
-                  </Button>
-                  <Button
-                    onClick={() => handlePartnerAction('reference_call')}
-                    variant="outline"
-                    className="flex-grow"
-                  >
-                    Customer Reference Call
-                  </Button>
-                  <Button
-                    onClick={() => handlePartnerAction('onboarding_services')}
-                    variant="outline"
-                    className="flex-grow"
-                  >
-                    Onboarding Services
-                  </Button>
-                  <Button
-                    onClick={() => handlePartnerAction('solution_management')}
-                    variant="outline"
-                    className="flex-grow"
-                  >
-                    Management Services
-                  </Button>
+                  {PARTNER_ACTIONS.map((action) => (
+                    <Button
+                      key={action.action}
+                      onClick={() => handlePartnerAction(action.action)}
+                      variant="outline"
+                      className="flex-grow"
+                    >
+                      {action.name}
+                      <span className="ml-2 text-sm text-muted-foreground">
+                        (${action.cost})
+                      </span>
+                    </Button>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -244,24 +205,37 @@ export default function Home() {
                     <span className="text-muted-foreground">{formatCurrency(revenue.totalRevenue)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span>From Commits</span>
-                    <span className="text-muted-foreground">{formatCurrency(revenue.commitRevenue)}</span>
+                    <span>Partner Costs</span>
+                    <span className="text-muted-foreground text-red-500">-{formatCurrency(revenue.partnerCosts)}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span>From Adoptions</span>
-                    <span className="text-muted-foreground">{formatCurrency(revenue.adoptionRevenue)}</span>
+                  <div className="flex justify-between items-center font-bold">
+                    <span>Net Revenue</span>
+                    <span className={revenue.netRevenue >= 0 ? "text-green-600" : "text-red-600"}>
+                      {formatCurrency(revenue.netRevenue)}
+                    </span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span>From Expansions</span>
-                    <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
+                  <div className="mt-2 pt-2 border-t">
+                    <div className="flex justify-between items-center">
+                      <span>From Commits</span>
+                      <span className="text-muted-foreground">{formatCurrency(revenue.commitRevenue)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>From Adoptions</span>
+                      <span className="text-muted-foreground">{formatCurrency(revenue.adoptionRevenue)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>From Expansions</span>
+                      <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
+                    </div>
                   </div>
                 </div>
 
                 <div className="mt-8 bg-blue-50 p-6 rounded-lg">
-                  <h2 className="text-2xl font-bold text-center mb-2">Average Revenue per Potential Customer</h2>
-                  <p className="text-3xl text-center text-blue-600 font-bold">
+                  <h2 className="text-2xl font-bold text-center mb-2">Average Net Revenue per Customer</h2>
+                  <p className="text-3xl text-center font-bold text-blue-600"
+                     style={{ color: revenue.netRevenue >= 0 ? '#2563eb' : '#dc2626' }}>
                     {stats.length > 0 && stats[0].total > 0
-                      ? formatCurrency(revenue.totalRevenue / stats[0].total)
+                      ? formatCurrency(revenue.netRevenue / stats[0].total)
                       : '$0.00'}
                   </p>
                   <p className="text-sm text-center text-gray-600 mt-1">
