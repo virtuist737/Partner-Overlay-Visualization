@@ -213,9 +213,6 @@ export class Visualization {
       const baseSpeed = 1.5 + Math.random() * 2; // Speed between 1.5 and 3.5
       const verticalVariation = (Math.random() - 0.5) * 2; // More vertical variation
       
-      // Use wider initial area (first 20% of canvas)
-      const startX = Math.random() * (this.canvas.width * 0.2);
-      
       this.particles.push(new Particle({
         x: startX,
         y,
