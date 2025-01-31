@@ -7,8 +7,6 @@ export interface ParticleOptions {
   type: 'customer' | 'partner';
 }
 
-import { STAGES } from './funnel';
-
 export class Particle {
   x: number;
   y: number;
@@ -39,24 +37,7 @@ export class Particle {
     this.x += this.speed;
     this.y += this.verticalSpeed;
 
-    // Calculate current stage and narrowing
-    const stageWidth = canvasHeight * 2 / STAGES.length;
-    const currentStage = Math.floor(this.x / stageWidth);
-    const progress = currentStage / (STAGES.length - 1);
-    const narrowing = Math.sin(progress * Math.PI) * 0.15;
-    
-    // Check collision with horizontal partition walls
-    const topWall = canvasHeight * narrowing;
-    const bottomWall = canvasHeight * (1 - narrowing);
-    
-    if (this.y - this.radius < topWall || this.y + this.radius > bottomWall) {
-      this.verticalSpeed *= -1; // Bounce off horizontal walls
-      this.y = this.y - this.radius < topWall ? 
-        topWall + this.radius : 
-        bottomWall - this.radius;
-    }
-
-    // Check vertical bounds (outside funnel)
+    // Check vertical bounds
     if (this.y - this.radius < 0 || this.y + this.radius > canvasHeight) {
       if (this.type === 'customer') {
         this.active = false; // Customer leaked
