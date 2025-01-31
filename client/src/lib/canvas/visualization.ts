@@ -175,14 +175,22 @@ export class Visualization {
       awarenessStats.current++;
       this.stageStats.set('Awareness', awarenessStats);
 
+      // Calculate the funnel height at the start (Awareness stage)
+      const startNarrowing = Math.sin(0) * 0.15; // At x = 0, progress = 0
+      const minY = this.canvas.height * startNarrowing;
+      const maxY = this.canvas.height * (1 - startNarrowing);
+      const y = minY + Math.random() * (maxY - minY);
+
       this.particles.push(new Particle({
         x: 0,
-        y: this.canvas.height * (0.3 + Math.random() * 0.4),
+        y,
         radius: 4,
         speed: 2,
         color: 'rgba(0, 0, 0, 0.8)',
         type: 'customer',
-        currentStage: 'Awareness'
+        currentStage: 'Awareness',
+        canvasWidth: this.canvas.width,
+        canvasHeight: this.canvas.height
       }));
 
       this.particleGenerators.customer = setTimeout(createParticle, 200);
