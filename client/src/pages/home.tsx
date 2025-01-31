@@ -105,7 +105,7 @@ export default function Home() {
   return (
     <div className="flex-1 flex items-stretch p-4 max-h-[100vh]">
       <Card className="w-full h-full flex flex-col p-6 overflow-hidden">
-        <h1 className="text-2xl font-bold mb-4">Customer Journey Visualization</h1>
+        <h1 className="text-2xl font-bold mb-4">Partner Overlay Visualization</h1>
         <div className="flex gap-2 mb-4">
           <Button
             onClick={() => {
