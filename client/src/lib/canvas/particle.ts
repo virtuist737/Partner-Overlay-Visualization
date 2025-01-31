@@ -66,7 +66,7 @@ export class Particle {
       // If particle hits top boundary, bounce
       else if (newY < minY + this.radius) {
         this.y = minY + this.radius;
-        this.verticalSpeed *= -0.5;
+        this.verticalSpeed *= -0.9;
       }
       else {
         this.y = newY;
@@ -75,7 +75,7 @@ export class Particle {
       // Partner particles retain original behavior
       const newY = this.y + scaledVerticalSpeed;
       if (newY < minY || newY > maxY) {
-        this.verticalSpeed *= -0.5;
+        this.verticalSpeed *= -0.9;
         this.y = newY < minY ? minY : maxY;
       } else {
         this.y = newY;
@@ -107,7 +107,7 @@ export class Particle {
                 x: Math.max(wall.startX!, Math.min(wall.endX! - 30 * this.scale, this.x - 15 * this.scale)),
                 width: 30 * this.scale
               });
-              this.verticalSpeed *= -0.5;
+              this.verticalSpeed *= -0.9;
             } else {
               // For customers, ensure they bounce up from bottom walls
               if (this.verticalSpeed > 0) {
@@ -136,10 +136,10 @@ export class Particle {
                 y: Math.max(wall.startY!, Math.min(wall.endY! - 30 * this.scale, this.y - 15 * this.scale)),
                 height: 30 * this.scale
               });
-              this.speed *= -0.5;
+              this.speed *= -0.9;
             } else {
               this.x = wall.x! - (this.speed > 0 ? scaledRadius + 1 : -scaledRadius - 1);
-              this.speed *= -0.5;
+              this.speed *= -0.9;
             }
           }
         }
