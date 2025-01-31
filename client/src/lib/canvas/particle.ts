@@ -22,12 +22,13 @@ export class Particle {
   active: boolean;
   currentStage?: string;
   scale: number;
+  baseRadius: number;
   canvas: HTMLCanvasElement;
 
   constructor(options: ParticleOptions) {
     this.x = options.x;
     this.y = options.y;
-    this.radius = options.radius;
+    this.baseRadius = options.radius;
     this.speed = options.speed;
     this.color = options.color;
     this.type = options.type;
@@ -36,9 +37,28 @@ export class Particle {
     this.active = true;
     this.currentStage = options.currentStage;
     this.canvas = options.canvas!;
+
+    // Calculate initial scale
     const canvasWidth = options.canvasWidth || 1000;
     const canvasHeight = options.canvasHeight || 600;
     this.scale = Math.min(canvasWidth / 1000, canvasHeight / 600);
+    this.radius = this.baseRadius * this.scale;
+  }
+
+  updateScale(canvas: HTMLCanvasElement) {
+    const rect = canvas.getBoundingClientRect();
+    const baseWidth = 1000; // Reference width
+    const baseHeight = 600; // Reference height
+
+    // Calculate scale based on both dimensions
+    const widthScale = rect.width / baseWidth;
+    const heightScale = rect.height / baseHeight;
+
+    // Use the smaller scale to maintain proportions
+    this.scale = Math.min(widthScale, heightScale);
+
+    // Update radius with new scale
+    this.radius = this.baseRadius * this.scale;
   }
 
   update(canvasHeight: number, walls: Wall[]) {
@@ -46,21 +66,22 @@ export class Particle {
 
     const scaledSpeed = this.speed * this.scale;
     const scaledVerticalSpeed = this.verticalSpeed * this.scale;
+    const scaledRadius = this.radius;
 
     // Calculate funnel boundaries based on x position with tighter constraints
     const progress = this.x / this.canvas.width;
     const narrowing = Math.sin(progress * Math.PI) * 0.15;
-    const minY = canvasHeight * narrowing + (this.radius * 2);
-    const maxY = canvasHeight * (1 - narrowing) - (this.radius * 2);
+    const minY = canvasHeight * narrowing + (scaledRadius * 2);
+    const maxY = canvasHeight * (1 - narrowing) - (scaledRadius * 2);
 
     // Update positions
     this.x += scaledSpeed;
     const newY = this.y + scaledVerticalSpeed;
 
     // Enforce funnel boundaries with elastic collisions
-    if (newY > maxY - this.radius || newY < minY + this.radius) {
+    if (newY > maxY - scaledRadius || newY < minY + scaledRadius) {
       this.verticalSpeed *= -0.8; // Elastic collision with slight energy loss
-      this.y = newY > maxY - this.radius ? maxY - this.radius : minY + this.radius;
+      this.y = newY > maxY - scaledRadius ? maxY - scaledRadius : minY + scaledRadius;
     } else {
       this.y = newY;
     }
@@ -73,8 +94,6 @@ export class Particle {
 
     // Handle wall collisions
     walls.forEach(wall => {
-      const scaledRadius = this.radius * this.scale;
-
       if (wall.horizontal) {
         if (this.x >= wall.startX! && this.x <= wall.endX! && Math.abs(this.y - wall.y!) < scaledRadius) {
           let canPass = false;
@@ -127,7 +146,7 @@ export class Particle {
   draw(ctx: CanvasRenderingContext2D) {
     if (!this.active) return;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius * this.scale, 0, Math.PI * 2);
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     ctx.fillStyle = this.color;
     ctx.fill();
   }

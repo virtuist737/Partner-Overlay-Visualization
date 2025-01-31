@@ -32,12 +32,16 @@ export class Visualization {
   particleGenerators: { customer?: NodeJS.Timeout; partner?: NodeJS.Timeout };
   stageStats: Map<string, StageStats>;
   revenue: RevenueStats;
+  dpr: number;
+  resizeObserver: ResizeObserver;
+  visualViewportHandler: (event: Event) => void;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
-    this.ctx = canvas.getContext('2d')!;
-    this.setupCanvas();
+    this.ctx = canvas.getContext('2d', { alpha: false })!;
+    this.dpr = Math.max(1, window.devicePixelRatio || 1);
 
+    this.setupCanvas();
     this.funnel = new Funnel(canvas);
     this.particles = [];
     this.showingCustomers = false;
@@ -56,55 +60,71 @@ export class Visualization {
     };
 
     this.animate = this.animate.bind(this);
+    this.handleResize = this.handleResize.bind(this);
     this.animationFrame = requestAnimationFrame(this.animate);
 
-    window.addEventListener('resize', this.handleResize);
+    // Set up resize observer
+    this.resizeObserver = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        if (entry.target === this.canvas.parentElement) {
+          this.handleResize();
+        }
+      }
+    });
+
+    // Observe the canvas parent element
+    if (this.canvas.parentElement) {
+      this.resizeObserver.observe(this.canvas.parentElement);
+    }
+
+    // Handle visual viewport changes (zoom)
+    this.visualViewportHandler = () => {
+      this.handleResize();
+    };
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', this.visualViewportHandler);
+      window.visualViewport.addEventListener('scale', this.visualViewportHandler);
+    }
   }
 
   setupCanvas() {
     const updateDimensions = () => {
-      const rect = this.canvas.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
+      const rect = this.canvas.parentElement?.getBoundingClientRect() || { width: 800, height: 600 };
 
-      this.canvas.width = rect.width * dpr;
-      this.canvas.height = rect.height * dpr;
-      this.ctx.scale(dpr, dpr);
-      
-      this.canvas.style.width = `${rect.width}px`;
-      this.canvas.style.height = `${rect.height}px`;
+      // Set the canvas size accounting for device pixel ratio
+      const displayWidth = rect.width;
+      const displayHeight = rect.height;
+
+      // Set CSS size
+      this.canvas.style.width = `${displayWidth}px`;
+      this.canvas.style.height = `${displayHeight}px`;
+
+      // Set actual size accounting for DPR
+      this.canvas.width = Math.floor(displayWidth * this.dpr);
+      this.canvas.height = Math.floor(displayHeight * this.dpr);
+
+      // Scale the context to ensure correct drawing operations
+      this.ctx.scale(this.dpr, this.dpr);
+
+      // Clear any transforms
+      this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     };
 
     updateDimensions();
-
-    // Listen for zoom changes
-    window.visualViewport?.addEventListener('resize', updateDimensions);
-    window.visualViewport?.addEventListener('scale', updateDimensions);
-
-    // Add regular resize listener as fallback
-    window.addEventListener('resize', updateDimensions);
   }
 
-  handleResize = () => {
-    const rect = this.canvas.parentElement?.getBoundingClientRect();
-    if (!rect) return;
+  handleResize() {
+    this.setupCanvas();
 
-    // Use the container dimensions directly
-    const width = rect.width;
-    const height = rect.height;
-
-    // Update canvas style dimensions
-    this.canvas.style.width = `${width}px`;
-    this.canvas.style.height = `${height}px`;
-
-    // Update actual canvas dimensions
-    const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = width * dpr;
-    this.canvas.height = height * dpr;
-
-    // Reset scale and update funnel
-    this.ctx.scale(dpr, dpr);
+    // Recreate the funnel with new dimensions
     this.funnel = new Funnel(this.canvas);
-  };
+
+    // Update particle scales
+    this.particles.forEach(particle => {
+      particle.updateScale(this.canvas);
+    });
+  }
 
   toggleCustomers() {
     this.showingCustomers = !this.showingCustomers;
@@ -364,7 +384,13 @@ export class Visualization {
 
   destroy() {
     cancelAnimationFrame(this.animationFrame);
-    window.removeEventListener('resize', this.handleResize);
+    this.resizeObserver.disconnect();
+
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', this.visualViewportHandler);
+      window.visualViewport.removeEventListener('scale', this.visualViewportHandler);
+    }
+
     if (this.particleGenerators.customer) clearTimeout(this.particleGenerators.customer);
     if (this.particleGenerators.partner) clearTimeout(this.particleGenerators.partner);
   }
