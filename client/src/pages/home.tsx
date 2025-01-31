@@ -257,7 +257,7 @@ export default function Home() {
                       : '$0.00'}
                   </p>
                   <p className="text-sm text-center text-gray-600 mt-1">
-                    Based on {stats.length > 0 ? stats[0].total : 0} total potential customers
+                    Based on {stats.length > 0 ? stats[0].total : 0}/100 total potential customers
                   </p>
                 </div>
               </div>
