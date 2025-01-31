@@ -168,7 +168,7 @@ export class Visualization {
 
       // Reduce particle size to 1/3 of previous size
       const baseRadius = Math.min(rect.width, rect.height) * 0.001;
-      const baseSpeed = rect.width * 0.002;
+      const baseSpeed = rect.width * 0.0014; // Reduced by 30% from 0.002
       const verticalVariation = (Math.random() - 0.5) * baseSpeed * 0.5;
 
       this.particles.push(new Particle({
