@@ -65,11 +65,7 @@ export default function Home() {
                 {showingPartners ? 'Hide Partners' : 'Show Partners'}
               </Button>
             </div>
-            <div className="flex gap-2">
-              <Button onClick={() => visualization?.zoomOut()} variant="outline">-</Button>
-              <Button onClick={() => visualization?.resetZoom()} variant="outline">Reset</Button>
-              <Button onClick={() => visualization?.zoomIn()} variant="outline">+</Button>
-            </div>
+            
           </div>
 
           <div className="relative w-full h-[60vh] min-h-[400px] bg-black/5 rounded-lg overflow-hidden">
