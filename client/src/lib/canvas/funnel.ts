@@ -273,8 +273,11 @@ export class Funnel {
 
     // Calculate the wall index considering the additional walls we added
     // For each stage we have: 1 vertical wall + 2 horizontal walls + 2 connecting walls (if needed)
+    // First stage (Awareness) has an extra bottom blocking wall
+    const wallsPerStage = 5;
+    const extraWallOffset = fromIndex === 0 ? 1 : 0;
     const wallIndex = Math.min(fromIndex, toIndex);
-    const verticalWallIndex = wallIndex * 5; // 5 walls per stage (1 vertical + 2 horizontal + 2 connecting)
+    const verticalWallIndex = (wallIndex * wallsPerStage) + extraWallOffset;
 
     return this.walls.filter((wall, index) => {
       // Return the main vertical wall between stages
