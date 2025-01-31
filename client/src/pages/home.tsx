@@ -55,7 +55,16 @@ export default function Home() {
   };
 
   const handlePartnerAction = (action: string) => {
-    if (visualization) {
+    if (!visualization) return;
+    
+    if (action === 'seo_listicle') {
+      const walls = visualization.funnel.getWallsBetweenStages('Awareness', 'Education');
+      walls.forEach(wall => {
+        const position = visualization.canvas.height * 0.5;
+        const size = visualization.canvas.height * 0.1;
+        visualization.funnel.addHole(0, position, size);
+      });
+    } else {
       visualization.executePartnerAction(action);
     }
   };
