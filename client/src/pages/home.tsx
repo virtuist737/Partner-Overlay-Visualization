@@ -70,6 +70,12 @@ export default function Home() {
               >
                 Remove Partner
               </Button>
+              <Button 
+                onClick={() => visualization?.reset()}
+                variant="destructive"
+              >
+                Reset
+              </Button>
             </div>
             
           </div>

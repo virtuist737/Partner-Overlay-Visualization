@@ -98,6 +98,15 @@ export class Visualization {
     }
   }
 
+  reset() {
+    this.particles = [];
+    this.showingCustomers = false;
+    this.showingPartners = false;
+    if (this.particleGenerators.customer) clearTimeout(this.particleGenerators.customer);
+    if (this.particleGenerators.partner) clearTimeout(this.particleGenerators.partner);
+    this.funnel = new Funnel(this.canvas);
+  }
+
   startCustomerParticles() {
     const createParticle = () => {
       if (!this.showingCustomers) return;
