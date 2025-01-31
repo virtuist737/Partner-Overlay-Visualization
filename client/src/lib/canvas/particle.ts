@@ -32,7 +32,7 @@ export class Particle {
     this.color = options.color;
     this.type = options.type;
     this.verticalSpeed = options.verticalSpeed || 
-      (this.type === 'partner' ? options.speed : (Math.random() - 0.5) * 0.5);
+      (this.type === 'partner' ? options.speed : (Math.random() - 0.5) * 1.2);
     this.active = true;
     this.currentStage = options.currentStage;
     this.canvas = options.canvas!;

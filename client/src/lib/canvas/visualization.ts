@@ -202,7 +202,7 @@ export class Visualization {
       const y = minY + Math.random() * (maxY - minY);
 
       // Randomize initial speed and direction
-      const baseSpeed = 2 + Math.random() * 2; // Speed between 2 and 4
+      const baseSpeed = 4 + Math.random() * 3; // Speed between 4 and 7
       const verticalVariation = (Math.random() - 0.5) * 0.8; // More vertical variation
 
       this.particles.push(new Particle({
