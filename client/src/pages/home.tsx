@@ -136,7 +136,7 @@ export default function Home() {
           </Button>
           <Button
             onClick={() => {
-              window.location.reload();
+              window.location.reload(true);
             }}
             variant="destructive"
           >
