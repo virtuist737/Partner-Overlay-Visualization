@@ -159,22 +159,24 @@ export class Visualization {
 
       const rect = this.canvas.getBoundingClientRect();
       const startNarrowing = Math.sin(0) * 0.15;
-      const minY = rect.height * startNarrowing + (rect.height * 0.02);
-      const maxY = rect.height * (1 - startNarrowing) - (rect.height * 0.02);
+      const minY = rect.height * startNarrowing + (rect.height * 0.05); // Adjusted padding
+      const maxY = rect.height * (1 - startNarrowing) - (rect.height * 0.05); // Adjusted padding
 
-      const startX = rect.width * 0.05;
+      // Adjust starting X position to be more visible
+      const startX = rect.width * 0.02; // Moved closer to left edge
       const y = minY + Math.random() * (maxY - minY);
 
-      const baseRadius = Math.min(rect.width, rect.height) * 0.0001;
-      const baseSpeed = rect.width * 0.001;
-      const verticalVariation = (Math.random() - 0.5) * baseSpeed;
+      // Increase base radius for better visibility
+      const baseRadius = Math.min(rect.width, rect.height) * 0.01; // Increased from 0.0001
+      const baseSpeed = rect.width * 0.002; // Slightly increased speed
+      const verticalVariation = (Math.random() - 0.5) * baseSpeed * 0.5; // Reduced vertical variation
 
       this.particles.push(new Particle({
         x: startX,
         y,
         radius: baseRadius,
-        speed: Math.random() < 0.2 ? -baseSpeed : baseSpeed,
-        color: 'rgba(0, 0, 0, 0.8)',
+        speed: baseSpeed,
+        color: 'rgba(0, 0, 0, 0.9)', // Made more opaque
         type: 'customer',
         currentStage: 'Awareness',
         canvas: this.canvas,
@@ -185,7 +187,7 @@ export class Visualization {
     };
 
     createParticle();
-  }
+}
 
   updateParticleStage(particle: Particle, newStage: string) {
     if (particle.type !== 'customer' || particle.currentStage === newStage) return;
@@ -400,7 +402,8 @@ export class Visualization {
     this.revenue.partnerCosts += costs[action] || 0;
     this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
 
-    const holeSize = rect.height * 0.05;
+    // Increased hole size for better particle flow
+    const holeSize = rect.height * 0.1; // Increased from 0.05
 
     switch (action) {
       case 'seo_listicle': {
