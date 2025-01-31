@@ -247,10 +247,6 @@ export default function Home() {
                     <span>From Expansions</span>
                     <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span>Revenue/Minute</span>
-                    <span className="text-muted-foreground">{formatCurrency(revenue.revenuePerMinute)}</span>
-                  </div>
                 </div>
               </div>
             </CardContent>
