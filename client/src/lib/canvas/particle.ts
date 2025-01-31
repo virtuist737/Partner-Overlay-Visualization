@@ -78,6 +78,43 @@ export class Particle {
         }
       }
     });
+
+
+    // Calculate current stage and narrowing
+    const stageWidth = canvasHeight * 2 / STAGES.length;
+    const currentStage = Math.floor(this.x / stageWidth);
+    const progress = currentStage / (STAGES.length - 1);
+    const narrowing = Math.sin(progress * Math.PI) * 0.15;
+
+    // Check collision with horizontal partition walls
+    const topWall = canvasHeight * narrowing;
+    const bottomWall = canvasHeight * (1 - narrowing);
+
+    if (this.y - this.radius < topWall || this.y + this.radius > bottomWall) {
+      if (this.type === 'partner' && !this.hasCreatedHole) {
+        // Create holes in horizontal walls
+        const wallY = this.y - this.radius < topWall ? topWall : bottomWall;
+        const holeX = Math.max(0, this.x - 15);
+
+        // Add horizontal hole to current stage
+        walls[currentStage].holes.push({
+          y: wallY - 15,
+          height: 30
+        });
+
+        this.hasCreatedHole = true;
+        this.verticalSpeed *= -0.5; // Bounce with reduced speed
+      } else {
+        // Regular bounce for customers or partners that created holes
+        this.y = this.y - this.radius < topWall ? 
+          topWall + this.radius : 
+          bottomWall - this.radius;
+        this.verticalSpeed *= -0.5; // Bounce with reduced speed
+      }
+    }
+
+    // Check vertical bounds (outside funnel)
+
   }
 
   draw(ctx: CanvasRenderingContext2D) {
