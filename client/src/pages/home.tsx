@@ -144,15 +144,15 @@ export default function Home() {
                       onClick={() => handlePartnerAction(action.action)}
                       variant="outline"
                       size="sm"
-                      className="h-14"
+                      className="h-14 relative"
                       disabled={!showingCustomers}
                     >
-                      <div className="flex flex-col items-center text-sm gap-1">
-                        <span className="text-center">{action.name}</span>
-                        <span className="text-muted-foreground">
-                          ${action.cost}
-                        </span>
-                      </div>
+                      <span className="absolute top-1 right-1.5 text-xs font-mono text-muted-foreground">
+                        ${action.cost}
+                      </span>
+                      <span className="text-base font-medium mt-2">
+                        {action.name}
+                      </span>
                     </Button>
                   ))}
                 </div>
