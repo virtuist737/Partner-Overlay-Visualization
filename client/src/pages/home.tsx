@@ -136,20 +136,11 @@ export default function Home() {
           </Button>
           <Button
             onClick={() => {
-              visualization?.reset();
-              setShowingCustomers(false);
-              setStats([]);
-              setConversionRates([]);
-              setRevenue({
-                totalRevenue: 0,
-                commitRevenue: 0,
-                expansionRevenue: 0,
-                adoptionRevenue: 0
-              });
+              window.location.reload();
             }}
             variant="destructive"
           >
-            Stop
+            Reset
           </Button>
         </div>
         <div className="flex gap-4 mb-4">
