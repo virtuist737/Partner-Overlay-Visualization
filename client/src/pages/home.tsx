@@ -18,6 +18,8 @@ export default function Home() {
   const [visualization, setVisualization] = useState<Visualization | null>(null);
   const [showingCustomers, setShowingCustomers] = useState(false);
   const [stats, setStats] = useState<any[]>([]);
+  const [timeLeft, setTimeLeft] = useState<number>(60);
+  const [timerActive, setTimerActive] = useState<boolean>(false);
   const [conversionRates, setConversionRates] = useState<any[]>([]);
   const [revenue, setRevenue] = useState<any>({
     totalRevenue: 0,
@@ -46,10 +48,31 @@ export default function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (timerActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0) {
+      if (visualization && showingCustomers) {
+        visualization.pause();
+        setShowingCustomers(false);
+      }
+    }
+    return () => clearInterval(interval);
+  }, [timerActive, timeLeft, visualization, showingCustomers]);
+
   const handleCustomersToggle = () => {
     if (visualization) {
       visualization.toggleCustomers();
       setShowingCustomers(!showingCustomers);
+      if (!showingCustomers) {
+        setTimeLeft(60);
+        setTimerActive(true);
+      } else {
+        setTimerActive(false);
+      }
     }
   };
 
@@ -202,6 +225,12 @@ export default function Home() {
 
           <Card className="w-80">
             <CardContent className="p-6 space-y-8">
+              {timerActive && (
+                <div className="bg-yellow-50 p-4 rounded-lg mb-4">
+                  <h2 className="text-xl font-semibold text-center text-yellow-800">Time Remaining</h2>
+                  <p className="text-3xl font-bold text-center text-yellow-600">{timeLeft}s</p>
+                </div>
+              )}
               <div>
                 <h2 className="text-xl font-semibold mb-2">Stage Statistics</h2>
                 <div className="space-y-2">
