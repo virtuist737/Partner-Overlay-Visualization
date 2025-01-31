@@ -30,8 +30,6 @@ export class Visualization {
   particleGenerators: { customer?: NodeJS.Timeout; partner?: NodeJS.Timeout };
   stageStats: Map<string, StageStats>;
   revenue: RevenueStats;
-  stageWidth: number;
-
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -73,7 +71,6 @@ export class Visualization {
     // Set the display dimensions of the canvas via CSS
     this.canvas.style.width = `${rect.width}px`;
     this.canvas.style.height = `${rect.height}px`;
-    this.stageWidth = rect.width / STAGES.length;
   }
 
   handleResize = () => {
@@ -96,7 +93,6 @@ export class Visualization {
     // Reset scale and update funnel
     this.ctx.scale(dpr, dpr);
     this.funnel = new Funnel(this.canvas);
-    this.stageWidth = width / STAGES.length;
   };
 
   toggleCustomers() {
@@ -179,26 +175,14 @@ export class Visualization {
       awarenessStats.current++;
       this.stageStats.set('Awareness', awarenessStats);
 
-      // Calculate the vertical boundaries of the Awareness section
-      const stageIndex = 0; // Awareness is the first stage
-      const narrowing = Math.sin((stageIndex / (STAGES.length - 1)) * Math.PI) * 0.15;
-      const topY = this.canvas.height * narrowing;
-      const bottomY = this.canvas.height * (1 - narrowing);
-
-      // Generate particle within the middle 60% of the Awareness section
-      const verticalRange = bottomY - topY;
-      const startY = topY + (verticalRange * 0.2) + (Math.random() * verticalRange * 0.6);
-
       this.particles.push(new Particle({
-        x: this.stageWidth * 0.2, // Start 20% into the first stage
-        y: startY,
+        x: 0,
+        y: this.canvas.height * (0.3 + Math.random() * 0.4),
         radius: 4,
         speed: 2,
         color: 'rgba(0, 0, 0, 0.8)',
         type: 'customer',
-        currentStage: 'Awareness',
-        canvasWidth: this.canvas.width,
-        canvasHeight: this.canvas.height
+        currentStage: 'Awareness'
       }));
 
       this.particleGenerators.customer = setTimeout(createParticle, 200);
