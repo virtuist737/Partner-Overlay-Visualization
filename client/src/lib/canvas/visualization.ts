@@ -64,7 +64,7 @@ export class Visualization {
     const stageWidth = this.canvas.width / STAGES.length;
     const randomStage = Math.floor(Math.random() * STAGES.length);
     const x = (randomStage * stageWidth) + (Math.random() * stageWidth);
-    
+
     const progress = randomStage / (STAGES.length - 1);
     const narrowing = Math.sin(progress * Math.PI) * 0.15;
     const minY = this.canvas.height * narrowing;
@@ -76,7 +76,7 @@ export class Visualization {
       y,
       radius: 6,
       speed: Math.random() < 0.5 ? 2 : -2,
-      color: 'rgba(34, 197, 94, 0.5)',
+      color: 'rgba(0, 0, 0, 0.8)',
       type: 'partner'
     });
 
@@ -147,7 +147,7 @@ export class Visualization {
         y,
         radius: 6,
         speed: Math.random() < 0.5 ? 2 : -2,
-        color: 'rgba(34, 197, 94, 0.5)',
+        color: 'rgba(0, 0, 0, 0.8)',
         type: 'partner'
       });
 
