@@ -148,64 +148,6 @@ export class Visualization {
     this.animate();
   }
 
-  addPartner() {
-    const stageWidth = this.canvas.width / STAGES.length;
-    const randomStage = Math.floor(Math.random() * STAGES.length);
-    const x = (randomStage * stageWidth) + (Math.random() * stageWidth);
-
-    const progress = randomStage / (STAGES.length - 1);
-    const narrowing = Math.sin(progress * Math.PI) * 0.15;
-    const minY = this.canvas.height * narrowing;
-    const maxY = this.canvas.height * (1 - narrowing);
-    const y = minY + (Math.random() * (maxY - minY));
-
-    const particle = new Particle({
-      x,
-      y,
-      radius: 6,
-      speed: Math.random() < 0.5 ? 2 : -2,
-      color: 'rgba(0, 0, 0, 0.8)',
-      type: 'partner'
-    });
-
-    this.particles.push(particle);
-
-    const wallIndex = Math.floor(x / (this.canvas.width / STAGES.length));
-    if (wallIndex > 0 && wallIndex < STAGES.length) {
-      const holeY = y < this.canvas.height / 2 ?
-        this.canvas.height * 0.2 + Math.random() * 0.2 :
-        this.canvas.height * 0.6 + Math.random() * 0.2;
-      this.funnel.addHole(wallIndex - 1, holeY, this.canvas.height * 0.03);
-    }
-  }
-
-  removePartner() {
-    const partnerIndex = this.particles.findIndex(p => p.type === 'partner');
-    if (partnerIndex !== -1) {
-      this.particles.splice(partnerIndex, 1);
-    }
-  }
-
-  reset() {
-    this.particles = [];
-    this.showingCustomers = false;
-    this.showingPartners = false;
-    if (this.particleGenerators.customer) clearTimeout(this.particleGenerators.customer);
-    if (this.particleGenerators.partner) clearTimeout(this.particleGenerators.partner);
-    this.funnel = new Funnel(this.canvas);
-    this.stageStats = new Map(
-      STAGES.map(stage => [stage.name, { total: 0, current: 0 }])
-    );
-    this.revenue = {
-      totalRevenue: 0,
-      commitRevenue: 0,
-      expansionRevenue: 0,
-      adoptionRevenue: 0,
-      partnerCosts: 0,
-      netRevenue: 0
-    };
-  }
-
   startCustomerParticles() {
     const createParticle = () => {
       if (!this.showingCustomers) return;
@@ -215,26 +157,29 @@ export class Visualization {
       awarenessStats.current++;
       this.stageStats.set('Awareness', awarenessStats);
 
+      const rect = this.canvas.getBoundingClientRect();
       const startNarrowing = Math.sin(0) * 0.15;
-      const minY = this.canvas.height * startNarrowing + 20;
-      const maxY = this.canvas.height * (1 - startNarrowing) - 20;
+      const minY = rect.height * startNarrowing + 20;
+      const maxY = rect.height * (1 - startNarrowing) - 20;
 
-      const startX = Math.random() * (this.canvas.width * 0.1);
+      const startX = Math.random() * (rect.width * 0.1);
       const y = minY + Math.random() * (maxY - minY);
 
-      const baseSpeed = 1.5 + Math.random() * 2;
-      const verticalVariation = (Math.random() - 0.5) * 2;
-      
+      const baseScale = Math.min(rect.width / 1000, rect.height / 600);
+      const baseRadius = 3 * baseScale;
+      const baseSpeed = (1.5 + Math.random() * 2) * baseScale;
+      const verticalVariation = (Math.random() - 0.5) * 2 * baseScale;
+
       this.particles.push(new Particle({
         x: startX,
         y,
-        radius: 3,
+        radius: baseRadius,
         speed: Math.random() < 0.2 ? -baseSpeed : baseSpeed,
         color: 'rgba(0, 0, 0, 0.8)',
         type: 'customer',
         currentStage: 'Awareness',
-        canvasWidth: this.canvas.width,
-        canvasHeight: this.canvas.height,
+        canvasWidth: rect.width,
+        canvasHeight: rect.height,
         canvas: this.canvas,
         verticalSpeed: verticalVariation
       }));
@@ -273,69 +218,105 @@ export class Visualization {
     particle.currentStage = newStage;
   }
 
-  getStageStats(): StageStats[] {
-    return STAGES.map(stage => ({
-      name: stage.name,
-      ...this.stageStats.get(stage.name)!
-    }));
-  }
+  addPartner() {
+    const rect = this.canvas.getBoundingClientRect();
+    const stageWidth = rect.width / STAGES.length;
+    const randomStage = Math.floor(Math.random() * STAGES.length);
+    const x = (randomStage * stageWidth) + (Math.random() * stageWidth);
 
-  getConversionRates(): ConversionStats[] {
-    const rates: ConversionStats[] = [];
+    const progress = randomStage / (STAGES.length - 1);
+    const narrowing = Math.sin(progress * Math.PI) * 0.15;
+    const minY = rect.height * narrowing;
+    const maxY = rect.height * (1 - narrowing);
+    const y = minY + (Math.random() * (maxY - minY));
 
-    for (let i = 0; i < STAGES.length - 1; i++) {
-      const fromStage = STAGES[i].name;
-      const toStage = STAGES[i + 1].name;
-      const fromStats = this.stageStats.get(fromStage)!;
-      const toStats = this.stageStats.get(toStage)!;
+    const baseScale = Math.min(rect.width / 1000, rect.height / 600);
+    const baseRadius = 6 * baseScale;
+    const baseSpeed = 2 * baseScale;
 
-      const rate = fromStats.total === 0 ? 0 : (toStats.total / fromStats.total) * 100;
+    const particle = new Particle({
+      x,
+      y,
+      radius: baseRadius,
+      speed: Math.random() < 0.5 ? baseSpeed : -baseSpeed,
+      color: 'rgba(0, 0, 0, 0.8)',
+      type: 'partner'
+    });
 
-      rates.push({
-        from: fromStage,
-        to: toStage,
-        rate: Math.round(rate * 10) / 10
-      });
+    this.particles.push(particle);
+
+    const wallIndex = Math.floor(x / (rect.width / STAGES.length));
+    if (wallIndex > 0 && wallIndex < STAGES.length) {
+      const holeY = y < rect.height / 2 ?
+        rect.height * 0.2 + Math.random() * 0.2 :
+        rect.height * 0.6 + Math.random() * 0.2;
+      this.funnel.addHole(wallIndex - 1, holeY, rect.height * 0.03);
     }
-
-    return rates;
   }
 
-  getRevenueStats(): RevenueStats {
-    return { ...this.revenue };
+  removePartner() {
+    const partnerIndex = this.particles.findIndex(p => p.type === 'partner');
+    if (partnerIndex !== -1) {
+      this.particles.splice(partnerIndex, 1);
+    }
+  }
+
+  reset() {
+    this.particles = [];
+    this.showingCustomers = false;
+    this.showingPartners = false;
+    if (this.particleGenerators.customer) clearTimeout(this.particleGenerators.customer);
+    if (this.particleGenerators.partner) clearTimeout(this.particleGenerators.partner);
+    this.funnel = new Funnel(this.canvas);
+    this.stageStats = new Map(
+      STAGES.map(stage => [stage.name, { total: 0, current: 0 }])
+    );
+    this.revenue = {
+      totalRevenue: 0,
+      commitRevenue: 0,
+      expansionRevenue: 0,
+      adoptionRevenue: 0,
+      partnerCosts: 0,
+      netRevenue: 0
+    };
   }
 
   startPartnerParticles() {
     const createPartner = () => {
       if (!this.showingPartners) return;
 
-      const stageWidth = this.canvas.width / STAGES.length;
+      const rect = this.canvas.getBoundingClientRect();
+      const stageWidth = rect.width / STAGES.length;
       const randomStage = Math.floor(Math.random() * STAGES.length);
       const x = (randomStage * stageWidth) + (Math.random() * stageWidth);
 
       const progress = randomStage / (STAGES.length - 1);
       const narrowing = Math.sin(progress * Math.PI) * 0.15;
-      const minY = this.canvas.height * narrowing;
-      const maxY = this.canvas.height * (1 - narrowing);
+      const minY = rect.height * narrowing;
+      const maxY = rect.height * (1 - narrowing);
       const y = minY + (Math.random() * (maxY - minY));
+
+      const baseScale = Math.min(rect.width / 1000, rect.height / 600);
+      const baseRadius = 6 * baseScale;
+      const baseSpeed = 2 * baseScale;
 
       const particle = new Particle({
         x,
         y,
-        radius: 6,
-        speed: Math.random() < 0.5 ? 2 : -2,
+        radius: baseRadius,
+        speed: Math.random() < 0.5 ? baseSpeed : -baseSpeed,
         color: 'rgba(0, 0, 0, 0.8)',
         type: 'partner'
       });
 
       this.particles.push(particle);
 
-      const wallIndex = Math.floor(x / (this.canvas.width / STAGES.length));
+      const wallIndex = Math.floor(x / (rect.width / STAGES.length));
       if (wallIndex > 0 && wallIndex < STAGES.length) {
-        const holeY = y < this.canvas.height / 2 ?
-          this.canvas.height * 0.2 + Math.random() * 0.2 :
-          this.canvas.height * 0.6 + Math.random() * 0.2;
-        this.funnel.addHole(wallIndex - 1, holeY, this.canvas.height * 0.1);
+        const holeY = y < rect.height / 2 ?
+          rect.height * 0.2 + Math.random() * 0.2 :
+          rect.height * 0.6 + Math.random() * 0.2;
+        this.funnel.addHole(wallIndex - 1, holeY, rect.height * 0.1);
       }
 
       this.particleGenerators.partner = setTimeout(createPartner, 500);
@@ -375,6 +356,38 @@ export class Visualization {
 
     if (this.particleGenerators.customer) clearTimeout(this.particleGenerators.customer);
     if (this.particleGenerators.partner) clearTimeout(this.particleGenerators.partner);
+  }
+
+  getStageStats(): StageStats[] {
+    return STAGES.map(stage => ({
+      name: stage.name,
+      ...this.stageStats.get(stage.name)!
+    }));
+  }
+
+  getConversionRates(): ConversionStats[] {
+    const rates: ConversionStats[] = [];
+
+    for (let i = 0; i < STAGES.length - 1; i++) {
+      const fromStage = STAGES[i].name;
+      const toStage = STAGES[i + 1].name;
+      const fromStats = this.stageStats.get(fromStage)!;
+      const toStats = this.stageStats.get(toStage)!;
+
+      const rate = fromStats.total === 0 ? 0 : (toStats.total / fromStats.total) * 100;
+
+      rates.push({
+        from: fromStage,
+        to: toStage,
+        rate: Math.round(rate * 10) / 10
+      });
+    }
+
+    return rates;
+  }
+
+  getRevenueStats(): RevenueStats {
+    return { ...this.revenue };
   }
 
   executePartnerAction(action: string) {
