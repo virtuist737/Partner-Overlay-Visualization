@@ -60,17 +60,41 @@ export class Visualization {
     }
   }
 
-  togglePartners() {
-    this.showingPartners = !this.showingPartners;
-    // Clear existing partner particles
-    this.particles = this.particles.filter(p => p.type !== 'partner');
+  addPartner() {
+    const stageWidth = this.canvas.width / STAGES.length;
+    const randomStage = Math.floor(Math.random() * STAGES.length);
+    const x = (randomStage * stageWidth) + (Math.random() * stageWidth);
+    
+    const progress = randomStage / (STAGES.length - 1);
+    const narrowing = Math.sin(progress * Math.PI) * 0.15;
+    const minY = this.canvas.height * narrowing;
+    const maxY = this.canvas.height * (1 - narrowing);
+    const y = minY + (Math.random() * (maxY - minY));
 
-    if (this.showingPartners) {
-      this.startPartnerParticles();
-    } else {
-      if (this.particleGenerators.partner) {
-        clearTimeout(this.particleGenerators.partner);
-      }
+    const particle = new Particle({
+      x,
+      y,
+      radius: 6,
+      speed: Math.random() < 0.5 ? 2 : -2,
+      color: 'rgba(34, 197, 94, 0.5)',
+      type: 'partner'
+    });
+
+    this.particles.push(particle);
+
+    const wallIndex = Math.floor(x / (this.canvas.width / STAGES.length));
+    if (wallIndex > 0 && wallIndex < STAGES.length) {
+      const holeY = y < this.canvas.height / 2 ? 
+        this.canvas.height * 0.2 + Math.random() * 0.2 : 
+        this.canvas.height * 0.6 + Math.random() * 0.2;
+      this.funnel.addHole(wallIndex - 1, holeY, this.canvas.height * 0.1);
+    }
+  }
+
+  removePartner() {
+    const partnerIndex = this.particles.findIndex(p => p.type === 'partner');
+    if (partnerIndex !== -1) {
+      this.particles.splice(partnerIndex, 1);
     }
   }
 

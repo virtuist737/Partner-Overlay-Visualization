@@ -59,10 +59,16 @@ export default function Home() {
                 {showingCustomers ? 'Hide Customers' : 'Show Customers'}
               </Button>
               <Button 
-                onClick={handlePartnersToggle} 
-                variant={showingPartners ? "secondary" : "default"}
+                onClick={() => visualization?.addPartner()}
+                variant="default"
               >
-                {showingPartners ? 'Hide Partners' : 'Show Partners'}
+                Add Partner
+              </Button>
+              <Button 
+                onClick={() => visualization?.removePartner()}
+                variant="outline"
+              >
+                Remove Partner
               </Button>
             </div>
             
