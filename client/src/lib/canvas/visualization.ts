@@ -167,7 +167,7 @@ export class Visualization {
       const y = minY + Math.random() * (maxY - minY);
 
       // Reduce particle size to 1/3 of previous size
-      const baseRadius = Math.min(rect.width, rect.height) * 0.001; // Reduced from 0.003
+      const baseRadius = Math.min(rect.width, rect.height) * 0.001;
       const baseSpeed = rect.width * 0.002;
       const verticalVariation = (Math.random() - 0.5) * baseSpeed * 0.5;
 
@@ -403,7 +403,7 @@ export class Visualization {
     this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
 
     // Increased hole size for better particle flow
-    const holeSize = rect.height * 0.1; // Increased from 0.05
+    const holeSize = rect.height * 0.1;
 
     switch (action) {
       case 'seo_listicle': {
