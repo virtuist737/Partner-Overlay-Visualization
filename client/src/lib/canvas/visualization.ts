@@ -335,8 +335,14 @@ export class Visualization {
   executePartnerAction(action: string) {
     switch (action) {
       case 'seo_listicle':
-      case 'youtube_walkthrough':
         this.funnel.createEducationSelectionHoles();
+        break;
+      case 'youtube_walkthrough':
+        // Create separate holes for YouTube video
+        const walls = this.funnel.getWallsBetweenStages('Education', 'Selection');
+        walls.forEach(wall => {
+          this.funnel.openHolesInWall(wall, 1);
+        });
         break;
       case 'onboarding_services':
         this.funnel.createCommitOnboardingHoles();
