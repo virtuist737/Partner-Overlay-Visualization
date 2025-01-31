@@ -65,7 +65,7 @@ export default function Home() {
             </Button>
           </div>
 
-          <div className="relative w-full aspect-[2/1] bg-black/5 rounded-lg overflow-hidden">
+          <div className="relative w-full h-[60vh] min-h-[400px] bg-black/5 rounded-lg overflow-hidden">
             <canvas 
               ref={canvasRef}
               className="w-full h-full"

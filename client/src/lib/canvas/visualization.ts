@@ -32,8 +32,7 @@ export class Visualization {
     const rect = this.canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
 
-    // Set a fixed aspect ratio of 2:1
-    const height = rect.width * 0.5;
+    const height = rect.height;
 
     this.canvas.width = rect.width * dpr;
     this.canvas.height = height * dpr;
