@@ -15,4 +15,5 @@ export interface ParticleOptions {
   canvasWidth?: number;
   canvasHeight?: number;
   canvas?: HTMLCanvasElement;
+  verticalSpeed?: number;
 }

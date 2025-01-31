@@ -196,19 +196,27 @@ export class Visualization {
       const startNarrowing = Math.sin(0) * 0.15; // At x = 0, progress = 0
       const minY = this.canvas.height * startNarrowing + 20; // Add offset to avoid top edge
       const maxY = this.canvas.height * (1 - startNarrowing) - 20; // Subtract offset to avoid bottom edge
+
+      // Randomize starting position within the first 10% of the canvas width
+      const startX = Math.random() * (this.canvas.width * 0.1);
       const y = minY + Math.random() * (maxY - minY);
 
+      // Randomize initial speed and direction
+      const baseSpeed = 2 + Math.random() * 2; // Speed between 2 and 4
+      const verticalVariation = (Math.random() - 0.5) * 0.8; // More vertical variation
+
       this.particles.push(new Particle({
-        x: 20, // Start slightly offset from the left edge
+        x: startX,
         y,
-        radius: 3, // Keep the reduced size
-        speed: 3, // Increased horizontal speed for better movement
+        radius: 3,
+        speed: baseSpeed,
         color: 'rgba(0, 0, 0, 0.8)',
         type: 'customer',
         currentStage: 'Awareness',
         canvasWidth: this.canvas.width,
         canvasHeight: this.canvas.height,
-        canvas: this.canvas
+        canvas: this.canvas,
+        verticalSpeed: verticalVariation
       }));
 
       this.particleGenerators.customer = setTimeout(createParticle, 200);
