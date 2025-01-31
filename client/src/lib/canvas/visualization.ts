@@ -10,8 +10,6 @@ export class Visualization {
   showingCustomers: boolean;
   showingPartners: boolean;
   particleGenerators: { customer?: NodeJS.Timeout; partner?: NodeJS.Timeout };
-  zoomLevel: number = 1;
-
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
@@ -129,27 +127,8 @@ export class Visualization {
     createPartner();
   }
 
-  setZoom(level: number) {
-    this.zoomLevel = Math.max(0.1, Math.min(2, level));
-    this.setupCanvas();
-  }
-
-  zoomIn() {
-    this.setZoom(this.zoomLevel * 1.2);
-  }
-
-  zoomOut() {
-    this.setZoom(this.zoomLevel * 0.8);
-  }
-
-  resetZoom() {
-    this.setZoom(1);
-  }
-
   animate() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.save();
-    this.ctx.scale(this.zoomLevel, this.zoomLevel);
 
     // Draw funnel
     this.funnel.draw();
@@ -161,7 +140,6 @@ export class Visualization {
       particle.draw(this.ctx);
     });
 
-    this.ctx.restore();
     this.animationFrame = requestAnimationFrame(this.animate);
   }
 
