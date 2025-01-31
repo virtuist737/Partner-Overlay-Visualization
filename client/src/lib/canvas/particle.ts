@@ -46,16 +46,16 @@ export class Particle {
     const scaledSpeed = this.speed * this.scale;
     const scaledVerticalSpeed = this.verticalSpeed * this.scale;
 
-    // Calculate funnel boundaries based on x position
-    const progress = this.x / (canvasHeight * 2);
+    // Calculate funnel boundaries based on x position with tighter constraints
+    const progress = this.x / (this.canvas.width);
     const narrowing = Math.sin(progress * Math.PI) * 0.15;
-    const minY = canvasHeight * narrowing;
-    const maxY = canvasHeight * (1 - narrowing);
+    const minY = canvasHeight * narrowing + (this.radius * 2); // Add padding
+    const maxY = canvasHeight * (1 - narrowing) - (this.radius * 2); // Add padding
 
     // Update horizontal position
     this.x += scaledSpeed;
 
-    // For customer particles, strictly enforce funnel boundaries and prevent downward movement at bottom
+    // For customer particles, strictly enforce funnel boundaries
     if (this.type === 'customer') {
       // Update vertical position with strict boundary enforcement
       const newY = this.y + scaledVerticalSpeed;
@@ -63,16 +63,19 @@ export class Particle {
       // If particle hits bottom boundary, force it upward
       if (newY > maxY - this.radius) {
         this.y = maxY - this.radius;
-        this.verticalSpeed = -Math.abs(this.verticalSpeed); // Force upward movement
+        this.verticalSpeed = -Math.abs(this.verticalSpeed * 0.8); // Reduce bounce intensity
       }
-      // If particle hits top boundary, bounce
+      // If particle hits top boundary, force it downward
       else if (newY < minY + this.radius) {
         this.y = minY + this.radius;
-        this.verticalSpeed *= -0.9;
+        this.verticalSpeed = Math.abs(this.verticalSpeed * 0.8); // Reduce bounce intensity
       }
       else {
         this.y = newY;
       }
+
+      // Add slight gravity effect to keep particles from getting stuck at the top
+      this.verticalSpeed += 0.05 * this.scale;
     } else {
       // Partner particles retain original behavior
       const newY = this.y + scaledVerticalSpeed;

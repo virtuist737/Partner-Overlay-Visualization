@@ -194,15 +194,15 @@ export class Visualization {
 
       // Calculate the funnel height at the start (Awareness stage)
       const startNarrowing = Math.sin(0) * 0.15; // At x = 0, progress = 0
-      const minY = this.canvas.height * startNarrowing;
-      const maxY = this.canvas.height * (1 - startNarrowing);
+      const minY = this.canvas.height * startNarrowing + 20; // Add offset to avoid top edge
+      const maxY = this.canvas.height * (1 - startNarrowing) - 20; // Subtract offset to avoid bottom edge
       const y = minY + Math.random() * (maxY - minY);
 
       this.particles.push(new Particle({
-        x: 0,
+        x: 20, // Start slightly offset from the left edge
         y,
-        radius: 4,
-        speed: 4, // Increased from 2 to 4
+        radius: 3, // Reduced from 4 to 3
+        speed: 2, // Reduced from 4 to 2 for better control
         color: 'rgba(0, 0, 0, 0.8)',
         type: 'customer',
         currentStage: 'Awareness',
