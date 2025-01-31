@@ -409,8 +409,12 @@ export class Visualization {
       case 'seo_listicle': {
         const walls = this.funnel.getWallsBetweenStages('Awareness', 'Education');
         walls.forEach(wall => {
+          // Calculate evenly spaced vertical positions
+          const existingHoles = wall.holes.length;
+          const spacing = (wall.endY - wall.startY) / (existingHoles + 2);
+          const y = wall.startY + spacing * (existingHoles + 1);
           wall.holes.push({
-            y: rect.height * 0.3 + Math.random() * (rect.height * 0.4),
+            y: y,
             height: holeSize
           });
         });
@@ -419,8 +423,12 @@ export class Visualization {
       case 'youtube_walkthrough': {
         const walls = this.funnel.getWallsBetweenStages('Education', 'Selection');
         walls.forEach(wall => {
+          // Calculate evenly spaced vertical positions
+          const existingHoles = wall.holes.length;
+          const spacing = (wall.endY - wall.startY) / (existingHoles + 2);
+          const y = wall.startY + spacing * (existingHoles + 1);
           wall.holes.push({
-            y: rect.height * 0.3 + Math.random() * (rect.height * 0.4),
+            y: y,
             height: holeSize
           });
         });
@@ -429,8 +437,12 @@ export class Visualization {
       case 'reference_call': {
         const walls = this.funnel.getWallsBetweenStages('Selection', 'Commit');
         walls.forEach(wall => {
+          // Calculate evenly spaced vertical positions
+          const existingHoles = wall.holes.length;
+          const spacing = (wall.endY - wall.startY) / (existingHoles + 2);
+          const y = wall.startY + spacing * (existingHoles + 1);
           wall.holes.push({
-            y: rect.height * 0.3 + Math.random() * (rect.height * 0.4),
+            y: y,
             height: holeSize
           });
         });
@@ -439,8 +451,12 @@ export class Visualization {
       case 'onboarding_services': {
         const walls = this.funnel.getWallsBetweenStages('Commit', 'Onboarding');
         walls.forEach(wall => {
+          // Calculate evenly spaced vertical positions
+          const existingHoles = wall.holes.length;
+          const spacing = (wall.endY - wall.startY) / (existingHoles + 2);
+          const y = wall.startY + spacing * (existingHoles + 1);
           wall.holes.push({
-            y: rect.height * 0.3 + Math.random() * (rect.height * 0.4),
+            y: y,
             height: holeSize
           });
         });
@@ -449,15 +465,23 @@ export class Visualization {
       case 'solution_management': {
         const onboardingWalls = this.funnel.getWallsBetweenStages('Onboarding', 'Adoption');
         onboardingWalls.forEach(wall => {
+          // Calculate evenly spaced vertical positions
+          const existingHoles = wall.holes.length;
+          const spacing = (wall.endY - wall.startY) / (existingHoles + 2);
+          const y = wall.startY + spacing * (existingHoles + 1);
           wall.holes.push({
-            y: rect.height * 0.3 + Math.random() * (rect.height * 0.4),
+            y: y,
             height: holeSize
           });
         });
         const expansionWalls = this.funnel.getWallsBetweenStages('Adoption', 'Expansion');
         expansionWalls.forEach(wall => {
+          // Calculate evenly spaced vertical positions
+          const existingHoles = wall.holes.length;
+          const spacing = (wall.endY - wall.startY) / (existingHoles + 2);
+          const y = wall.startY + spacing * (existingHoles + 1);
           wall.holes.push({
-            y: rect.height * 0.3 + Math.random() * (rect.height * 0.4),
+            y: y,
             height: holeSize
           });
         });
