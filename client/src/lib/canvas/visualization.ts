@@ -409,81 +409,69 @@ export class Visualization {
       case 'seo_listicle': {
         const walls = this.funnel.getWallsBetweenStages('Awareness', 'Education');
         walls.forEach(wall => {
-          // Calculate evenly spaced vertical positions
-          const existingHoles = wall.holes.length;
-          const spacing = (wall.endY - wall.startY) / (existingHoles + 2);
-          const y = wall.startY + spacing * (existingHoles + 1);
-          wall.holes.push({
-            y: y,
+          const newHoleCount = wall.holes.length + 1;
+          const spacing = (wall.endY - wall.startY) / (newHoleCount);
+          wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
+            y: wall.startY + spacing * (i + 0.5),
             height: holeSize
-          });
+          }));
         });
         break;
       }
       case 'youtube_walkthrough': {
         const walls = this.funnel.getWallsBetweenStages('Education', 'Selection');
         walls.forEach(wall => {
-          // Calculate evenly spaced vertical positions
-          const existingHoles = wall.holes.length;
-          const spacing = (wall.endY - wall.startY) / (existingHoles + 2);
-          const y = wall.startY + spacing * (existingHoles + 1);
-          wall.holes.push({
-            y: y,
+          const newHoleCount = wall.holes.length + 1;
+          const spacing = (wall.endY - wall.startY) / (newHoleCount);
+          wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
+            y: wall.startY + spacing * (i + 0.5),
             height: holeSize
-          });
+          }));
         });
         break;
       }
       case 'reference_call': {
         const walls = this.funnel.getWallsBetweenStages('Selection', 'Commit');
         walls.forEach(wall => {
-          // Calculate evenly spaced vertical positions
-          const existingHoles = wall.holes.length;
-          const spacing = (wall.endY - wall.startY) / (existingHoles + 2);
-          const y = wall.startY + spacing * (existingHoles + 1);
-          wall.holes.push({
-            y: y,
+          const newHoleCount = wall.holes.length + 1;
+          const spacing = (wall.endY - wall.startY) / (newHoleCount);
+          wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
+            y: wall.startY + spacing * (i + 0.5),
             height: holeSize
-          });
+          }));
         });
         break;
       }
       case 'onboarding_services': {
         const walls = this.funnel.getWallsBetweenStages('Commit', 'Onboarding');
         walls.forEach(wall => {
-          // Calculate evenly spaced vertical positions
-          const existingHoles = wall.holes.length;
-          const spacing = (wall.endY - wall.startY) / (existingHoles + 2);
-          const y = wall.startY + spacing * (existingHoles + 1);
-          wall.holes.push({
-            y: y,
+          const newHoleCount = wall.holes.length + 1;
+          const spacing = (wall.endY - wall.startY) / (newHoleCount);
+          wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
+            y: wall.startY + spacing * (i + 0.5),
             height: holeSize
-          });
+          }));
         });
         break;
       }
       case 'solution_management': {
         const onboardingWalls = this.funnel.getWallsBetweenStages('Onboarding', 'Adoption');
         onboardingWalls.forEach(wall => {
-          // Calculate evenly spaced vertical positions
-          const existingHoles = wall.holes.length;
-          const spacing = (wall.endY - wall.startY) / (existingHoles + 2);
-          const y = wall.startY + spacing * (existingHoles + 1);
-          wall.holes.push({
-            y: y,
+          const newHoleCount = wall.holes.length + 1;
+          const spacing = (wall.endY - wall.startY) / (newHoleCount);
+          wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
+            y: wall.startY + spacing * (i + 0.5),
             height: holeSize
-          });
+          }));
         });
         const expansionWalls = this.funnel.getWallsBetweenStages('Adoption', 'Expansion');
         expansionWalls.forEach(wall => {
-          // Calculate evenly spaced vertical positions
-          const existingHoles = wall.holes.length;
-          const spacing = (wall.endY - wall.startY) / (existingHoles + 2);
-          const y = wall.startY + spacing * (existingHoles + 1);
-          wall.holes.push({
-            y: y,
+          const newHoleCount = wall.holes.length + 1;
+          const spacing = (wall.endY - wall.startY) / (newHoleCount);
+          wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
+            y: wall.startY + spacing * (i + 0.5),
             height: holeSize
-          });
+          }));
         });
         break;
       }
