@@ -204,6 +204,20 @@ export default function Home() {
                     <span>Total Revenue</span>
                     <span className="text-muted-foreground">{formatCurrency(revenue.totalRevenue)}</span>
                   </div>
+                  <div className="pl-4 space-y-1">
+                    <div className="flex justify-between items-center text-sm">
+                      <span>From Commits</span>
+                      <span className="text-muted-foreground">{formatCurrency(revenue.commitRevenue)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span>From Adoptions</span>
+                      <span className="text-muted-foreground">{formatCurrency(revenue.adoptionRevenue)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span>From Expansions</span>
+                      <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
+                    </div>
+                  </div>
                   <div className="flex justify-between items-center">
                     <span>Partner Costs</span>
                     <span className="text-muted-foreground text-red-500">-{formatCurrency(revenue.partnerCosts)}</span>
@@ -213,20 +227,6 @@ export default function Home() {
                     <span className={revenue.netRevenue >= 0 ? "text-green-600" : "text-red-600"}>
                       {formatCurrency(revenue.netRevenue)}
                     </span>
-                  </div>
-                  <div className="mt-2 pt-2 border-t">
-                    <div className="flex justify-between items-center">
-                      <span>From Commits</span>
-                      <span className="text-muted-foreground">{formatCurrency(revenue.commitRevenue)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span>From Adoptions</span>
-                      <span className="text-muted-foreground">{formatCurrency(revenue.adoptionRevenue)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span>From Expansions</span>
-                      <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
-                    </div>
                   </div>
                 </div>
 
