@@ -86,10 +86,10 @@ export default function Home() {
   }, [stats, visualization, showingCustomers]);
 
   return (
-    <div className="flex-1 flex items-stretch p-4 max-h-[100vh]">
-      <Card className="w-full h-full flex flex-col p-6 overflow-hidden">
-        <h1 className="text-2xl font-bold mb-4">Partner Overlay Visualization</h1>
-        <div className="flex gap-2 mb-4">
+    <div className="flex-1 flex items-stretch p-4 max-h-[100vh] bg-background">
+      <Card className="w-full h-full flex flex-col p-6 overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm">
+        <h1 className="text-3xl font-bold mb-6 text-primary">Customer Journey Visualization</h1>
+        <div className="flex gap-3 mb-6">
           <Button
             onClick={() => {
               if (!showingCustomers) {
@@ -99,6 +99,7 @@ export default function Home() {
             }}
             variant={showingCustomers ? "secondary" : "default"}
             disabled={showingCustomers}
+            className="min-w-[100px]"
           >
             Start
           </Button>
@@ -114,6 +115,7 @@ export default function Home() {
               }
             }}
             variant="outline"
+            className="min-w-[100px]"
           >
             {showingCustomers ? 'Pause' : 'Resume'}
           </Button>
@@ -122,46 +124,51 @@ export default function Home() {
               window.location.reload();
             }}
             variant="destructive"
+            className="min-w-[100px]"
           >
             Reset
           </Button>
         </div>
-        <div className="flex gap-4 mb-4">
-          <div className="flex-1 space-y-4">
-            <Card>
+        <div className="flex gap-6 mb-4">
+          <div className="flex-1 space-y-6">
+            <Card className="border-none shadow-lg bg-card/80">
               <CardContent className="p-6">
-                <h2 className="text-lg font-semibold mb-2">Partner Actions</h2>
-                <div className="flex flex-wrap gap-2">
+                <h2 className="text-xl font-semibold mb-4 text-primary">Partner Actions</h2>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                   {PARTNER_ACTIONS.map((action) => (
                     <Button
                       key={action.action}
                       onClick={() => handlePartnerAction(action.action)}
                       variant="outline"
-                      className="flex-grow"
+                      className="w-full h-full py-4 hover:bg-primary/10"
                     >
-                      {action.name}
-                      <span className="ml-2 text-sm text-muted-foreground">
-                        (${action.cost})
-                      </span>
+                      <div className="flex flex-col items-center gap-2">
+                        <span>{action.name}</span>
+                        <span className="text-sm text-muted-foreground">
+                          ${action.cost}
+                        </span>
+                      </div>
                     </Button>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-none shadow-lg bg-card/80">
               <CardContent className="p-6">
-                <div className="relative w-full flex-1 bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
+                <div className="relative w-full aspect-video bg-black/10 rounded-lg overflow-hidden flex items-center justify-center">
                   <canvas
                     ref={canvasRef}
                     className="w-full h-full"
                   />
                 </div>
 
-                <div className="mt-4 grid grid-cols-7 gap-4">
+                <div className="mt-6 grid grid-cols-7 gap-4">
                   {STAGES.map((stage) => (
-                    <div key={stage.name} className="text-center cursor-pointer">
-                      <h3 className="text-lg font-semibold">{stage.name}</h3>
+                    <div key={stage.name} className="text-center cursor-pointer group">
+                      <h3 className="text-sm font-medium text-primary/80 group-hover:text-primary transition-colors">
+                        {stage.name}
+                      </h3>
                     </div>
                   ))}
                 </div>
@@ -169,16 +176,16 @@ export default function Home() {
             </Card>
           </div>
 
-          <Card className="w-80">
+          <Card className="w-96 border-none shadow-lg bg-card/80">
             <CardContent className="p-6 space-y-8">
               <div>
-                <h2 className="text-xl font-semibold mb-2">Stage Statistics</h2>
-                <div className="space-y-2">
+                <h2 className="text-xl font-semibold mb-4 text-primary">Statistics</h2>
+                <div className="space-y-4">
                   {stats.map((stat: any) => (
                     <div key={stat.name} className="flex justify-between items-center">
-                      <span>{stat.name}</span>
-                      <span className="text-muted-foreground">
-                        Current: {stat.current} | Total: {stat.total}
+                      <span className="text-primary/90">{stat.name}</span>
+                      <span className="text-muted-foreground font-mono">
+                        {stat.current} / {stat.total}
                       </span>
                     </div>
                   ))}
@@ -186,59 +193,59 @@ export default function Home() {
               </div>
 
               <div>
-                <h2 className="text-xl font-semibold mb-2">Conversion Rates</h2>
-                <div className="space-y-2">
+                <h2 className="text-xl font-semibold mb-4 text-primary">Conversion</h2>
+                <div className="space-y-4">
                   {conversionRates.map((rate: any) => (
                     <div key={`${rate.from}-${rate.to}`} className="flex justify-between items-center">
-                      <span>{rate.from} → {rate.to}</span>
-                      <span className="text-muted-foreground">{rate.rate}%</span>
+                      <span className="text-primary/90">{rate.from} → {rate.to}</span>
+                      <span className="text-muted-foreground font-mono">{rate.rate}%</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               <div>
-                <h2 className="text-xl font-semibold mb-2">Revenue Statistics</h2>
-                <div className="space-y-2">
+                <h2 className="text-xl font-semibold mb-4 text-primary">Revenue</h2>
+                <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span>Total Revenue</span>
-                    <span className="text-muted-foreground">{formatCurrency(revenue.totalRevenue)}</span>
+                    <span className="text-primary/90">Total Revenue</span>
+                    <span className="text-muted-foreground font-mono">{formatCurrency(revenue.totalRevenue)}</span>
                   </div>
-                  <div className="pl-4 space-y-1">
+                  <div className="pl-4 space-y-2">
                     <div className="flex justify-between items-center text-sm">
-                      <span>From Commits</span>
-                      <span className="text-muted-foreground">{formatCurrency(revenue.commitRevenue)}</span>
+                      <span className="text-primary/80">From Commits</span>
+                      <span className="text-muted-foreground font-mono">{formatCurrency(revenue.commitRevenue)}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span>From Adoptions</span>
-                      <span className="text-muted-foreground">{formatCurrency(revenue.adoptionRevenue)}</span>
+                      <span className="text-primary/80">From Adoptions</span>
+                      <span className="text-muted-foreground font-mono">{formatCurrency(revenue.adoptionRevenue)}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span>From Expansions</span>
-                      <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
+                      <span className="text-primary/80">From Expansions</span>
+                      <span className="text-muted-foreground font-mono">{formatCurrency(revenue.expansionRevenue)}</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span>Partner Costs</span>
-                    <span className="text-muted-foreground text-red-500">{formatCurrency(revenue.partnerCosts)}</span>
+                    <span className="text-primary/90">Partner Costs</span>
+                    <span className="text-red-500 font-mono">{formatCurrency(revenue.partnerCosts)}</span>
                   </div>
                   <div className="flex justify-between items-center font-bold">
-                    <span>Net Revenue</span>
-                    <span className={revenue.netRevenue >= 0 ? "text-green-600" : "text-red-600"}>
+                    <span className="text-primary">Net Revenue</span>
+                    <span className={`font-mono ${revenue.netRevenue >= 0 ? "text-green-500" : "text-red-500"}`}>
                       {formatCurrency(revenue.netRevenue)}
                     </span>
                   </div>
                 </div>
 
-                <div className="mt-8 bg-blue-50 p-6 rounded-lg">
-                  <h2 className="text-2xl font-bold text-center mb-2">Average Net Revenue per Customer</h2>
-                  <p className="text-3xl text-center font-bold text-blue-600"
-                     style={{ color: revenue.netRevenue >= 0 ? '#2563eb' : '#dc2626' }}>
+                <div className="mt-8 bg-primary/5 p-6 rounded-lg">
+                  <h2 className="text-xl font-semibold text-center mb-2 text-primary">Average Revenue per Customer</h2>
+                  <p className="text-3xl text-center font-bold"
+                     style={{ color: revenue.netRevenue >= 0 ? 'hsl(var(--primary))' : 'hsl(var(--destructive))' }}>
                     {stats.length > 0 && stats[0].total > 0
                       ? formatCurrency(revenue.netRevenue / stats[0].total)
                       : '$0.00'}
                   </p>
-                  <p className="text-sm text-center text-gray-600 mt-1">
+                  <p className="text-sm text-center text-muted-foreground mt-2">
                     Based on {stats.length > 0 ? stats[0].total : 0}/100 total potential customers
                   </p>
                 </div>
