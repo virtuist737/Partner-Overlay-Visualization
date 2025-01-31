@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Visualization } from '@/lib/canvas/visualization';
+import { ScrollArea } from '@/components/ui/scroll-area'; // Added import
 
 const STAGES = [
   { name: 'Awareness' },
@@ -86,7 +87,7 @@ export default function Home() {
 
   return (
     <div className="flex-1 flex p-4 h-full overflow-hidden">
-      <Card className="w-full flex flex-col p-4 bg-card/50 backdrop-blur-sm border-none shadow-2xl">
+      <Card className="w-full flex flex-col p-4 bg-card/50 backdrop-blur-sm border-none shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-lg font-bold text-primary">Partner Overlay Visualization</h1>
           <div className="flex gap-2">
@@ -182,79 +183,83 @@ export default function Home() {
           </div>
 
           <Card className="lg:w-72 border-none shadow-lg bg-card/80 flex-shrink-0">
-            <CardContent className="p-3 space-y-4">
-              <div>
-                <h2 className="text-sm font-semibold mb-2 text-primary">Statistics</h2>
-                <div className="space-y-1.5">
-                  {stats.map((stat: any) => (
-                    <div key={stat.name} className="flex justify-between items-center text-sm">
-                      <span className="text-primary/90">{stat.name}</span>
-                      <span className="text-muted-foreground font-mono">
-                        {stat.current} / {stat.total}
-                      </span>
+            <CardContent className="p-3">
+              <ScrollArea className="h-[calc(100vh-8rem)] pr-4"> {/* Added ScrollArea */}
+                <div className="space-y-4">
+                  <div>
+                    <h2 className="text-sm font-semibold mb-2 text-primary">Statistics</h2>
+                    <div className="space-y-1.5">
+                      {stats.map((stat: any) => (
+                        <div key={stat.name} className="flex justify-between items-center text-sm">
+                          <span className="text-primary/90">{stat.name}</span>
+                          <span className="text-muted-foreground font-mono">
+                            {stat.current} / {stat.total}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
 
-              <div>
-                <h2 className="text-sm font-semibold mb-2 text-primary">Conversion</h2>
-                <div className="space-y-1.5">
-                  {conversionRates.map((rate: any) => (
-                    <div key={`${rate.from}-${rate.to}`} className="flex justify-between items-center text-sm">
-                      <span className="text-primary/90">{rate.from} → {rate.to}</span>
-                      <span className="text-muted-foreground font-mono">{rate.rate}%</span>
+                  <div>
+                    <h2 className="text-sm font-semibold mb-2 text-primary">Conversion</h2>
+                    <div className="space-y-1.5">
+                      {conversionRates.map((rate: any) => (
+                        <div key={`${rate.from}-${rate.to}`} className="flex justify-between items-center text-sm">
+                          <span className="text-primary/90">{rate.from} → {rate.to}</span>
+                          <span className="text-muted-foreground font-mono">{rate.rate}%</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
 
-              <div>
-                <h2 className="text-sm font-semibold mb-2 text-primary">Revenue</h2>
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-primary/90">Total Revenue</span>
-                    <span className="text-muted-foreground font-mono">{formatCurrency(revenue.totalRevenue)}</span>
-                  </div>
-                  <div className="pl-3 space-y-1">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-primary/80">From Commits</span>
-                      <span className="text-muted-foreground font-mono">{formatCurrency(revenue.commitRevenue)}</span>
+                  <div>
+                    <h2 className="text-sm font-semibold mb-2 text-primary">Revenue</h2>
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-primary/90">Total Revenue</span>
+                        <span className="text-muted-foreground font-mono">{formatCurrency(revenue.totalRevenue)}</span>
+                      </div>
+                      <div className="pl-3 space-y-1">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-primary/80">From Commits</span>
+                          <span className="text-muted-foreground font-mono">{formatCurrency(revenue.commitRevenue)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-primary/80">From Adoptions</span>
+                          <span className="text-muted-foreground font-mono">{formatCurrency(revenue.adoptionRevenue)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-primary/80">From Expansions</span>
+                          <span className="text-muted-foreground font-mono">{formatCurrency(revenue.expansionRevenue)}</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-primary/90">Partner Costs</span>
+                        <span className="text-red-500 font-mono">{formatCurrency(revenue.partnerCosts)}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-sm font-medium pt-1">
+                        <span className="text-primary">Net Revenue</span>
+                        <span className={`font-mono ${revenue.netRevenue >= 0 ? "text-green-500" : "text-red-500"}`}>
+                          {formatCurrency(revenue.netRevenue)}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-primary/80">From Adoptions</span>
-                      <span className="text-muted-foreground font-mono">{formatCurrency(revenue.adoptionRevenue)}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-primary/80">From Expansions</span>
-                      <span className="text-muted-foreground font-mono">{formatCurrency(revenue.expansionRevenue)}</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-primary/90">Partner Costs</span>
-                    <span className="text-red-500 font-mono">{formatCurrency(revenue.partnerCosts)}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm font-medium pt-1">
-                    <span className="text-primary">Net Revenue</span>
-                    <span className={`font-mono ${revenue.netRevenue >= 0 ? "text-green-500" : "text-red-500"}`}>
-                      {formatCurrency(revenue.netRevenue)}
-                    </span>
-                  </div>
-                </div>
 
-                <div className="mt-4 bg-primary/5 p-3 rounded-lg">
-                  <h2 className="text-sm font-semibold text-center mb-1 text-primary">Average Revenue per Customer</h2>
-                  <p className="text-xl text-center font-bold"
-                     style={{ color: revenue.netRevenue >= 0 ? 'hsl(var(--primary))' : 'hsl(var(--destructive))' }}>
-                    {stats.length > 0 && stats[0].total > 0
-                      ? formatCurrency(revenue.netRevenue / stats[0].total)
-                      : '$0.00'}
-                  </p>
-                  <p className="text-xs text-center text-muted-foreground mt-1">
-                    Based on {stats.length > 0 ? stats[0].total : 0}/100 total potential customers
-                  </p>
+                    <div className="mt-4 bg-primary/5 p-3 rounded-lg">
+                      <h2 className="text-sm font-semibold text-center mb-1 text-primary">Average Revenue per Customer</h2>
+                      <p className="text-xl text-center font-bold"
+                         style={{ color: revenue.netRevenue >= 0 ? 'hsl(var(--primary))' : 'hsl(var(--destructive))' }}>
+                        {stats.length > 0 && stats[0].total > 0
+                          ? formatCurrency(revenue.netRevenue / stats[0].total)
+                          : '$0.00'}
+                      </p>
+                      <p className="text-xs text-center text-muted-foreground mt-1">
+                        Based on {stats.length > 0 ? stats[0].total : 0}/100 total potential customers
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </ScrollArea> {/* Added closing tag */}
             </CardContent>
           </Card>
         </div>
