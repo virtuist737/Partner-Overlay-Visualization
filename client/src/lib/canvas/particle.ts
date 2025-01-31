@@ -22,8 +22,8 @@ export class Particle {
   active: boolean;
   currentStage?: string;
   scale: number;
-
   canvas: HTMLCanvasElement;
+
   constructor(options: ParticleOptions) {
     this.x = options.x;
     this.y = options.y;
@@ -31,7 +31,7 @@ export class Particle {
     this.speed = options.speed;
     this.color = options.color;
     this.type = options.type;
-    this.verticalSpeed = this.type === 'partner' ? options.speed : (Math.random() - 0.5);
+    this.verticalSpeed = this.type === 'partner' ? options.speed : (Math.random() - 0.5) * 0.5; // Reduced vertical speed for customers
     this.active = true;
     this.currentStage = options.currentStage;
     this.canvas = options.canvas!;
@@ -47,48 +47,25 @@ export class Particle {
     const scaledVerticalSpeed = this.verticalSpeed * this.scale;
 
     // Calculate funnel boundaries based on x position with tighter constraints
-    const progress = this.x / (this.canvas.width);
+    const progress = this.x / this.canvas.width;
     const narrowing = Math.sin(progress * Math.PI) * 0.15;
-    const minY = canvasHeight * narrowing + (this.radius * 2); // Add padding
-    const maxY = canvasHeight * (1 - narrowing) - (this.radius * 2); // Add padding
+    const minY = canvasHeight * narrowing + (this.radius * 2);
+    const maxY = canvasHeight * (1 - narrowing) - (this.radius * 2);
 
-    // Update horizontal position
+    // Update positions
     this.x += scaledSpeed;
+    const newY = this.y + scaledVerticalSpeed;
 
-    // For customer particles, strictly enforce funnel boundaries
-    if (this.type === 'customer') {
-      // Update vertical position with strict boundary enforcement
-      const newY = this.y + scaledVerticalSpeed;
-
-      // If particle hits bottom boundary, force it upward
-      if (newY > maxY - this.radius) {
-        this.y = maxY - this.radius;
-        this.verticalSpeed = -Math.abs(this.verticalSpeed * 0.8); // Reduce bounce intensity
-      }
-      // If particle hits top boundary, force it downward
-      else if (newY < minY + this.radius) {
-        this.y = minY + this.radius;
-        this.verticalSpeed = Math.abs(this.verticalSpeed * 0.8); // Reduce bounce intensity
-      }
-      else {
-        this.y = newY;
-      }
-
-      // Add slight gravity effect to keep particles from getting stuck at the top
-      this.verticalSpeed += 0.05 * this.scale;
+    // Enforce funnel boundaries with elastic collisions
+    if (newY > maxY - this.radius || newY < minY + this.radius) {
+      this.verticalSpeed *= -0.8; // Elastic collision with slight energy loss
+      this.y = newY > maxY - this.radius ? maxY - this.radius : minY + this.radius;
     } else {
-      // Partner particles retain original behavior
-      const newY = this.y + scaledVerticalSpeed;
-      if (newY < minY || newY > maxY) {
-        this.verticalSpeed *= -0.9;
-        this.y = newY < minY ? minY : maxY;
-      } else {
-        this.y = newY;
-      }
+      this.y = newY;
     }
 
     // Check canvas bounds
-    if (this.x < 0 || this.x > canvasHeight * 2) {
+    if (this.x < 0 || this.x > this.canvas.width) {
       this.active = false;
       return;
     }
@@ -112,17 +89,11 @@ export class Particle {
                 x: Math.max(wall.startX!, Math.min(wall.endX! - 30 * this.scale, this.x - 15 * this.scale)),
                 width: 30 * this.scale
               });
-              this.verticalSpeed *= -0.9;
+              this.verticalSpeed *= -0.8;
             } else {
-              // For customers, ensure they bounce away from walls
-              const isTopWall = wall.y! < this.canvas.height / 2;
-              if (isTopWall) {
-                this.verticalSpeed = Math.abs(this.verticalSpeed);
-                this.y = wall.y! + scaledRadius;
-              } else {
-                this.verticalSpeed = -Math.abs(this.verticalSpeed);
-                this.y = wall.y! - scaledRadius;
-              }
+              // Elastic collision for customers
+              this.verticalSpeed *= -0.8;
+              this.y = wall.y! + (this.verticalSpeed > 0 ? scaledRadius : -scaledRadius);
             }
           }
         }
@@ -131,11 +102,7 @@ export class Particle {
           let canPass = false;
           wall.holes.forEach(hole => {
             if (this.y > hole.y! && this.y < hole.y! + hole.height!) {
-              if (this.type === 'customer') {
-                canPass = this.speed > 0;
-              } else {
-                canPass = true;
-              }
+              canPass = this.type === 'customer' ? this.speed > 0 : true;
             }
           });
 
@@ -145,10 +112,10 @@ export class Particle {
                 y: Math.max(wall.startY!, Math.min(wall.endY! - 30 * this.scale, this.y - 15 * this.scale)),
                 height: 30 * this.scale
               });
-              this.speed *= -0.9;
+              this.speed *= -0.8;
             } else {
-              this.x = wall.x! - (this.speed > 0 ? scaledRadius + 1 : -scaledRadius - 1);
-              this.speed *= -0.9;
+              this.x = wall.x! - (this.speed > 0 ? scaledRadius : -scaledRadius);
+              this.speed *= -0.8;
             }
           }
         }
@@ -158,22 +125,9 @@ export class Particle {
 
   draw(ctx: CanvasRenderingContext2D) {
     if (!this.active) return;
-
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius * this.scale, 0, Math.PI * 2);
     ctx.fillStyle = this.color;
     ctx.fill();
   }
-}
-
-export interface ParticleOptions {
-  x: number;
-  y: number;
-  radius: number;
-  speed: number;
-  color: string;
-  type: 'customer' | 'partner';
-  currentStage?: string;
-  canvasWidth?: number;
-  canvasHeight?: number;
 }

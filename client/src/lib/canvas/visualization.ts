@@ -201,8 +201,8 @@ export class Visualization {
       this.particles.push(new Particle({
         x: 20, // Start slightly offset from the left edge
         y,
-        radius: 3, // Reduced from 4 to 3
-        speed: 2, // Reduced from 4 to 2 for better control
+        radius: 3, // Keep the reduced size
+        speed: 3, // Increased horizontal speed for better movement
         color: 'rgba(0, 0, 0, 0.8)',
         type: 'customer',
         currentStage: 'Awareness',
