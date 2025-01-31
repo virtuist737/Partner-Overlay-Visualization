@@ -116,8 +116,9 @@ export default function Home() {
               }}
               variant="outline"
               size="sm"
+              disabled={!showingCustomers}
             >
-              {showingCustomers ? 'Pause' : 'Resume'}
+              Pause
             </Button>
             <Button
               onClick={() => {
