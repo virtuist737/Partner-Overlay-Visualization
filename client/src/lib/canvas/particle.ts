@@ -23,6 +23,7 @@ export class Particle {
   currentStage?: string;
   scale: number;
 
+  canvas: HTMLCanvasElement;
   constructor(options: ParticleOptions) {
     this.x = options.x;
     this.y = options.y;
@@ -33,6 +34,7 @@ export class Particle {
     this.verticalSpeed = this.type === 'partner' ? options.speed : (Math.random() - 0.5);
     this.active = true;
     this.currentStage = options.currentStage;
+    this.canvas = options.canvas!;
     const canvasWidth = options.canvasWidth || 1000;
     const canvasHeight = options.canvasHeight || 600;
     this.scale = Math.min(canvasWidth / 1000, canvasHeight / 600);

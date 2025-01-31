@@ -201,7 +201,8 @@ export class Visualization {
         type: 'customer',
         currentStage: 'Awareness',
         canvasWidth: this.canvas.width,
-        canvasHeight: this.canvas.height
+        canvasHeight: this.canvas.height,
+        canvas: this.canvas
       }));
 
       this.particleGenerators.customer = setTimeout(createParticle, 200);
