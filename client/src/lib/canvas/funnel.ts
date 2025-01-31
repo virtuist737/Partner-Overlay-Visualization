@@ -311,12 +311,17 @@ export class Funnel {
   }
 
   patchSelectionStageHoles() {
-    const horizontalWalls = this.getStageHorizontalWalls('Selection');
-    this.closeHoles(horizontalWalls);
+    const verticalWalls = this.getWallsBetweenStages('Selection', 'Commit');
+    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
   }
 
   manageAdoptionExpansionHoles() {
-    const verticalWalls = this.getWallsBetweenStages('Adoption', 'Expansion');
-    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
+    // Create holes between Onboarding and Adoption
+    const onboardingAdoptionWalls = this.getWallsBetweenStages('Onboarding', 'Adoption');
+    onboardingAdoptionWalls.forEach(wall => this.openHolesInWall(wall, 1));
+
+    // Create holes between Adoption and Expansion
+    const adoptionExpansionWalls = this.getWallsBetweenStages('Adoption', 'Expansion');
+    adoptionExpansionWalls.forEach(wall => this.openHolesInWall(wall, 1));
   }
 }
