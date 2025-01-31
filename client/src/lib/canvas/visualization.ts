@@ -162,11 +162,11 @@ export class Visualization {
       const minY = rect.height * startNarrowing + (rect.height * 0.02);
       const maxY = rect.height * (1 - startNarrowing) - (rect.height * 0.02);
 
-      const startX = Math.random() * (rect.width * 0.1);
+      const startX = rect.width * 0.05;
       const y = minY + Math.random() * (maxY - minY);
 
-      const baseRadius = Math.min(rect.width, rect.height) * 0.008;
-      const baseSpeed = rect.width * 0.002;
+      const baseRadius = Math.min(rect.width, rect.height) * 0.01;
+      const baseSpeed = rect.width * 0.001;
       const verticalVariation = (Math.random() - 0.5) * baseSpeed;
 
       this.particles.push(new Particle({
