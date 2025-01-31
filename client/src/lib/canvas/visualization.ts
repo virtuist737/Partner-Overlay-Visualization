@@ -412,7 +412,7 @@ export class Visualization {
           const newHoleCount = wall.holes.length + 1;
           const effectiveHeight = wall.endY - wall.startY;
           const spacing = effectiveHeight / (newHoleCount);
-          const currentHoleSize = holeSize * Math.pow(0.7, newHoleCount - 1);
+          const currentHoleSize = holeSize * Math.pow(0.5, newHoleCount - 1);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
             y: wall.startY + (currentHoleSize/2) + spacing * i,
             height: currentHoleSize
@@ -426,7 +426,7 @@ export class Visualization {
           const newHoleCount = wall.holes.length + 1;
           const effectiveHeight = wall.endY - wall.startY;
           const spacing = effectiveHeight / (newHoleCount);
-          const currentHoleSize = holeSize * Math.pow(0.7, newHoleCount - 1);
+          const currentHoleSize = holeSize * Math.pow(0.5, newHoleCount - 1);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
             y: wall.startY + (currentHoleSize/2) + spacing * i,
             height: currentHoleSize
@@ -440,7 +440,7 @@ export class Visualization {
           const newHoleCount = wall.holes.length + 1;
           const effectiveHeight = wall.endY - wall.startY;
           const spacing = effectiveHeight / (newHoleCount);
-          const currentHoleSize = holeSize * Math.pow(0.7, newHoleCount - 1);
+          const currentHoleSize = holeSize * Math.pow(0.5, newHoleCount - 1);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
             y: wall.startY + (currentHoleSize/2) + spacing * i,
             height: currentHoleSize
@@ -454,7 +454,7 @@ export class Visualization {
           const newHoleCount = wall.holes.length + 1;
           const effectiveHeight = wall.endY - wall.startY;
           const spacing = effectiveHeight / (newHoleCount);
-          const currentHoleSize = holeSize * Math.pow(0.7, newHoleCount - 1);
+          const currentHoleSize = holeSize * Math.pow(0.5, newHoleCount - 1);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
             y: wall.startY + (currentHoleSize/2) + spacing * i,
             height: currentHoleSize
@@ -468,7 +468,7 @@ export class Visualization {
           const newHoleCount = wall.holes.length + 1;
           const effectiveHeight = wall.endY - wall.startY;
           const spacing = effectiveHeight / (newHoleCount);
-          const currentHoleSize = holeSize * Math.pow(0.7, newHoleCount - 1);
+          const currentHoleSize = holeSize * Math.pow(0.5, newHoleCount - 1);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
             y: wall.startY + (currentHoleSize/2) + spacing * i,
             height: currentHoleSize
@@ -479,7 +479,7 @@ export class Visualization {
           const newHoleCount = wall.holes.length + 1;
           const effectiveHeight = wall.endY - wall.startY;
           const spacing = effectiveHeight / (newHoleCount);
-          const currentHoleSize = holeSize * Math.pow(0.7, newHoleCount - 1);
+          const currentHoleSize = holeSize * Math.pow(0.5, newHoleCount - 1);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
             y: wall.startY + (currentHoleSize/2) + spacing * i,
             height: currentHoleSize
