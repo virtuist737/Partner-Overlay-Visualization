@@ -150,18 +150,6 @@ export class Funnel {
         holes: [],
         holeCount: 0
       });
-
-      // Add bottom blocking wall for the Awareness stage (first stage)
-      if (i === 0) {
-        this.walls.push({
-          x: x,
-          startY: bottomY,
-          endY: this.height, // Extend to full canvas height
-          horizontal: false,
-          holes: [],
-          holeCount: 0
-        });
-      }
     }
   }
 
@@ -273,11 +261,8 @@ export class Funnel {
 
     // Calculate the wall index considering the additional walls we added
     // For each stage we have: 1 vertical wall + 2 horizontal walls + 2 connecting walls (if needed)
-    // First stage (Awareness) has an extra bottom blocking wall
-    const wallsPerStage = 5;
-    const extraWallOffset = fromIndex === 0 ? 1 : 0;
     const wallIndex = Math.min(fromIndex, toIndex);
-    const verticalWallIndex = (wallIndex * wallsPerStage) + extraWallOffset;
+    const verticalWallIndex = wallIndex * 5; // 5 walls per stage (1 vertical + 2 horizontal + 2 connecting)
 
     return this.walls.filter((wall, index) => {
       // Return the main vertical wall between stages
@@ -314,17 +299,12 @@ export class Funnel {
   }
 
   patchSelectionStageHoles() {
-    const verticalWalls = this.getWallsBetweenStages('Selection', 'Commit');
-    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
+    const horizontalWalls = this.getStageHorizontalWalls('Selection');
+    this.closeHoles(horizontalWalls);
   }
 
   manageAdoptionExpansionHoles() {
-    // Create holes between Onboarding and Adoption
-    const onboardingAdoptionWalls = this.getWallsBetweenStages('Onboarding', 'Adoption');
-    onboardingAdoptionWalls.forEach(wall => this.openHolesInWall(wall, 1));
-
-    // Create holes between Adoption and Expansion
-    const adoptionExpansionWalls = this.getWallsBetweenStages('Adoption', 'Expansion');
-    adoptionExpansionWalls.forEach(wall => this.openHolesInWall(wall, 1));
+    const verticalWalls = this.getWallsBetweenStages('Adoption', 'Expansion');
+    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
   }
 }
