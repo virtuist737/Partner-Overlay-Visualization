@@ -106,21 +106,21 @@ export default function Home() {
                   variant="outline"
                   className="flex-grow"
                 >
-                  Publish SEO Listicle
+                  SEO Listicle
                 </Button>
                 <Button
                   onClick={() => handlePartnerAction('youtube_walkthrough')}
                   variant="outline"
                   className="flex-grow"
                 >
-                  Create YouTube Walkthrough
+                  YouTube Video
                 </Button>
                 <Button
                   onClick={() => handlePartnerAction('onboarding_services')}
                   variant="outline"
                   className="flex-grow"
                 >
-                  Sell Onboarding Services
+                  Onboarding Services
                 </Button>
                 <Button
                   onClick={() => handlePartnerAction('reference_call')}
@@ -134,7 +134,7 @@ export default function Home() {
                   variant="outline"
                   className="flex-grow"
                 >
-                  Solution Management Services
+                  Management Services
                 </Button>
               </div>
             </div>
