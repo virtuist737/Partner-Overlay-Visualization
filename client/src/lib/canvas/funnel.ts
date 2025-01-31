@@ -136,19 +136,19 @@ export class Funnel {
     if (fromIndex === -1 || toIndex === -1) return [];
 
     const wallIndex = Math.min(fromIndex, toIndex);
+    // Only return the vertical wall between stages
     return this.walls.filter((_, index) => 
-      index === wallIndex * 3 || // Vertical wall
-      index === wallIndex * 3 + 1 || // Top horizontal wall
-      index === wallIndex * 3 + 2 // Bottom horizontal wall
+      index === wallIndex * 3 // Vertical wall only
     );
   }
 
-  getStageWalls(stageName: string): Wall[] {
+  getStageHorizontalWalls(stageName: string): Wall[] {
     const stageIndex = STAGES.findIndex(s => s.name === stageName);
     if (stageIndex === -1) return [];
 
     return this.walls.filter((_, index) => 
-      Math.floor(index / 3) === stageIndex
+      Math.floor(index / 3) === stageIndex && 
+      (index % 3 === 1 || index % 3 === 2) // Only horizontal walls (top and bottom)
     );
   }
 
@@ -175,29 +175,39 @@ export class Funnel {
   }
 
   createEducationSelectionHoles() {
-    const walls = this.getWallsBetweenStages('Education', 'Selection');
-    walls.forEach(wall => this.openHolesInWall(wall));
+    const verticalWalls = this.getWallsBetweenStages('Education', 'Selection');
+    verticalWalls.forEach(wall => this.openHolesInWall(wall));
   }
 
   createCommitOnboardingHoles() {
-    const walls = this.getWallsBetweenStages('Commit', 'Onboarding');
-    walls.forEach(wall => this.openHolesInWall(wall));
+    const verticalWalls = this.getWallsBetweenStages('Commit', 'Onboarding');
+    verticalWalls.forEach(wall => this.openHolesInWall(wall));
   }
 
   patchSelectionStageHoles() {
-    const walls = this.getStageWalls('Selection');
-    this.closeHoles(walls);
+    const horizontalWalls = this.getStageHorizontalWalls('Selection');
+    this.closeHoles(horizontalWalls);
   }
 
   manageAdoptionExpansionHoles() {
-    // Close Adoption stage holes
-    const adoptionWalls = this.getStageWalls('Adoption');
-    this.closeHoles(adoptionWalls);
+    // Close Adoption stage horizontal walls
+    const adoptionHorizontalWalls = this.getStageHorizontalWalls('Adoption');
+    this.closeHoles(adoptionHorizontalWalls);
 
-    // Open Adoption-Expansion partition holes
-    const expansionWalls = this.getWallsBetweenStages('Adoption', 'Expansion');
-    expansionWalls.forEach(wall => this.openHolesInWall(wall));
+    // Open Adoption-Expansion vertical partition wall
+    const verticalWalls = this.getWallsBetweenStages('Adoption', 'Expansion');
+    verticalWalls.forEach(wall => this.openHolesInWall(wall));
   }
+
+  getStageWalls(stageName: string): Wall[] {
+    const stageIndex = STAGES.findIndex(s => s.name === stageName);
+    if (stageIndex === -1) return [];
+
+    return this.walls.filter((_, index) => 
+      Math.floor(index / 3) === stageIndex
+    );
+  }
+
 
   draw() {
     this.ctx.clearRect(0, 0, this.width, this.height);
