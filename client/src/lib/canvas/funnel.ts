@@ -119,10 +119,10 @@ export class Funnel {
 
   getHoleSize(count: number): number {
     switch (count) {
-      case 1: return 80;
-      case 2: return 45;
-      case 3: return 35;
-      default: return Math.max(25, 80 / count);
+      case 1: return 50;
+      case 2: return 30;
+      case 3: return 25;
+      default: return Math.max(20, 50 / count);
     }
   }
 
