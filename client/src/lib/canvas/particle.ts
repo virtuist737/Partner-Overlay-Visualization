@@ -22,6 +22,7 @@ export class Particle {
   active: boolean;
   currentStage?: string;
   canvas: HTMLCanvasElement;
+  dpr: number;
 
   constructor(options: ParticleOptions) {
     this.x = options.x;
@@ -36,24 +37,30 @@ export class Particle {
     this.active = true;
     this.currentStage = options.currentStage;
     this.canvas = options.canvas!;
+    this.dpr = window.devicePixelRatio || 1;
   }
 
   calculateRelativeRadius(baseRadius: number, canvas: HTMLCanvasElement): number {
     const rect = canvas.getBoundingClientRect();
-    const viewportDimension = Math.min(rect.width, rect.height);
-    return (baseRadius * viewportDimension) / 100;
+    const minDimension = Math.min(rect.width, rect.height);
+    return (baseRadius / 1000) * minDimension;
   }
 
   calculateRelativeSpeed(baseSpeed: number, canvas: HTMLCanvasElement): number {
     const rect = canvas.getBoundingClientRect();
-    const viewportDimension = Math.min(rect.width, rect.height);
-    return (baseSpeed / 100) * viewportDimension;
+    const minDimension = Math.min(rect.width, rect.height);
+    return (baseSpeed / 1000) * minDimension;
   }
 
   updateScale(canvas: HTMLCanvasElement) {
-    this.radius = this.calculateRelativeRadius(this.radius, canvas);
-    this.speed = this.calculateRelativeSpeed(this.speed, canvas);
-    this.verticalSpeed = this.calculateRelativeSpeed(this.verticalSpeed, canvas);
+    const currentRadius = this.radius * 1000 / Math.min(canvas.width / this.dpr, canvas.height / this.dpr);
+    const currentSpeed = this.speed * 1000 / Math.min(canvas.width / this.dpr, canvas.height / this.dpr);
+    this.radius = this.calculateRelativeRadius(currentRadius, canvas);
+    this.speed = this.calculateRelativeSpeed(currentSpeed, canvas);
+    if (this.verticalSpeed) {
+      const currentVerticalSpeed = this.verticalSpeed * 1000 / Math.min(canvas.width / this.dpr, canvas.height / this.dpr);
+      this.verticalSpeed = this.calculateRelativeSpeed(currentVerticalSpeed, canvas);
+    }
   }
 
   update(canvasHeight: number, walls: Wall[]) {

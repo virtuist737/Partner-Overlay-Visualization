@@ -83,15 +83,33 @@ export class Visualization {
 
   setupCanvas() {
     const updateDimensions = () => {
-      this.dpr = Math.max(1, window.devicePixelRatio || 1);
       const rect = this.canvas.parentElement?.getBoundingClientRect() || { width: 800, height: 600 };
+      this.dpr = Math.max(1, window.devicePixelRatio || 1);
 
-      const displayWidth = rect.width;
-      const displayHeight = rect.height;
+      // Calculate dimensions maintaining a 16:9 aspect ratio
+      const targetAspectRatio = 16 / 9;
+      const containerAspectRatio = rect.width / rect.height;
 
+      let displayWidth = rect.width;
+      let displayHeight = rect.height;
+
+      if (containerAspectRatio > targetAspectRatio) {
+        // Container is too wide, use height as constraint
+        displayWidth = displayHeight * targetAspectRatio;
+      } else {
+        // Container is too tall, use width as constraint
+        displayHeight = displayWidth / targetAspectRatio;
+      }
+
+      // Center the canvas in its container
       this.canvas.style.width = `${displayWidth}px`;
       this.canvas.style.height = `${displayHeight}px`;
+      this.canvas.style.position = 'absolute';
+      this.canvas.style.left = '50%';
+      this.canvas.style.top = '50%';
+      this.canvas.style.transform = 'translate(-50%, -50%)';
 
+      // Set actual canvas dimensions
       this.canvas.width = Math.floor(displayWidth * this.dpr);
       this.canvas.height = Math.floor(displayHeight * this.dpr);
 
