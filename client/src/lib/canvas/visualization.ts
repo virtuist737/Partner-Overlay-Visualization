@@ -31,11 +31,16 @@ export class Visualization {
   setupCanvas() {
     const rect = this.canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
+
+    // Set a fixed aspect ratio of 2:1
+    const height = rect.width * 0.5;
+
     this.canvas.width = rect.width * dpr;
-    this.canvas.height = rect.height * dpr;
+    this.canvas.height = height * dpr;
     this.ctx.scale(dpr, dpr);
+
     this.canvas.style.width = `${rect.width}px`;
-    this.canvas.style.height = `${rect.height}px`;
+    this.canvas.style.height = `${height}px`;
   }
 
   handleResize = () => {
@@ -45,6 +50,9 @@ export class Visualization {
 
   toggleCustomers() {
     this.showingCustomers = !this.showingCustomers;
+    // Clear existing customer particles
+    this.particles = this.particles.filter(p => p.type !== 'customer');
+
     if (this.showingCustomers) {
       this.startCustomerParticles();
     } else {
@@ -56,6 +64,9 @@ export class Visualization {
 
   togglePartners() {
     this.showingPartners = !this.showingPartners;
+    // Clear existing partner particles
+    this.particles = this.particles.filter(p => p.type !== 'partner');
+
     if (this.showingPartners) {
       this.startPartnerParticles();
     } else {
@@ -96,7 +107,7 @@ export class Visualization {
         x,
         y: edge,
         radius: 6,
-        speed: edge === 0 ? 1 : -1, // Move down if at top, up if at bottom
+        speed: edge === 0 ? 2 : -2, // Increase speed for more dynamic movement
         color: 'rgba(34, 197, 94, 0.5)',
         type: 'partner'
       });
@@ -104,7 +115,7 @@ export class Visualization {
       this.particles.push(particle);
 
       // Create new holes in nearby walls when partners are added
-      const wallIndex = Math.floor(x / this.funnel.stageWidth);
+      const wallIndex = Math.floor(x / (this.canvas.width / STAGES.length));
       if (wallIndex > 0 && wallIndex < STAGES.length) {
         const holeY = edge === 0 ? 
           this.canvas.height * 0.2 + Math.random() * 0.2 : 
