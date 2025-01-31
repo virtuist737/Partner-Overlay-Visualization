@@ -159,24 +159,24 @@ export class Visualization {
 
       const rect = this.canvas.getBoundingClientRect();
       const startNarrowing = Math.sin(0) * 0.15;
-      const minY = rect.height * startNarrowing + (rect.height * 0.05); // Adjusted padding
-      const maxY = rect.height * (1 - startNarrowing) - (rect.height * 0.05); // Adjusted padding
+      const minY = rect.height * startNarrowing + (rect.height * 0.05);
+      const maxY = rect.height * (1 - startNarrowing) - (rect.height * 0.05);
 
       // Adjust starting X position to be more visible
-      const startX = rect.width * 0.02; // Moved closer to left edge
+      const startX = rect.width * 0.02;
       const y = minY + Math.random() * (maxY - minY);
 
-      // Increase base radius for better visibility
-      const baseRadius = Math.min(rect.width, rect.height) * 0.01; // Increased from 0.0001
-      const baseSpeed = rect.width * 0.002; // Slightly increased speed
-      const verticalVariation = (Math.random() - 0.5) * baseSpeed * 0.5; // Reduced vertical variation
+      // Reduce particle size significantly while keeping them visible
+      const baseRadius = Math.min(rect.width, rect.height) * 0.003; // Reduced from 0.01
+      const baseSpeed = rect.width * 0.002;
+      const verticalVariation = (Math.random() - 0.5) * baseSpeed * 0.5;
 
       this.particles.push(new Particle({
         x: startX,
         y,
         radius: baseRadius,
         speed: baseSpeed,
-        color: 'rgba(0, 0, 0, 0.9)', // Made more opaque
+        color: 'rgba(0, 0, 0, 0.9)',
         type: 'customer',
         currentStage: 'Awareness',
         canvas: this.canvas,
@@ -187,7 +187,7 @@ export class Visualization {
     };
 
     createParticle();
-}
+  }
 
   updateParticleStage(particle: Particle, newStage: string) {
     if (particle.type !== 'customer' || particle.currentStage === newStage) return;
