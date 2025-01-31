@@ -259,10 +259,16 @@ export class Funnel {
 
     if (fromIndex === -1 || toIndex === -1) return [];
 
+    // Calculate the wall index considering the additional walls we added
+    // For each stage we have: 1 vertical wall + 2 horizontal walls + 2 connecting walls (if needed)
     const wallIndex = Math.min(fromIndex, toIndex);
-    return this.walls.filter((_, index) => 
-      index === wallIndex * 3 // Vertical wall only
-    );
+    const verticalWallIndex = wallIndex * 5; // 5 walls per stage (1 vertical + 2 horizontal + 2 connecting)
+
+    return this.walls.filter((wall, index) => {
+      // Return the main vertical wall between stages
+      return wall.horizontal === false && 
+             index === verticalWallIndex;
+    });
   }
 
   getStageHorizontalWalls(stageName: string): Wall[] {
@@ -270,8 +276,8 @@ export class Funnel {
     if (stageIndex === -1) return [];
 
     return this.walls.filter((_, index) => 
-      Math.floor(index / 3) === stageIndex && 
-      (index % 3 === 1 || index % 3 === 2) // Only horizontal walls (top and bottom)
+      Math.floor(index / 5) === stageIndex && 
+      (index % 5 === 1 || index % 5 === 2) // Only horizontal walls (top and bottom)
     );
   }
 
