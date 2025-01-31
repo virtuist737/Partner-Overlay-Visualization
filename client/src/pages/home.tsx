@@ -20,6 +20,11 @@ export default function Home() {
   const [showingPartners, setShowingPartners] = useState(false);
   const [stats, setStats] = useState<any[]>([]);
   const [conversionRates, setConversionRates] = useState<any[]>([]);
+  const [revenue, setRevenue] = useState<any>({
+    totalRevenue: 0,
+    commitRevenue: 0,
+    expansionRevenue: 0
+  });
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -30,6 +35,7 @@ export default function Home() {
         if (viz) {
           setStats(viz.getStageStats());
           setConversionRates(viz.getConversionRates());
+          setRevenue(viz.getRevenueStats());
         }
         requestAnimationFrame(updateStats);
       };
@@ -46,6 +52,13 @@ export default function Home() {
       visualization.toggleCustomers();
       setShowingCustomers(!showingCustomers);
     }
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
   };
 
   return (
@@ -90,7 +103,7 @@ export default function Home() {
             />
           </div>
 
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <h2 className="text-xl font-semibold mb-2">Stage Statistics</h2>
               <div className="space-y-2">
@@ -114,6 +127,24 @@ export default function Home() {
                     <span className="text-muted-foreground">{rate.rate}%</span>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Revenue Statistics</h2>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span>Total Revenue</span>
+                  <span className="text-muted-foreground">{formatCurrency(revenue.totalRevenue)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>From Commits</span>
+                  <span className="text-muted-foreground">{formatCurrency(revenue.commitRevenue)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>From Expansions</span>
+                  <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
+                </div>
               </div>
             </div>
           </div>

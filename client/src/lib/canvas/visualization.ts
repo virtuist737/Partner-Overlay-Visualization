@@ -12,6 +12,12 @@ interface ConversionStats {
   rate: number;
 }
 
+interface RevenueStats {
+  totalRevenue: number;
+  commitRevenue: number;
+  expansionRevenue: number;
+}
+
 export class Visualization {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -22,6 +28,7 @@ export class Visualization {
   showingPartners: boolean;
   particleGenerators: { customer?: NodeJS.Timeout; partner?: NodeJS.Timeout };
   stageStats: Map<string, StageStats>;
+  revenue: RevenueStats;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -36,6 +43,11 @@ export class Visualization {
     this.stageStats = new Map(
       STAGES.map(stage => [stage.name, { total: 0, current: 0 }])
     );
+    this.revenue = {
+      totalRevenue: 0,
+      commitRevenue: 0,
+      expansionRevenue: 0
+    };
 
     this.animate = this.animate.bind(this);
     this.animationFrame = requestAnimationFrame(this.animate);
@@ -124,6 +136,11 @@ export class Visualization {
     this.stageStats = new Map(
       STAGES.map(stage => [stage.name, { total: 0, current: 0 }])
     );
+    this.revenue = {
+      totalRevenue: 0,
+      commitRevenue: 0,
+      expansionRevenue: 0
+    };
   }
 
   startCustomerParticles() {
@@ -166,6 +183,15 @@ export class Visualization {
     newStageStats.current++;
     this.stageStats.set(newStage, newStageStats);
 
+    // Update revenue when reaching Commit or Expansion stages
+    if (newStage === 'Commit') {
+      this.revenue.commitRevenue += 1000;
+      this.revenue.totalRevenue += 1000;
+    } else if (newStage === 'Expansion') {
+      this.revenue.expansionRevenue += 1000;
+      this.revenue.totalRevenue += 1000;
+    }
+
     particle.currentStage = newStage;
   }
 
@@ -195,6 +221,10 @@ export class Visualization {
     }
 
     return rates;
+  }
+
+  getRevenueStats(): RevenueStats {
+    return { ...this.revenue };
   }
 
   startPartnerParticles() {
