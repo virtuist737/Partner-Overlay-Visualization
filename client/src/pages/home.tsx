@@ -66,6 +66,21 @@ export default function Home() {
       walls.forEach(wall => {
         visualization.funnel.openHolesInWall(wall, 1);
       });
+    } else if (action === 'onboarding_services') {
+      const walls = visualization.funnel.getWallsBetweenStages('Commit', 'Onboarding');
+      walls.forEach(wall => {
+        visualization.funnel.openHolesInWall(wall, 1);
+      });
+    } else if (action === 'solution_management') {
+      const onboardingAdoptionWalls = visualization.funnel.getWallsBetweenStages('Onboarding', 'Adoption');
+      onboardingAdoptionWalls.forEach(wall => {
+        visualization.funnel.openHolesInWall(wall, 1);
+      });
+      
+      const adoptionExpansionWalls = visualization.funnel.getWallsBetweenStages('Adoption', 'Expansion');
+      adoptionExpansionWalls.forEach(wall => {
+        visualization.funnel.openHolesInWall(wall, 1);
+      });
     } else {
       visualization.executePartnerAction(action);
     }
