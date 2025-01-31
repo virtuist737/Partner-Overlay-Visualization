@@ -17,7 +17,6 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [visualization, setVisualization] = useState<Visualization | null>(null);
   const [showingCustomers, setShowingCustomers] = useState(false);
-  const [showingPartners, setShowingPartners] = useState(false);
   const [stats, setStats] = useState<any[]>([]);
   const [conversionRates, setConversionRates] = useState<any[]>([]);
   const [revenue, setRevenue] = useState<any>({
@@ -56,13 +55,11 @@ export default function Home() {
 
   const handlePartnerAction = (action: string) => {
     if (!visualization) return;
-    
+
     if (action === 'seo_listicle') {
-      const walls = visualization.funnel.getWallsBetweenStages('Awareness', 'Education');
+      const walls = visualization.funnel.getWallsBetweenStages('Education', 'Selection');
       walls.forEach(wall => {
-        const position = visualization.canvas.height * 0.5;
-        const size = visualization.canvas.height * 0.1;
-        visualization.funnel.addHole(0, position, size);
+        visualization.funnel.openHolesInWall(wall, 2);
       });
     } else {
       visualization.executePartnerAction(action);
@@ -153,12 +150,7 @@ export default function Home() {
           <div className="mt-4 grid grid-cols-7 gap-4">
             {STAGES.map((stage) => (
               <div key={stage.name} className="text-center">
-                <h3 
-                  className="text-lg font-semibold" 
-                  style={{ color: stage.color }}
-                >
-                  {stage.name}
-                </h3>
+                <h3 className="text-lg font-semibold">{stage.name}</h3>
               </div>
             ))}
           </div>
