@@ -27,12 +27,11 @@ export class Particle {
   constructor(options: ParticleOptions) {
     this.x = options.x;
     this.y = options.y;
-    this.radius = this.calculateRelativeRadius(options.radius, options.canvas!);
-    this.speed = this.calculateRelativeSpeed(options.speed, options.canvas!);
+    this.radius = options.radius;
+    this.speed = options.speed;
     this.color = options.color;
     this.type = options.type;
-    this.verticalSpeed = options.verticalSpeed ? 
-      this.calculateRelativeSpeed(options.verticalSpeed, options.canvas!) : 
+    this.verticalSpeed = options.verticalSpeed ? options.verticalSpeed : 
       (this.type === 'partner' ? this.speed : (Math.random() - 0.5) * this.speed);
     this.active = true;
     this.currentStage = options.currentStage;
@@ -40,27 +39,19 @@ export class Particle {
     this.dpr = window.devicePixelRatio || 1;
   }
 
-  calculateRelativeRadius(baseRadius: number, canvas: HTMLCanvasElement): number {
-    const rect = canvas.getBoundingClientRect();
-    const minDimension = Math.min(rect.width, rect.height);
-    return (baseRadius / 1000) * minDimension;
-  }
-
-  calculateRelativeSpeed(baseSpeed: number, canvas: HTMLCanvasElement): number {
-    const rect = canvas.getBoundingClientRect();
-    const minDimension = Math.min(rect.width, rect.height);
-    return (baseSpeed / 1000) * minDimension;
-  }
-
   updateScale(canvas: HTMLCanvasElement) {
-    const currentRadius = this.radius * 1000 / Math.min(canvas.width / this.dpr, canvas.height / this.dpr);
-    const currentSpeed = this.speed * 1000 / Math.min(canvas.width / this.dpr, canvas.height / this.dpr);
-    this.radius = this.calculateRelativeRadius(currentRadius, canvas);
-    this.speed = this.calculateRelativeSpeed(currentSpeed, canvas);
-    if (this.verticalSpeed) {
-      const currentVerticalSpeed = this.verticalSpeed * 1000 / Math.min(canvas.width / this.dpr, canvas.height / this.dpr);
-      this.verticalSpeed = this.calculateRelativeSpeed(currentVerticalSpeed, canvas);
-    }
+    // Scale relative to canvas dimensions, not window dimensions
+    const scaleX = canvas.width / (this.canvas.width || 1);
+    const scaleY = canvas.height / (this.canvas.height || 1);
+
+    this.x *= scaleX;
+    this.y *= scaleY;
+    // Maintain radius proportion relative to canvas width
+    this.radius *= scaleX;
+    this.speed *= scaleX;
+    this.verticalSpeed *= scaleY;
+
+    this.canvas = canvas;
   }
 
   update(canvasHeight: number, walls: Wall[]) {
