@@ -58,15 +58,17 @@ export class Visualization {
   setupCanvas() {
     const rect = this.canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-
-    const height = rect.height;
-
+    
     this.canvas.width = rect.width * dpr;
-    this.canvas.height = height * dpr;
+    this.canvas.height = rect.height * dpr;
+    
     this.ctx.scale(dpr, dpr);
-
-    this.canvas.style.width = `${rect.width}px`;
-    this.canvas.style.height = `${height}px`;
+    
+    this.canvas.style.width = '100%';
+    this.canvas.style.height = '100%';
+    
+    // Reset any transformations
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   handleResize = () => {
