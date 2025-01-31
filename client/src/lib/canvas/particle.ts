@@ -1,3 +1,5 @@
+import { STAGES } from './funnel';
+
 export interface ParticleOptions {
   x: number;
   y: number;
