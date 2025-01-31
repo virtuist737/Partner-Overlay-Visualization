@@ -93,6 +93,15 @@ export default function Home() {
     }).format(amount);
   };
 
+  useEffect(() => {
+    // Pause visualization if total customers reach 100
+    if (stats.length > 0 && stats[0].total >= 100 && visualization && showingCustomers) {
+      visualization.pause();
+      setShowingCustomers(false);
+    }
+  }, [stats, visualization, showingCustomers]);
+
+
   return (
     <div className="flex-1 flex items-stretch p-4 max-h-[100vh]">
       <Card className="w-full h-full flex flex-col p-6 overflow-hidden">
