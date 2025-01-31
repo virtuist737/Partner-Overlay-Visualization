@@ -97,15 +97,23 @@ export class Visualization {
     const createPartner = () => {
       if (!this.showingPartners) return;
 
-      // Create partners at random positions along the edges
-      const edge = Math.random() < 0.5 ? 0 : this.canvas.height;
-      const x = Math.random() * this.canvas.width;
+      // Create partners at random positions inside the funnel
+      const stageWidth = this.canvas.width / STAGES.length;
+      const randomStage = Math.floor(Math.random() * STAGES.length);
+      const x = (randomStage * stageWidth) + (Math.random() * stageWidth);
+      
+      // Calculate y position within the funnel's narrowing shape
+      const progress = randomStage / (STAGES.length - 1);
+      const narrowing = Math.sin(progress * Math.PI) * 0.15;
+      const minY = this.canvas.height * narrowing;
+      const maxY = this.canvas.height * (1 - narrowing);
+      const y = minY + (Math.random() * (maxY - minY));
 
       const particle = new Particle({
         x,
-        y: edge,
+        y,
         radius: 6,
-        speed: edge === 0 ? 2 : -2, // Increase speed for more dynamic movement
+        speed: Math.random() < 0.5 ? 2 : -2,
         color: 'rgba(34, 197, 94, 0.5)',
         type: 'partner'
       });
