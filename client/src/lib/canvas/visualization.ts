@@ -9,17 +9,19 @@ export class Visualization {
   animationFrame: number;
   showingCustomers: boolean;
   showingPartners: boolean;
+  particleGenerators: { customer?: NodeJS.Timeout; partner?: NodeJS.Timeout };
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
     this.setupCanvas();
-    
+
     this.funnel = new Funnel(canvas);
     this.particles = [];
     this.showingCustomers = false;
     this.showingPartners = false;
-    
+    this.particleGenerators = {};
+
     this.animate = this.animate.bind(this);
     this.animationFrame = requestAnimationFrame(this.animate);
 
@@ -27,7 +29,6 @@ export class Visualization {
   }
 
   setupCanvas() {
-    // Set canvas size with device pixel ratio
     const rect = this.canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
     this.canvas.width = rect.width * dpr;
@@ -46,6 +47,10 @@ export class Visualization {
     this.showingCustomers = !this.showingCustomers;
     if (this.showingCustomers) {
       this.startCustomerParticles();
+    } else {
+      if (this.particleGenerators.customer) {
+        clearTimeout(this.particleGenerators.customer);
+      }
     }
   }
 
@@ -53,6 +58,10 @@ export class Visualization {
     this.showingPartners = !this.showingPartners;
     if (this.showingPartners) {
       this.startPartnerParticles();
+    } else {
+      if (this.particleGenerators.partner) {
+        clearTimeout(this.particleGenerators.partner);
+      }
     }
   }
 
@@ -69,7 +78,7 @@ export class Visualization {
         type: 'customer'
       }));
 
-      setTimeout(createParticle, 200);
+      this.particleGenerators.customer = setTimeout(createParticle, 200);
     };
 
     createParticle();
@@ -79,20 +88,31 @@ export class Visualization {
     const createPartner = () => {
       if (!this.showingPartners) return;
 
-      // Create partners at the edges
-      const y = Math.random() < 0.5 ? 0 : this.canvas.height;
+      // Create partners at random positions along the edges
+      const edge = Math.random() < 0.5 ? 0 : this.canvas.height;
       const x = Math.random() * this.canvas.width;
 
-      this.particles.push(new Particle({
+      const particle = new Particle({
         x,
-        y,
+        y: edge,
         radius: 6,
-        speed: 0,
+        speed: edge === 0 ? 1 : -1, // Move down if at top, up if at bottom
         color: 'rgba(34, 197, 94, 0.5)',
         type: 'partner'
-      }));
+      });
 
-      setTimeout(createPartner, 500);
+      this.particles.push(particle);
+
+      // Create new holes in nearby walls when partners are added
+      const wallIndex = Math.floor(x / this.funnel.stageWidth);
+      if (wallIndex > 0 && wallIndex < STAGES.length) {
+        const holeY = edge === 0 ? 
+          this.canvas.height * 0.2 + Math.random() * 0.2 : 
+          this.canvas.height * 0.6 + Math.random() * 0.2;
+        this.funnel.addHole(wallIndex - 1, holeY, this.canvas.height * 0.1);
+      }
+
+      this.particleGenerators.partner = setTimeout(createPartner, 500);
     };
 
     createPartner();
@@ -100,7 +120,7 @@ export class Visualization {
 
   animate() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    
+
     // Draw funnel
     this.funnel.draw();
 
@@ -117,5 +137,7 @@ export class Visualization {
   destroy() {
     cancelAnimationFrame(this.animationFrame);
     window.removeEventListener('resize', this.handleResize);
+    if (this.particleGenerators.customer) clearTimeout(this.particleGenerators.customer);
+    if (this.particleGenerators.partner) clearTimeout(this.particleGenerators.partner);
   }
 }

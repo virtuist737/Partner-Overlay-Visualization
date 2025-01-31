@@ -3,27 +3,45 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Visualization } from '@/lib/canvas/visualization';
 
+const STAGES = [
+  { name: 'Awareness' },
+  { name: 'Education' },
+  { name: 'Selection' },
+  { name: 'Commit' },
+  { name: 'Onboarding' },
+  { name: 'Adoption' },
+  { name: 'Expansion' },
+];
+
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [visualization, setVisualization] = useState<Visualization | null>(null);
+  const [showingCustomers, setShowingCustomers] = useState(false);
+  const [showingPartners, setShowingPartners] = useState(false);
 
   useEffect(() => {
     if (canvasRef.current) {
       const viz = new Visualization(canvasRef.current);
       setVisualization(viz);
-      
+
       return () => {
         viz.destroy();
       };
     }
   }, []);
 
-  const handleShowCustomers = () => {
-    visualization?.toggleCustomers();
+  const handleCustomersToggle = () => {
+    if (visualization) {
+      visualization.toggleCustomers();
+      setShowingCustomers(!showingCustomers);
+    }
   };
 
-  const handleShowPartners = () => {
-    visualization?.togglePartners();
+  const handlePartnersToggle = () => {
+    if (visualization) {
+      visualization.togglePartners();
+      setShowingPartners(!showingPartners);
+    }
   };
 
   return (
@@ -31,13 +49,19 @@ export default function Home() {
       <Card className="mx-auto max-w-6xl">
         <CardContent className="p-6">
           <h1 className="text-2xl font-bold mb-4">Customer Journey Visualization</h1>
-          
+
           <div className="flex gap-4 mb-4">
-            <Button onClick={handleShowCustomers} variant="default">
-              Show Customers
+            <Button 
+              onClick={handleCustomersToggle} 
+              variant={showingCustomers ? "secondary" : "default"}
+            >
+              {showingCustomers ? 'Hide Customers' : 'Show Customers'}
             </Button>
-            <Button onClick={handleShowPartners} variant="secondary">
-              Show Partners
+            <Button 
+              onClick={handlePartnersToggle} 
+              variant={showingPartners ? "secondary" : "default"}
+            >
+              {showingPartners ? 'Hide Partners' : 'Show Partners'}
             </Button>
           </div>
 
@@ -49,13 +73,9 @@ export default function Home() {
           </div>
 
           <div className="mt-4 flex justify-between text-sm text-muted-foreground">
-            <span>Awareness</span>
-            <span>Education</span>
-            <span>Selection</span>
-            <span>Commit</span>
-            <span>Onboarding</span>
-            <span>Adoption</span>
-            <span>Expansion</span>
+            {STAGES.map((stage) => (
+              <span key={stage.name}>{stage.name}</span>
+            ))}
           </div>
         </CardContent>
       </Card>

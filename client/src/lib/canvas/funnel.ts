@@ -1,8 +1,4 @@
-export interface Stage {
-  name: string;
-  color: string;
-  gradient: string[];
-}
+import { Stage } from './types';
 
 export const STAGES: Stage[] = [
   { 
@@ -57,12 +53,11 @@ export class Funnel {
     this.height = canvas.height;
     this.stageWidth = this.width / STAGES.length;
     this.walls = [];
-
     this.setupWalls();
   }
 
   setupWalls() {
-    // Create walls between stages
+    // Create walls between stages with initial holes
     for (let i = 1; i < STAGES.length; i++) {
       this.walls.push({
         x: i * this.stageWidth,
@@ -73,14 +68,21 @@ export class Funnel {
     }
   }
 
+  addHole(wallIndex: number, y: number, height: number) {
+    if (wallIndex >= 0 && wallIndex < this.walls.length) {
+      this.walls[wallIndex].holes.push({ y, height });
+    }
+  }
+
   draw() {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
     // Draw funnel segments
     STAGES.forEach((stage, i) => {
       const x = i * this.stageWidth;
-      const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.2;
-      
+      // Adjust the hourglass shape to be more subtle
+      const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
+
       const gradient = this.ctx.createLinearGradient(x, 0, x, this.height);
       gradient.addColorStop(0, stage.gradient[0]);
       gradient.addColorStop(1, stage.gradient[1]);
@@ -93,16 +95,28 @@ export class Funnel {
       this.ctx.lineTo(x, this.height * (1 - narrowing));
       this.ctx.closePath();
       this.ctx.fill();
+    });
 
-      // Draw partition lines
-      if (i > 0) {
+    // Draw partition walls and holes
+    this.walls.forEach(wall => {
+      this.ctx.beginPath();
+      this.ctx.moveTo(wall.x, 0);
+      this.ctx.lineTo(wall.x, this.height);
+      this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+      this.ctx.lineWidth = 2;
+      this.ctx.stroke();
+
+      // Draw holes as lighter sections
+      wall.holes.forEach(hole => {
         this.ctx.beginPath();
-        this.ctx.moveTo(x, 0);
-        this.ctx.lineTo(x, this.height);
-        this.ctx.strokeStyle = 'rgba(0,0,0,0.1)';
-        this.ctx.lineWidth = 2;
-        this.ctx.stroke();
-      }
+        this.ctx.moveTo(wall.x - 2, hole.y);
+        this.ctx.lineTo(wall.x + 2, hole.y);
+        this.ctx.lineTo(wall.x + 2, hole.y + hole.height);
+        this.ctx.lineTo(wall.x - 2, hole.y + hole.height);
+        this.ctx.closePath();
+        this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        this.ctx.fill();
+      });
     });
   }
 }
