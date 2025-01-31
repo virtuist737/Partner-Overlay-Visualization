@@ -359,9 +359,9 @@ export class Visualization {
       'solution_management': 300
     };
 
-    // Add cost to partner costs
+    // Add cost to partner costs (making it positive)
     this.revenue.partnerCosts += costs[action] || 0;
-    // Update net revenue
+    // Update net revenue by subtracting partner costs from total revenue
     this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
 
     switch (action) {
