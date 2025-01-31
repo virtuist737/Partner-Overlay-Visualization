@@ -365,24 +365,33 @@ export class Visualization {
     this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
 
     switch (action) {
-      case 'seo_listicle':
-        this.funnel.createEducationSelectionHoles();
+      case 'seo_listicle': {
+        const walls = this.funnel.getWallsBetweenStages('Awareness', 'Education');
+        walls.forEach(wall => this.funnel.openHolesInWall(wall, 1));
         break;
-      case 'youtube_walkthrough':
+      }
+      case 'youtube_walkthrough': {
         const walls = this.funnel.getWallsBetweenStages('Education', 'Selection');
-        walls.forEach(wall => {
-          this.funnel.openHolesInWall(wall, 1);
-        });
+        walls.forEach(wall => this.funnel.openHolesInWall(wall, 1));
         break;
-      case 'onboarding_services':
-        this.funnel.createCommitOnboardingHoles();
+      }
+      case 'reference_call': {
+        const walls = this.funnel.getWallsBetweenStages('Selection', 'Commit');
+        walls.forEach(wall => this.funnel.openHolesInWall(wall, 1));
         break;
-      case 'reference_call':
-        this.funnel.patchSelectionStageHoles();
+      }
+      case 'onboarding_services': {
+        const walls = this.funnel.getWallsBetweenStages('Commit', 'Onboarding');
+        walls.forEach(wall => this.funnel.openHolesInWall(wall, 1));
         break;
-      case 'solution_management':
-        this.funnel.manageAdoptionExpansionHoles();
+      }
+      case 'solution_management': {
+        const onboardingWalls = this.funnel.getWallsBetweenStages('Onboarding', 'Adoption');
+        onboardingWalls.forEach(wall => this.funnel.openHolesInWall(wall, 1));
+        const expansionWalls = this.funnel.getWallsBetweenStages('Adoption', 'Expansion');
+        expansionWalls.forEach(wall => this.funnel.openHolesInWall(wall, 1));
         break;
+      }
     }
   }
 }
