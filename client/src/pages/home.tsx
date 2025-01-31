@@ -230,13 +230,7 @@ export default function Home() {
                         <span className="text-primary/90">Partner Costs</span>
                         <span className="text-red-500 font-mono">{formatCurrency(revenue.partnerCosts)}</span>
                       </div>
-                      <div className="flex justify-between items-center text-xs sm:text-sm font-medium pt-1">
-                        <span className="text-primary">Net Revenue</span>
-                        <span className={`font-mono ${revenue.netRevenue >= 0 ? "text-green-500" : "text-red-500"}`}>
-                          {formatCurrency(revenue.netRevenue)}
-                        </span>
                       </div>
-                    </div>
                     <div className="mt-4 bg-primary/5 p-3 rounded-lg">
                       <h2 className="text-sm font-semibold text-center mb-1 text-primary">Net Revenue</h2>
                       <p className="text-xl text-center font-bold"
