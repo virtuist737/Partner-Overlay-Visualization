@@ -30,8 +30,10 @@ export class Visualization {
   particleGenerators: { customer?: NodeJS.Timeout; partner?: NodeJS.Timeout };
   stageStats: Map<string, StageStats>;
   revenue: RevenueStats;
+  startTime: number;
 
   constructor(canvas: HTMLCanvasElement) {
+    this.startTime = Date.now();
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
     this.setupCanvas();
@@ -268,8 +270,10 @@ export class Visualization {
     return rates;
   }
 
-  getRevenueStats(): RevenueStats {
-    return { ...this.revenue };
+  getRevenueStats(): RevenueStats & { revenuePerMinute: number } {
+    const elapsedMinutes = (Date.now() - this.startTime) / 60000;
+    const revenuePerMinute = elapsedMinutes > 0 ? this.revenue.totalRevenue / elapsedMinutes : 0;
+    return { ...this.revenue, revenuePerMinute };
   }
 
   startPartnerParticles() {
