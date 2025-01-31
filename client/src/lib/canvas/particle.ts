@@ -10,6 +10,10 @@ export interface ParticleOptions {
 interface Wall {
   x?: number;
   y?: number;
+  startX?: number;
+  endX?: number;
+  startY?: number;
+  endY?: number;
   horizontal: boolean;
   holes: { x?: number; y?: number; width?: number; height?: number; }[];
 }
@@ -23,7 +27,6 @@ export class Particle {
   type: 'customer' | 'partner';
   verticalSpeed: number;
   active: boolean;
-  hasCreatedHole: boolean;
 
   constructor(options: ParticleOptions) {
     this.x = options.x;
@@ -34,7 +37,6 @@ export class Particle {
     this.type = options.type;
     this.verticalSpeed = this.type === 'partner' ? options.speed : (Math.random() - 0.5) * 2;
     this.active = true;
-    this.hasCreatedHole = false;
   }
 
   update(canvasHeight: number, walls: Wall[]) {
@@ -52,8 +54,8 @@ export class Particle {
     // Check wall collisions
     walls.forEach(wall => {
       if (wall.horizontal) {
-        // Horizontal wall collision
-        if (Math.abs(this.y - wall.y!) < this.radius) {
+        // Horizontal wall collision - check if particle is within wall's x-range
+        if (this.x >= wall.startX! && this.x <= wall.endX! && Math.abs(this.y - wall.y!) < this.radius) {
           let canPass = false;
           wall.holes.forEach(hole => {
             if (this.x > hole.x! && this.x < hole.x! + hole.width!) {
@@ -65,7 +67,7 @@ export class Particle {
             if (this.type === 'partner') {
               // Create a new hole when partner hits wall
               wall.holes.push({
-                x: Math.max(0, this.x - 15),
+                x: Math.max(wall.startX!, Math.min(wall.endX! - 30, this.x - 15)),
                 width: 30
               });
               this.verticalSpeed *= -0.5; // Bounce with reduced speed
@@ -77,8 +79,8 @@ export class Particle {
           }
         }
       } else {
-        // Vertical wall collision
-        if (Math.abs(this.x - wall.x!) < this.radius) {
+        // Vertical wall collision - check if particle is within wall's y-range
+        if (this.y >= wall.startY! && this.y <= wall.endY! && Math.abs(this.x - wall.x!) < this.radius) {
           let canPass = false;
           wall.holes.forEach(hole => {
             if (this.y > hole.y! && this.y < hole.y! + hole.height!) {
@@ -90,7 +92,7 @@ export class Particle {
             if (this.type === 'partner') {
               // Create a new hole when partner hits wall
               wall.holes.push({
-                y: Math.max(0, this.y - 15),
+                y: Math.max(wall.startY!, Math.min(wall.endY! - 30, this.y - 15)),
                 height: 30
               });
               this.speed *= -0.5; // Bounce with reduced speed

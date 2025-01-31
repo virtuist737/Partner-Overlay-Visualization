@@ -41,6 +41,10 @@ export const STAGES: Stage[] = [
 interface Wall {
   x?: number;
   y?: number;
+  startX?: number;
+  endX?: number;
+  startY?: number;
+  endY?: number;
   horizontal: boolean;
   holes: { x?: number; y?: number; width?: number; height?: number; }[];
 }
@@ -64,25 +68,37 @@ export class Funnel {
   }
 
   setupWalls() {
-    // Create vertical walls between stages
-    for (let i = 1; i < STAGES.length; i++) {
-      this.walls.push({
-        x: i * this.stageWidth,
-        horizontal: false,
-        holes: [
-          { y: this.height * 0.4, height: this.height * 0.2 }
-        ]
-      });
-    }
-
-    // Create horizontal walls for each stage
+    // Create walls for each stage
     for (let i = 0; i < STAGES.length; i++) {
       const x = i * this.stageWidth;
+      const nextX = (i + 1) * this.stageWidth;
       const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
+      const nextNarrowing = Math.sin(((i + 1) / (STAGES.length - 1)) * Math.PI) * 0.15;
 
+      const topY = this.height * narrowing;
+      const bottomY = this.height * (1 - narrowing);
+      const nextTopY = this.height * nextNarrowing;
+      const nextBottomY = this.height * (1 - nextNarrowing);
+
+      // Add vertical wall at the end of each segment (except last)
+      if (i < STAGES.length - 1) {
+        this.walls.push({
+          x: nextX,
+          startY: nextTopY,
+          endY: nextBottomY,
+          horizontal: false,
+          holes: [
+            { y: (nextTopY + nextBottomY) * 0.5 - this.height * 0.1, height: this.height * 0.2 }
+          ]
+        });
+      }
+
+      // Add horizontal walls for each segment
       // Top wall
       this.walls.push({
-        y: this.height * narrowing,
+        y: topY,
+        startX: x,
+        endX: nextX,
         horizontal: true,
         holes: [
           { x: x + this.stageWidth * 0.4, width: this.stageWidth * 0.2 }
@@ -91,7 +107,9 @@ export class Funnel {
 
       // Bottom wall
       this.walls.push({
-        y: this.height * (1 - narrowing),
+        y: bottomY,
+        startX: x,
+        endX: nextX,
         horizontal: true,
         holes: [
           { x: x + this.stageWidth * 0.4, width: this.stageWidth * 0.2 }
@@ -138,8 +156,8 @@ export class Funnel {
       if (wall.horizontal) {
         // Draw horizontal wall
         this.ctx.beginPath();
-        this.ctx.moveTo(0, wall.y!);
-        this.ctx.lineTo(this.width, wall.y!);
+        this.ctx.moveTo(wall.startX!, wall.y!);
+        this.ctx.lineTo(wall.endX!, wall.y!);
         this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
         this.ctx.lineWidth = 2;
         this.ctx.stroke();
@@ -158,8 +176,8 @@ export class Funnel {
       } else {
         // Draw vertical wall
         this.ctx.beginPath();
-        this.ctx.moveTo(wall.x!, 0);
-        this.ctx.lineTo(wall.x!, this.height);
+        this.ctx.moveTo(wall.x!, wall.startY!);
+        this.ctx.lineTo(wall.x!, wall.endY!);
         this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
         this.ctx.lineWidth = 2;
         this.ctx.stroke();
