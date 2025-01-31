@@ -124,12 +124,12 @@ export class Funnel {
   }
 
   getHoleSize(count: number): number {
-    const baseSize = Math.min(this.width, this.height) * 0.05; // Make hole size relative to canvas size
+    const baseSize = Math.min(this.width, this.height) * 0.08; // Increased base size by 60%
     switch (count) {
       case 1: return baseSize;
-      case 2: return baseSize * 0.7;
-      case 3: return baseSize * 0.5;
-      default: return Math.max(baseSize * 0.3, baseSize / count);
+      case 2: return baseSize * 0.8;
+      case 3: return baseSize * 0.6;
+      default: return Math.max(baseSize * 0.4, baseSize / count);
     }
   }
 
