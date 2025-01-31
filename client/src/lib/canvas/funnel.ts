@@ -153,22 +153,18 @@ export class Funnel {
   openHolesInWall(wall: Wall, count: number) {
     if (!wall.holeCount) wall.holeCount = 0;
     wall.holeCount += count;
-
-    const wallLength = wall.horizontal ? (wall.endX! - wall.startX!) : (wall.endY! - wall.startY!);
-    const maxHoleSize = wallLength * 0.05;
-    const minSpacing = maxHoleSize * 1.2;
-    const availableSpace = wallLength - (minSpacing * (wall.holeCount - 1));
-    const holeSize = Math.min(maxHoleSize, availableSpace / wall.holeCount);
-    const spacing = (wallLength - (holeSize * wall.holeCount)) / (wall.holeCount + 1);
+    const holeSize = this.getHoleSize(wall.holeCount);
 
     if (wall.horizontal) {
+      const segmentWidth = (wall.endX! - wall.startX!) / (wall.holeCount + 1);
       wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
-        x: wall.startX! + spacing * (i + 1) + (holeSize * i),
+        x: wall.startX! + segmentWidth * (i + 1) - (holeSize / 2),
         width: holeSize
       }));
     } else {
+      const segmentHeight = (wall.endY! - wall.startY!) / (wall.holeCount + 1);
       wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
-        y: wall.startY! + spacing * (i + 1) + (holeSize * i),
+        y: wall.startY! + segmentHeight * (i + 1) - (holeSize / 2),
         height: holeSize
       }));
     }
