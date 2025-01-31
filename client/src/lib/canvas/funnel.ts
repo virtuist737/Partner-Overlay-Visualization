@@ -71,17 +71,25 @@ export class Funnel {
     // Calculate stage width based on actual dimensions
     this.stageWidth = this.width / STAGES.length;
     this.walls = [];
-    this.scale = Math.min(this.width / 1000, this.height / 600); // Base scale on a reference size
+
+    // Adjust scale to make better use of canvas space
+    this.scale = Math.min(this.width / 800, this.height / 450); // Reduced reference size for larger visualization
     this.setupWalls();
   }
 
   setupWalls() {
     // Create walls for each stage
+    const margin = 0.1; // 10% margin from top and bottom
+    const maxNarrowing = 0.25; // Increased from 0.15 to make funnel more prominent
+
     for (let i = 0; i < STAGES.length; i++) {
       const x = i * this.stageWidth;
       const nextX = (i + 1) * this.stageWidth;
-      const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
-      const nextNarrowing = Math.sin(((i + 1) / (STAGES.length - 1)) * Math.PI) * 0.15;
+
+      // Calculate narrowing with margin
+      const progress = i / (STAGES.length - 1);
+      const narrowing = margin + (Math.sin(progress * Math.PI) * maxNarrowing);
+      const nextNarrowing = margin + (Math.sin(((i + 1) / (STAGES.length - 1)) * Math.PI) * maxNarrowing);
 
       const topY = this.height * narrowing;
       const bottomY = this.height * (1 - narrowing);
@@ -124,7 +132,7 @@ export class Funnel {
   }
 
   getHoleSize(count: number): number {
-    const baseSize = Math.min(this.width, this.height) * 0.05; // Make hole size relative to canvas size
+    const baseSize = Math.min(this.width, this.height) * 0.08; // Increased from 0.05 for larger holes
     switch (count) {
       case 1: return baseSize;
       case 2: return baseSize * 0.7;
@@ -160,10 +168,13 @@ export class Funnel {
     // Clear the entire canvas
     this.ctx.clearRect(0, 0, this.width, this.height);
 
-    // Draw funnel segments
+    // Draw funnel segments with enhanced size
     STAGES.forEach((stage, i) => {
       const x = i * this.stageWidth;
-      const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
+      const margin = 0.1;
+      const maxNarrowing = 0.25;
+      const progress = i / (STAGES.length - 1);
+      const narrowing = margin + (Math.sin(progress * Math.PI) * maxNarrowing);
 
       const gradient = this.ctx.createLinearGradient(x, 0, x, this.height);
       gradient.addColorStop(0, stage.gradient[0]);
@@ -259,7 +270,7 @@ export class Funnel {
 
   createEducationSelectionHoles() {
     const verticalWalls = this.getWallsBetweenStages('Education', 'Selection');
-    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1)); // Add one more hole each time
+    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
   }
 
   createCommitOnboardingHoles() {
