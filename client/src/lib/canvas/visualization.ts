@@ -243,6 +243,9 @@ export class Visualization {
       this.revenue.totalRevenue += 1000;
     }
 
+    // Update net revenue after any revenue changes
+    this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
+
     particle.currentStage = newStage;
   }
 
@@ -359,9 +362,9 @@ export class Visualization {
       'solution_management': 300
     };
 
-    // Add cost to partner costs (making it positive)
+    // Add cost to partner costs
     this.revenue.partnerCosts += costs[action] || 0;
-    // Update net revenue by subtracting partner costs from total revenue
+    // Update net revenue
     this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
 
     switch (action) {
