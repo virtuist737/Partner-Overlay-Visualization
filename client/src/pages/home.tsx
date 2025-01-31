@@ -76,7 +76,7 @@ export default function Home() {
       onboardingAdoptionWalls.forEach(wall => {
         visualization.funnel.openHolesInWall(wall, 1);
       });
-      
+
       const adoptionExpansionWalls = visualization.funnel.getWallsBetweenStages('Adoption', 'Expansion');
       adoptionExpansionWalls.forEach(wall => {
         visualization.funnel.openHolesInWall(wall, 1);
