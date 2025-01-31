@@ -248,7 +248,7 @@ export class Visualization {
     const y = minY + (Math.random() * (maxY - minY));
 
     const baseScale = Math.min(rect.width / 1000, rect.height / 600);
-    const baseRadius = 6 * baseScale;
+    const baseRadius = 30 * baseScale;
     const baseSpeed = 2 * baseScale;
 
     const particle = new Particle({
@@ -314,7 +314,7 @@ export class Visualization {
       const y = minY + (Math.random() * (maxY - minY));
 
       const baseScale = Math.min(rect.width / 1000, rect.height / 600);
-      const baseRadius = 6 * baseScale;
+      const baseRadius = 30 * baseScale;
       const baseSpeed = 2 * baseScale;
 
       const particle = new Particle({
