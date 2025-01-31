@@ -220,7 +220,7 @@ export default function Home() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Partner Costs</span>
-                    <span className="text-muted-foreground text-red-500">-{formatCurrency(revenue.partnerCosts)}</span>
+                    <span className="text-muted-foreground text-red-500">{formatCurrency(revenue.partnerCosts)}</span>
                   </div>
                   <div className="flex justify-between items-center font-bold">
                     <span>Net Revenue</span>
