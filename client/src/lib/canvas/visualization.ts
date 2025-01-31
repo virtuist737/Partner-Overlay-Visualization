@@ -410,9 +410,10 @@ export class Visualization {
         const walls = this.funnel.getWallsBetweenStages('Awareness', 'Education');
         walls.forEach(wall => {
           const newHoleCount = wall.holes.length + 1;
-          const spacing = (wall.endY - wall.startY) / (newHoleCount);
+          const effectiveHeight = wall.endY - wall.startY - holeSize;
+          const spacing = effectiveHeight / (newHoleCount);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + spacing * (i + 0.5),
+            y: wall.startY + (holeSize/2) + spacing * i,
             height: holeSize
           }));
         });
@@ -422,9 +423,10 @@ export class Visualization {
         const walls = this.funnel.getWallsBetweenStages('Education', 'Selection');
         walls.forEach(wall => {
           const newHoleCount = wall.holes.length + 1;
-          const spacing = (wall.endY - wall.startY) / (newHoleCount);
+          const effectiveHeight = wall.endY - wall.startY - holeSize;
+          const spacing = effectiveHeight / (newHoleCount);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + spacing * (i + 0.5),
+            y: wall.startY + (holeSize/2) + spacing * i,
             height: holeSize
           }));
         });
@@ -434,9 +436,10 @@ export class Visualization {
         const walls = this.funnel.getWallsBetweenStages('Selection', 'Commit');
         walls.forEach(wall => {
           const newHoleCount = wall.holes.length + 1;
-          const spacing = (wall.endY - wall.startY) / (newHoleCount);
+          const effectiveHeight = wall.endY - wall.startY - holeSize;
+          const spacing = effectiveHeight / (newHoleCount);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + spacing * (i + 0.5),
+            y: wall.startY + (holeSize/2) + spacing * i,
             height: holeSize
           }));
         });
@@ -446,9 +449,10 @@ export class Visualization {
         const walls = this.funnel.getWallsBetweenStages('Commit', 'Onboarding');
         walls.forEach(wall => {
           const newHoleCount = wall.holes.length + 1;
-          const spacing = (wall.endY - wall.startY) / (newHoleCount);
+          const effectiveHeight = wall.endY - wall.startY - holeSize;
+          const spacing = effectiveHeight / (newHoleCount);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + spacing * (i + 0.5),
+            y: wall.startY + (holeSize/2) + spacing * i,
             height: holeSize
           }));
         });
@@ -458,18 +462,20 @@ export class Visualization {
         const onboardingWalls = this.funnel.getWallsBetweenStages('Onboarding', 'Adoption');
         onboardingWalls.forEach(wall => {
           const newHoleCount = wall.holes.length + 1;
-          const spacing = (wall.endY - wall.startY) / (newHoleCount);
+          const effectiveHeight = wall.endY - wall.startY - holeSize;
+          const spacing = effectiveHeight / (newHoleCount);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + spacing * (i + 0.5),
+            y: wall.startY + (holeSize/2) + spacing * i,
             height: holeSize
           }));
         });
         const expansionWalls = this.funnel.getWallsBetweenStages('Adoption', 'Expansion');
         expansionWalls.forEach(wall => {
           const newHoleCount = wall.holes.length + 1;
-          const spacing = (wall.endY - wall.startY) / (newHoleCount);
+          const effectiveHeight = wall.endY - wall.startY - holeSize;
+          const spacing = effectiveHeight / (newHoleCount);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + spacing * (i + 0.5),
+            y: wall.startY + (holeSize/2) + spacing * i,
             height: holeSize
           }));
         });
