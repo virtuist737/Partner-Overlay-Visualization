@@ -195,8 +195,8 @@ export class Visualization {
       this.particles.push(new Particle({
         x: 0,
         y,
-        radius: 4, // Reduced from 4 to 2
-        speed: 2,
+        radius: 4,
+        speed: 4, // Increased from 2 to 4
         color: 'rgba(0, 0, 0, 0.8)',
         type: 'customer',
         currentStage: 'Awareness',
