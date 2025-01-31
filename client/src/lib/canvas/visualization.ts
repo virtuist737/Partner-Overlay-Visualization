@@ -184,9 +184,9 @@ export class Visualization {
       const startX = rect.width * 0.02;
       const y = minY + Math.random() * (maxY - minY);
 
-      // Reduce particle size to 1/3 of previous size
-      const baseRadius = Math.min(rect.width, rect.height) * 0.001;
-      const baseSpeed = rect.width * 0.0014; // Reduced by 30% from 0.002
+      // Increase base radius by 5x but keep speed proportional
+      const baseRadius = Math.min(rect.width, rect.height) * 0.005; // Increased from 0.001
+      const baseSpeed = rect.width * 0.0014;
       const verticalVariation = (Math.random() - 0.5) * baseSpeed * 0.5;
 
       this.particles.push(new Particle({
@@ -248,7 +248,7 @@ export class Visualization {
     const y = minY + (Math.random() * (maxY - minY));
 
     const baseScale = Math.min(rect.width / 1000, rect.height / 600);
-    const baseRadius = 6 * baseScale;
+    const baseRadius = 30 * baseScale; // Increased from 6 to make partner particles 5x larger
     const baseSpeed = 2 * baseScale;
 
     const particle = new Particle({
@@ -314,7 +314,7 @@ export class Visualization {
       const y = minY + (Math.random() * (maxY - minY));
 
       const baseScale = Math.min(rect.width / 1000, rect.height / 600);
-      const baseRadius = 6 * baseScale;
+      const baseRadius = 30 * baseScale;
       const baseSpeed = 2 * baseScale;
 
       const particle = new Particle({
