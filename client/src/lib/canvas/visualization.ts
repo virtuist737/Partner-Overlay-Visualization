@@ -159,16 +159,15 @@ export class Visualization {
 
       const rect = this.canvas.getBoundingClientRect();
       const startNarrowing = Math.sin(0) * 0.15;
-      const minY = rect.height * startNarrowing + 20;
-      const maxY = rect.height * (1 - startNarrowing) - 20;
+      const minY = rect.height * startNarrowing + (rect.height * 0.02);
+      const maxY = rect.height * (1 - startNarrowing) - (rect.height * 0.02);
 
       const startX = Math.random() * (rect.width * 0.1);
       const y = minY + Math.random() * (maxY - minY);
 
-      const baseScale = Math.min(rect.width / 1000, rect.height / 600);
-      const baseRadius = 3 * baseScale;
-      const baseSpeed = (1.5 + Math.random() * 2) * baseScale;
-      const verticalVariation = (Math.random() - 0.5) * 2 * baseScale;
+      const baseRadius = rect.height * 0.01;
+      const baseSpeed = rect.width * 0.002;
+      const verticalVariation = (Math.random() - 0.5) * baseSpeed;
 
       this.particles.push(new Particle({
         x: startX,
@@ -178,8 +177,6 @@ export class Visualization {
         color: 'rgba(0, 0, 0, 0.8)',
         type: 'customer',
         currentStage: 'Awareness',
-        canvasWidth: rect.width,
-        canvasHeight: rect.height,
         canvas: this.canvas,
         verticalSpeed: verticalVariation
       }));
@@ -391,6 +388,7 @@ export class Visualization {
   }
 
   executePartnerAction(action: string) {
+    const rect = this.canvas.getBoundingClientRect();
     const costs: Record<string, number> = {
       'seo_listicle': 100,
       'youtube_walkthrough': 100,
@@ -402,32 +400,64 @@ export class Visualization {
     this.revenue.partnerCosts += costs[action] || 0;
     this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
 
+    const holeSize = rect.height * 0.05;
+
     switch (action) {
       case 'seo_listicle': {
         const walls = this.funnel.getWallsBetweenStages('Awareness', 'Education');
-        walls.forEach(wall => this.funnel.openHolesInWall(wall, 1));
+        walls.forEach(wall => {
+          wall.holes.push({
+            y: rect.height * 0.3 + Math.random() * (rect.height * 0.4),
+            height: holeSize
+          });
+        });
         break;
       }
       case 'youtube_walkthrough': {
         const walls = this.funnel.getWallsBetweenStages('Education', 'Selection');
-        walls.forEach(wall => this.funnel.openHolesInWall(wall, 1));
+        walls.forEach(wall => {
+          wall.holes.push({
+            y: rect.height * 0.3 + Math.random() * (rect.height * 0.4),
+            height: holeSize
+          });
+        });
         break;
       }
       case 'reference_call': {
         const walls = this.funnel.getWallsBetweenStages('Selection', 'Commit');
-        walls.forEach(wall => this.funnel.openHolesInWall(wall, 1));
+        walls.forEach(wall => {
+          wall.holes.push({
+            y: rect.height * 0.3 + Math.random() * (rect.height * 0.4),
+            height: holeSize
+          });
+        });
         break;
       }
       case 'onboarding_services': {
         const walls = this.funnel.getWallsBetweenStages('Commit', 'Onboarding');
-        walls.forEach(wall => this.funnel.openHolesInWall(wall, 1));
+        walls.forEach(wall => {
+          wall.holes.push({
+            y: rect.height * 0.3 + Math.random() * (rect.height * 0.4),
+            height: holeSize
+          });
+        });
         break;
       }
       case 'solution_management': {
         const onboardingWalls = this.funnel.getWallsBetweenStages('Onboarding', 'Adoption');
-        onboardingWalls.forEach(wall => this.funnel.openHolesInWall(wall, 1));
+        onboardingWalls.forEach(wall => {
+          wall.holes.push({
+            y: rect.height * 0.3 + Math.random() * (rect.height * 0.4),
+            height: holeSize
+          });
+        });
         const expansionWalls = this.funnel.getWallsBetweenStages('Adoption', 'Expansion');
-        expansionWalls.forEach(wall => this.funnel.openHolesInWall(wall, 1));
+        expansionWalls.forEach(wall => {
+          wall.holes.push({
+            y: rect.height * 0.3 + Math.random() * (rect.height * 0.4),
+            height: holeSize
+          });
+        });
         break;
       }
     }
