@@ -93,47 +93,27 @@ export class Particle {
       const scaledRadius = this.radius * this.scale;
 
       if (wall.horizontal) {
-        // Calculate particle's next position
-        const nextY = this.y + this.verticalSpeed;
-
-        // Check if particle will intersect with the wall in the next frame
-        if (this.x >= wall.startX! && this.x <= wall.endX!) {
-          // For top walls (particle moving up)
-          if (this.verticalSpeed < 0 && nextY - scaledRadius <= wall.y!) {
-            let canPass = false;
-            wall.holes.forEach(hole => {
-              if (this.x > hole.x! && this.x < hole.x! + hole.width!) {
-                canPass = true;
-              }
-            });
-
-            if (!canPass) {
-              // Bounce off the wall
-              this.verticalSpeed = Math.abs(this.verticalSpeed) * 0.5;
-              this.y = wall.y! + scaledRadius;
+        if (this.x >= wall.startX! && this.x <= wall.endX! && Math.abs(this.y - wall.y!) < scaledRadius) {
+          let canPass = false;
+          wall.holes.forEach(hole => {
+            if (this.x > hole.x! && this.x < hole.x! + hole.width!) {
+              canPass = true;
             }
-          }
-          // For bottom walls (particle moving down)
-          else if (this.verticalSpeed > 0 && nextY + scaledRadius >= wall.y!) {
-            let canPass = false;
-            wall.holes.forEach(hole => {
-              if (this.x > hole.x! && this.x < hole.x! + hole.width!) {
-                canPass = true;
-              }
-            });
+          });
 
-            if (!canPass) {
-              if (this.type === 'partner') {
-                wall.holes.push({
-                  x: Math.max(wall.startX!, Math.min(wall.endX! - 30 * this.scale, this.x - 15 * this.scale)),
-                  width: 30 * this.scale
-                });
-                this.verticalSpeed *= -0.5;
-              } else {
-                // For customers, ensure they bounce up from bottom walls
-                this.verticalSpeed = -Math.abs(this.verticalSpeed) * 0.5;
-                this.y = wall.y! - scaledRadius;
+          if (!canPass) {
+            if (this.type === 'partner') {
+              wall.holes.push({
+                x: Math.max(wall.startX!, Math.min(wall.endX! - 30 * this.scale, this.x - 15 * this.scale)),
+                width: 30 * this.scale
+              });
+              this.verticalSpeed *= -0.5;
+            } else {
+              // For customers, ensure they bounce up from bottom walls
+              if (this.verticalSpeed > 0) {
+                this.verticalSpeed = -Math.abs(this.verticalSpeed);
               }
+              this.y = wall.y! - scaledRadius;
             }
           }
         }
