@@ -77,16 +77,16 @@ export class Funnel {
   draw() {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
-    // Draw funnel segments
+    // Draw funnel segments with visible partition walls
     STAGES.forEach((stage, i) => {
       const x = i * this.stageWidth;
-      // Adjust the hourglass shape to be more subtle
       const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
 
       const gradient = this.ctx.createLinearGradient(x, 0, x, this.height);
       gradient.addColorStop(0, stage.gradient[0]);
       gradient.addColorStop(1, stage.gradient[1]);
 
+      // Draw the gradient background
       this.ctx.fillStyle = gradient;
       this.ctx.beginPath();
       this.ctx.moveTo(x, this.height * narrowing);
@@ -95,26 +95,14 @@ export class Funnel {
       this.ctx.lineTo(x, this.height * (1 - narrowing));
       this.ctx.closePath();
       this.ctx.fill();
-    });
 
-    // Draw horizontal partition walls at the narrowing points
-    STAGES.forEach((stage, i) => {
-      const x = i * this.stageWidth;
-      const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
-      
-      // Draw top wall
+      // Draw the partition walls
       this.ctx.beginPath();
       this.ctx.moveTo(x, this.height * narrowing);
       this.ctx.lineTo(x + this.stageWidth, this.height * narrowing);
-      this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-      this.ctx.lineWidth = 2;
-      this.ctx.stroke();
-
-      // Draw bottom wall
-      this.ctx.beginPath();
       this.ctx.moveTo(x, this.height * (1 - narrowing));
       this.ctx.lineTo(x + this.stageWidth, this.height * (1 - narrowing));
-      this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+      this.ctx.strokeStyle = 'rgba(0,0,0,0.3)';
       this.ctx.lineWidth = 2;
       this.ctx.stroke();
     });
