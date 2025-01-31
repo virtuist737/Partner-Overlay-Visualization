@@ -109,11 +109,15 @@ export class Particle {
               });
               this.verticalSpeed *= -0.9;
             } else {
-              // For customers, ensure they bounce up from bottom walls
-              if (this.verticalSpeed > 0) {
+              // For customers, ensure they bounce away from walls
+              const isTopWall = wall.y! < this.canvas.height / 2;
+              if (isTopWall) {
+                this.verticalSpeed = Math.abs(this.verticalSpeed);
+                this.y = wall.y! + scaledRadius;
+              } else {
                 this.verticalSpeed = -Math.abs(this.verticalSpeed);
+                this.y = wall.y! - scaledRadius;
               }
-              this.y = wall.y! - scaledRadius;
             }
           }
         }
