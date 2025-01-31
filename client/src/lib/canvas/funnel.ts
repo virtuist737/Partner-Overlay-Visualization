@@ -90,6 +90,7 @@ export class Funnel {
 
       // Add vertical wall at the end of each segment (except last)
       if (i < STAGES.length - 1) {
+        // Main vertical wall
         const verticalWall: Wall = {
           x: nextX,
           startY: nextTopY,
@@ -100,6 +101,31 @@ export class Funnel {
         };
         this.walls.push(verticalWall);
         this.openHolesInWall(verticalWall, 1);
+
+        // Add connecting vertical walls at the top and bottom if there's a height difference
+        if (Math.abs(topY - nextTopY) > 1) {
+          // Top connecting wall
+          this.walls.push({
+            x: nextX,
+            startY: Math.min(topY, nextTopY),
+            endY: Math.max(topY, nextTopY),
+            horizontal: false,
+            holes: [],
+            holeCount: 0
+          });
+        }
+
+        if (Math.abs(bottomY - nextBottomY) > 1) {
+          // Bottom connecting wall
+          this.walls.push({
+            x: nextX,
+            startY: Math.min(bottomY, nextBottomY),
+            endY: Math.max(bottomY, nextBottomY),
+            horizontal: false,
+            holes: [],
+            holeCount: 0
+          });
+        }
       }
 
       // Add horizontal walls for each segment
