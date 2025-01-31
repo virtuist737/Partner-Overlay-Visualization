@@ -79,7 +79,7 @@ export default function Home() {
                 onClick={handleCustomersToggle} 
                 variant={showingCustomers ? "secondary" : "default"}
               >
-                {showingCustomers ? 'Hide Customers' : 'Show Customers'}
+                {showingCustomers ? 'Stop Journey' : 'Start Customer Journey'}
               </Button>
               <Button 
                 onClick={() => {
