@@ -177,7 +177,7 @@ export class Visualization {
         y: this.canvas.height * (0.3 + Math.random() * 0.4),
         radius: 4,
         speed: 2,
-        color: 'rgba(59, 130, 246, 0.5)',
+        color: 'rgba(0, 0, 0, 0.8)',
         type: 'customer',
         currentStage: 'Awareness'
       }));
