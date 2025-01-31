@@ -101,42 +101,45 @@ export default function Home() {
               </Button>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              <Button
-                onClick={() => handlePartnerAction('seo_listicle')}
-                variant="outline"
-                className="flex-grow"
-              >
-                Publish SEO Listicle
-              </Button>
-              <Button
-                onClick={() => handlePartnerAction('youtube_walkthrough')}
-                variant="outline"
-                className="flex-grow"
-              >
-                Create YouTube Walkthrough
-              </Button>
-              <Button
-                onClick={() => handlePartnerAction('onboarding_services')}
-                variant="outline"
-                className="flex-grow"
-              >
-                Sell Onboarding Services
-              </Button>
-              <Button
-                onClick={() => handlePartnerAction('reference_call')}
-                variant="outline"
-                className="flex-grow"
-              >
-                Customer Reference Call
-              </Button>
-              <Button
-                onClick={() => handlePartnerAction('solution_management')}
-                variant="outline"
-                className="flex-grow"
-              >
-                Solution Management Services
-              </Button>
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Partner Actions</h2>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  onClick={() => handlePartnerAction('seo_listicle')}
+                  variant="outline"
+                  className="flex-grow"
+                >
+                  Publish SEO Listicle
+                </Button>
+                <Button
+                  onClick={() => handlePartnerAction('youtube_walkthrough')}
+                  variant="outline"
+                  className="flex-grow"
+                >
+                  Create YouTube Walkthrough
+                </Button>
+                <Button
+                  onClick={() => handlePartnerAction('onboarding_services')}
+                  variant="outline"
+                  className="flex-grow"
+                >
+                  Sell Onboarding Services
+                </Button>
+                <Button
+                  onClick={() => handlePartnerAction('reference_call')}
+                  variant="outline"
+                  className="flex-grow"
+                >
+                  Customer Reference Call
+                </Button>
+                <Button
+                  onClick={() => handlePartnerAction('solution_management')}
+                  variant="outline"
+                  className="flex-grow"
+                >
+                  Solution Management Services
+                </Button>
+              </div>
             </div>
           </div>
 
