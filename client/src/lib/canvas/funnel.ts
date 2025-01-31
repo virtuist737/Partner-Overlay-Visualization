@@ -124,13 +124,8 @@ export class Funnel {
   }
 
   getHoleSize(count: number): number {
-    const baseSize = Math.min(this.width, this.height) * 0.08; // Increased base size by 60%
-    switch (count) {
-      case 1: return baseSize;
-      case 2: return baseSize * 0.8;
-      case 3: return baseSize * 0.6;
-      default: return Math.max(baseSize * 0.4, baseSize / count);
-    }
+    const baseSize = Math.min(this.width, this.height) * 0.08;
+    return baseSize * Math.pow(0.95, count - 1); // Reduce by 5% for each additional hole
   }
 
   openHolesInWall(wall: Wall, count: number) {
