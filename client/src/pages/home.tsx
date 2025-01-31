@@ -116,18 +116,18 @@ export default function Home() {
                   YouTube Video
                 </Button>
                 <Button
-                  onClick={() => handlePartnerAction('onboarding_services')}
-                  variant="outline"
-                  className="flex-grow"
-                >
-                  Onboarding Services
-                </Button>
-                <Button
                   onClick={() => handlePartnerAction('reference_call')}
                   variant="outline"
                   className="flex-grow"
                 >
                   Customer Reference Call
+                </Button>
+                <Button
+                  onClick={() => handlePartnerAction('onboarding_services')}
+                  variant="outline"
+                  className="flex-grow"
+                >
+                  Onboarding Services
                 </Button>
                 <Button
                   onClick={() => handlePartnerAction('solution_management')}
