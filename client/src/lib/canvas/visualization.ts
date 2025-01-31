@@ -58,19 +58,35 @@ export class Visualization {
   }
 
   setupCanvas() {
+    // Get the container dimensions
     const rect = this.canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
 
-    // Set the actual pixel dimensions of the canvas
-    this.canvas.width = rect.width * dpr;
-    this.canvas.height = rect.height * dpr;
+    // Calculate the scale needed to fill the container while maintaining aspect ratio
+    const containerWidth = rect.width;
+    const containerHeight = rect.height;
+    const scaleX = containerWidth / 1000; // Base width
+    const scaleY = containerHeight / 600; // Base height
+    const fillScale = Math.min(scaleX, scaleY);
 
-    // Scale the canvas context
-    this.ctx.scale(dpr * this.zoom, dpr * this.zoom);
+    // Set the actual pixel dimensions of the canvas
+    this.canvas.width = containerWidth * dpr;
+    this.canvas.height = containerHeight * dpr;
+
+    // Clear any previous transformations
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    // Apply device pixel ratio and zoom
+    this.ctx.scale(dpr * this.zoom * fillScale, dpr * this.zoom * fillScale);
+
+    // Center the visualization in the canvas
+    const translateX = (containerWidth / (dpr * fillScale) - 1000) / 2;
+    const translateY = (containerHeight / (dpr * fillScale) - 600) / 2;
+    this.ctx.translate(translateX, translateY);
 
     // Set the display dimensions of the canvas via CSS
-    this.canvas.style.width = `${rect.width}px`;
-    this.canvas.style.height = `${rect.height}px`;
+    this.canvas.style.width = `${containerWidth}px`;
+    this.canvas.style.height = `${containerHeight}px`;
   }
 
   setZoom(zoom: number) {
@@ -80,36 +96,7 @@ export class Visualization {
   }
 
   handleResize = () => {
-    // Get the container dimensions
-    const rect = this.canvas.parentElement?.getBoundingClientRect();
-    if (!rect) return;
-
-    // Maintain aspect ratio while fitting container
-    const containerAspectRatio = rect.width / rect.height;
-    const targetAspectRatio = 16 / 9; // Desired aspect ratio
-
-    let width, height;
-    if (containerAspectRatio > targetAspectRatio) {
-      // Container is wider than target ratio
-      height = rect.height;
-      width = height * targetAspectRatio;
-    } else {
-      // Container is taller than target ratio
-      width = rect.width;
-      height = width / targetAspectRatio;
-    }
-
-    // Update canvas style dimensions
-    this.canvas.style.width = `${width}px`;
-    this.canvas.style.height = `${height}px`;
-
-    // Update actual canvas dimensions
-    const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = width * dpr;
-    this.canvas.height = height * dpr;
-
-    // Reset scale and update funnel
-    this.ctx.scale(dpr * this.zoom, dpr * this.zoom);
+    this.setupCanvas();
     this.funnel = new Funnel(this.canvas);
   };
 
