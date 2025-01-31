@@ -88,7 +88,7 @@ export default function Home() {
     <div className="flex-1 flex p-4 h-full">
       <Card className="w-full flex flex-col p-4 bg-card/50 backdrop-blur-sm border-none shadow-2xl">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-lg font-bold text-primary">Customer Journey Visualization</h1>
+          <h1 className="text-lg font-bold text-primary">Partner Overlay Visualization</h1>
           <div className="flex gap-2">
             <Button
               onClick={() => {
