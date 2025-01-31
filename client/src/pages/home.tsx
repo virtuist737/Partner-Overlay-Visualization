@@ -88,7 +88,7 @@ export default function Home() {
     <div className="flex-1 flex p-4 h-full">
       <Card className="w-full flex flex-col p-4 bg-card/50 backdrop-blur-sm border-none shadow-2xl">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl font-bold text-primary">Customer Journey Visualization</h1>
+          <h1 className="text-lg font-bold text-primary">Customer Journey Visualization</h1>
           <div className="flex gap-2">
             <Button
               onClick={() => {
@@ -117,7 +117,7 @@ export default function Home() {
               variant="outline"
               size="sm"
             >
-              {showingCustomers ? 'Pause' : 'Resume'}
+              Resume
             </Button>
             <Button
               onClick={() => {
@@ -145,7 +145,7 @@ export default function Home() {
                       size="sm"
                       className="h-14"
                     >
-                      <div className="flex flex-col items-center text-xs gap-1">
+                      <div className="flex flex-col items-center text-sm gap-1">
                         <span className="text-center">{action.name}</span>
                         <span className="text-muted-foreground">
                           ${action.cost}
@@ -168,7 +168,7 @@ export default function Home() {
                 <div className="mt-2 grid grid-cols-7 gap-2">
                   {STAGES.map((stage) => (
                     <div key={stage.name} className="text-center">
-                      <h3 className="text-xs font-medium text-primary/80">
+                      <h3 className="text-sm font-medium text-primary/80">
                         {stage.name}
                       </h3>
                     </div>
@@ -184,7 +184,7 @@ export default function Home() {
                 <h2 className="text-sm font-semibold mb-2 text-primary">Statistics</h2>
                 <div className="space-y-1.5">
                   {stats.map((stat: any) => (
-                    <div key={stat.name} className="flex justify-between items-center text-xs">
+                    <div key={stat.name} className="flex justify-between items-center text-sm">
                       <span className="text-primary/90">{stat.name}</span>
                       <span className="text-muted-foreground font-mono">
                         {stat.current} / {stat.total}
@@ -198,7 +198,7 @@ export default function Home() {
                 <h2 className="text-sm font-semibold mb-2 text-primary">Conversion</h2>
                 <div className="space-y-1.5">
                   {conversionRates.map((rate: any) => (
-                    <div key={`${rate.from}-${rate.to}`} className="flex justify-between items-center text-xs">
+                    <div key={`${rate.from}-${rate.to}`} className="flex justify-between items-center text-sm">
                       <span className="text-primary/90">{rate.from} → {rate.to}</span>
                       <span className="text-muted-foreground font-mono">{rate.rate}%</span>
                     </div>
@@ -209,29 +209,29 @@ export default function Home() {
               <div>
                 <h2 className="text-sm font-semibold mb-2 text-primary">Revenue</h2>
                 <div className="space-y-1.5">
-                  <div className="flex justify-between items-center text-xs">
+                  <div className="flex justify-between items-center text-sm">
                     <span className="text-primary/90">Total Revenue</span>
                     <span className="text-muted-foreground font-mono">{formatCurrency(revenue.totalRevenue)}</span>
                   </div>
                   <div className="pl-3 space-y-1">
-                    <div className="flex justify-between items-center text-xs">
+                    <div className="flex justify-between items-center text-sm">
                       <span className="text-primary/80">From Commits</span>
                       <span className="text-muted-foreground font-mono">{formatCurrency(revenue.commitRevenue)}</span>
                     </div>
-                    <div className="flex justify-between items-center text-xs">
+                    <div className="flex justify-between items-center text-sm">
                       <span className="text-primary/80">From Adoptions</span>
                       <span className="text-muted-foreground font-mono">{formatCurrency(revenue.adoptionRevenue)}</span>
                     </div>
-                    <div className="flex justify-between items-center text-xs">
+                    <div className="flex justify-between items-center text-sm">
                       <span className="text-primary/80">From Expansions</span>
                       <span className="text-muted-foreground font-mono">{formatCurrency(revenue.expansionRevenue)}</span>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center text-xs">
+                  <div className="flex justify-between items-center text-sm">
                     <span className="text-primary/90">Partner Costs</span>
                     <span className="text-red-500 font-mono">{formatCurrency(revenue.partnerCosts)}</span>
                   </div>
-                  <div className="flex justify-between items-center text-xs font-medium pt-1">
+                  <div className="flex justify-between items-center text-sm font-medium pt-1">
                     <span className="text-primary">Net Revenue</span>
                     <span className={`font-mono ${revenue.netRevenue >= 0 ? "text-green-500" : "text-red-500"}`}>
                       {formatCurrency(revenue.netRevenue)}
@@ -240,14 +240,14 @@ export default function Home() {
                 </div>
 
                 <div className="mt-4 bg-primary/5 p-3 rounded-lg">
-                  <h2 className="text-xs font-semibold text-center mb-1 text-primary">Average Revenue per Customer</h2>
-                  <p className="text-lg text-center font-bold"
+                  <h2 className="text-sm font-semibold text-center mb-1 text-primary">Average Revenue per Customer</h2>
+                  <p className="text-xl text-center font-bold"
                      style={{ color: revenue.netRevenue >= 0 ? 'hsl(var(--primary))' : 'hsl(var(--destructive))' }}>
                     {stats.length > 0 && stats[0].total > 0
                       ? formatCurrency(revenue.netRevenue / stats[0].total)
                       : '$0.00'}
                   </p>
-                  <p className="text-[10px] text-center text-muted-foreground mt-1">
+                  <p className="text-xs text-center text-muted-foreground mt-1">
                     Based on {stats.length > 0 ? stats[0].total : 0}/100 total potential customers
                   </p>
                 </div>
