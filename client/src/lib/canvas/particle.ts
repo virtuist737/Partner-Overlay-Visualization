@@ -99,7 +99,12 @@ export class Particle {
           let canPass = false;
           wall.holes.forEach(hole => {
             if (this.y > hole.y! && this.y < hole.y! + hole.height!) {
-              canPass = true;
+              // For customer particles, only allow left-to-right movement through holes
+              if (this.type === 'customer') {
+                canPass = this.speed > 0; // Only allow passage if moving right
+              } else {
+                canPass = true; // Partners can move both ways
+              }
             }
           });
 
