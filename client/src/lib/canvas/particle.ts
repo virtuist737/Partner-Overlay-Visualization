@@ -41,7 +41,7 @@ export class Particle {
   calculateRelativeRadius(baseRadius: number, canvas: HTMLCanvasElement): number {
     const rect = canvas.getBoundingClientRect();
     const viewportDimension = Math.min(rect.width, rect.height);
-    return baseRadius * viewportDimension;
+    return (baseRadius * viewportDimension) / 100;
   }
 
   calculateRelativeSpeed(baseSpeed: number, canvas: HTMLCanvasElement): number {

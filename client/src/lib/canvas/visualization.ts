@@ -165,7 +165,7 @@ export class Visualization {
       const startX = rect.width * 0.05;
       const y = minY + Math.random() * (maxY - minY);
 
-      const baseRadius = Math.min(rect.width, rect.height) * 0.01;
+      const baseRadius = Math.min(rect.width, rect.height) * 0.0001;
       const baseSpeed = rect.width * 0.001;
       const verticalVariation = (Math.random() - 0.5) * baseSpeed;
 
