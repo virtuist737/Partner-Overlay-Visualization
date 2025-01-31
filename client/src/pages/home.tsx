@@ -61,6 +61,11 @@ export default function Home() {
       walls.forEach(wall => {
         visualization.funnel.openHolesInWall(wall, 1);
       });
+    } else if (action === 'youtube_walkthrough') {
+      const walls = visualization.funnel.getWallsBetweenStages('Education', 'Selection');
+      walls.forEach(wall => {
+        visualization.funnel.openHolesInWall(wall, 1);
+      });
     } else if (action === 'reference_call') {
       const walls = visualization.funnel.getWallsBetweenStages('Selection', 'Commit');
       walls.forEach(wall => {
