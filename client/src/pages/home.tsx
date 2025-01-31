@@ -18,11 +18,22 @@ export default function Home() {
   const [visualization, setVisualization] = useState<Visualization | null>(null);
   const [showingCustomers, setShowingCustomers] = useState(false);
   const [showingPartners, setShowingPartners] = useState(false);
+  const [stats, setStats] = useState<any[]>([]);
+  const [conversionRates, setConversionRates] = useState<any[]>([]);
 
   useEffect(() => {
     if (canvasRef.current) {
       const viz = new Visualization(canvasRef.current);
       setVisualization(viz);
+
+      const updateStats = () => {
+        if (viz) {
+          setStats(viz.getStageStats());
+          setConversionRates(viz.getConversionRates());
+        }
+        requestAnimationFrame(updateStats);
+      };
+      updateStats();
 
       return () => {
         viz.destroy();
@@ -34,13 +45,6 @@ export default function Home() {
     if (visualization) {
       visualization.toggleCustomers();
       setShowingCustomers(!showingCustomers);
-    }
-  };
-
-  const handlePartnersToggle = () => {
-    if (visualization) {
-      visualization.togglePartners();
-      setShowingPartners(!showingPartners);
     }
   };
 
@@ -77,7 +81,6 @@ export default function Home() {
                 Reset
               </Button>
             </div>
-            
           </div>
 
           <div className="relative w-full h-[60vh] min-h-[400px] bg-black/5 rounded-lg overflow-hidden">
@@ -85,6 +88,34 @@ export default function Home() {
               ref={canvasRef}
               className="w-full h-full"
             />
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Stage Statistics</h2>
+              <div className="space-y-2">
+                {stats.map((stat: any) => (
+                  <div key={stat.name} className="flex justify-between items-center">
+                    <span>{stat.name}</span>
+                    <span className="text-muted-foreground">
+                      Current: {stat.current} | Total: {stat.total}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Conversion Rates</h2>
+              <div className="space-y-2">
+                {conversionRates.map((rate: any) => (
+                  <div key={`${rate.from}-${rate.to}`} className="flex justify-between items-center">
+                    <span>{rate.from} → {rate.to}</span>
+                    <span className="text-muted-foreground">{rate.rate}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="mt-4 flex justify-between text-sm text-muted-foreground">

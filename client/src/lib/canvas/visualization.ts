@@ -1,6 +1,17 @@
 import { Particle } from './particle';
 import { Funnel, STAGES } from './funnel';
 
+interface StageStats {
+  total: number;
+  current: number;
+}
+
+interface ConversionStats {
+  from: string;
+  to: string;
+  rate: number;
+}
+
 export class Visualization {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -10,6 +21,8 @@ export class Visualization {
   showingCustomers: boolean;
   showingPartners: boolean;
   particleGenerators: { customer?: NodeJS.Timeout; partner?: NodeJS.Timeout };
+  stageStats: Map<string, StageStats>;
+
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
@@ -20,6 +33,9 @@ export class Visualization {
     this.showingCustomers = false;
     this.showingPartners = false;
     this.particleGenerators = {};
+    this.stageStats = new Map(
+      STAGES.map(stage => [stage.name, { total: 0, current: 0 }])
+    );
 
     this.animate = this.animate.bind(this);
     this.animationFrame = requestAnimationFrame(this.animate);
@@ -105,11 +121,20 @@ export class Visualization {
     if (this.particleGenerators.customer) clearTimeout(this.particleGenerators.customer);
     if (this.particleGenerators.partner) clearTimeout(this.particleGenerators.partner);
     this.funnel = new Funnel(this.canvas);
+    this.stageStats = new Map(
+      STAGES.map(stage => [stage.name, { total: 0, current: 0 }])
+    );
   }
 
   startCustomerParticles() {
     const createParticle = () => {
       if (!this.showingCustomers) return;
+
+      // Update Awareness stage count when creating new particle
+      const awarenessStats = this.stageStats.get('Awareness')!;
+      awarenessStats.total++;
+      awarenessStats.current++;
+      this.stageStats.set('Awareness', awarenessStats);
 
       this.particles.push(new Particle({
         x: 0,
@@ -117,13 +142,59 @@ export class Visualization {
         radius: 4,
         speed: 2,
         color: 'rgba(59, 130, 246, 0.5)',
-        type: 'customer'
+        type: 'customer',
+        currentStage: 'Awareness'
       }));
 
       this.particleGenerators.customer = setTimeout(createParticle, 200);
     };
 
     createParticle();
+  }
+
+  updateParticleStage(particle: Particle, newStage: string) {
+    if (particle.type !== 'customer' || particle.currentStage === newStage) return;
+
+    // Decrease count in old stage
+    const oldStageStats = this.stageStats.get(particle.currentStage!)!;
+    oldStageStats.current--;
+    this.stageStats.set(particle.currentStage!, oldStageStats);
+
+    // Increase count in new stage
+    const newStageStats = this.stageStats.get(newStage)!;
+    newStageStats.total++;
+    newStageStats.current++;
+    this.stageStats.set(newStage, newStageStats);
+
+    particle.currentStage = newStage;
+  }
+
+  getStageStats(): StageStats[] {
+    return STAGES.map(stage => ({
+      name: stage.name,
+      ...this.stageStats.get(stage.name)!
+    }));
+  }
+
+  getConversionRates(): ConversionStats[] {
+    const rates: ConversionStats[] = [];
+
+    for (let i = 0; i < STAGES.length - 1; i++) {
+      const fromStage = STAGES[i].name;
+      const toStage = STAGES[i + 1].name;
+      const fromStats = this.stageStats.get(fromStage)!;
+      const toStats = this.stageStats.get(toStage)!;
+
+      const rate = fromStats.total === 0 ? 0 : (toStats.total / fromStats.total) * 100;
+
+      rates.push({
+        from: fromStage,
+        to: toStage,
+        rate: Math.round(rate * 10) / 10
+      });
+    }
+
+    return rates;
   }
 
   startPartnerParticles() {
@@ -178,6 +249,12 @@ export class Visualization {
     // Update and draw particles
     this.particles = this.particles.filter(p => p.active);
     this.particles.forEach(particle => {
+      if (particle.type === 'customer') {
+        const stageIndex = Math.floor((particle.x / this.canvas.width) * STAGES.length);
+        if (stageIndex >= 0 && stageIndex < STAGES.length) {
+          this.updateParticleStage(particle, STAGES[stageIndex].name);
+        }
+      }
       particle.update(this.canvas.height, this.funnel.walls);
       particle.draw(this.ctx);
     });

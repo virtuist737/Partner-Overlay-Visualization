@@ -5,6 +5,7 @@ export interface ParticleOptions {
   speed: number;
   color: string;
   type: 'customer' | 'partner';
+  currentStage?: string;
 }
 
 interface Wall {
@@ -27,6 +28,7 @@ export class Particle {
   type: 'customer' | 'partner';
   verticalSpeed: number;
   active: boolean;
+  currentStage?: string;
 
   constructor(options: ParticleOptions) {
     this.x = options.x;
@@ -37,6 +39,7 @@ export class Particle {
     this.type = options.type;
     this.verticalSpeed = this.type === 'partner' ? options.speed : (Math.random() - 0.5) * 2;
     this.active = true;
+    this.currentStage = options.currentStage;
   }
 
   update(canvasHeight: number, walls: Wall[]) {
