@@ -366,8 +366,8 @@ export class Visualization {
       'seo_listicle': 100,
       'youtube_walkthrough': 100,
       'reference_call': 200,
-      'onboarding_services': 200,
-      'solution_management': 300
+      'onboarding_services': 300,
+      'solution_management': 500
     };
 
     // Add cost to partner costs

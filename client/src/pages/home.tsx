@@ -17,8 +17,8 @@ const PARTNER_ACTIONS = [
   { name: 'SEO Listicle', action: 'seo_listicle', cost: 100 },
   { name: 'YouTube Video', action: 'youtube_walkthrough', cost: 100 },
   { name: 'Customer Reference Call', action: 'reference_call', cost: 200 },
-  { name: 'Onboarding Services', action: 'onboarding_services', cost: 200 },
-  { name: 'Management Services', action: 'solution_management', cost: 300 },
+  { name: 'Onboarding Services', action: 'onboarding_services', cost: 300 },
+  { name: 'Management Services', action: 'solution_management', cost: 500 },
 ];
 
 export default function Home() {
