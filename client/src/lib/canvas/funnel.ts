@@ -199,19 +199,7 @@ export class Funnel {
     verticalWalls.forEach(wall => this.openHolesInWall(wall));
   }
 
-  getStageWalls(stageName: string): Wall[] {
-    const stageIndex = STAGES.findIndex(s => s.name === stageName);
-    if (stageIndex === -1) return [];
-
-    return this.walls.filter((_, index) => 
-      Math.floor(index / 3) === stageIndex
-    );
-  }
-
-
   draw() {
-    this.ctx.clearRect(0, 0, this.width, this.height);
-
     // Draw funnel segments
     STAGES.forEach((stage, i) => {
       const x = i * this.stageWidth;
