@@ -157,16 +157,24 @@ export class Funnel {
 
     if (wall.horizontal) {
       const segmentWidth = (wall.endX! - wall.startX!) / (wall.holeCount + 1);
-      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
-        x: wall.startX! + segmentWidth * (i + 1) - (holeSize / 2),
-        width: holeSize
-      }));
+      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => {
+        const shrinkFactor = Math.pow(0.8, i); // Each subsequent hole shrinks by 20%
+        const adjustedSize = holeSize * shrinkFactor;
+        return {
+          x: wall.startX! + segmentWidth * (i + 1) - (adjustedSize / 2),
+          width: adjustedSize
+        };
+      });
     } else {
       const segmentHeight = (wall.endY! - wall.startY!) / (wall.holeCount + 1);
-      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
-        y: wall.startY! + segmentHeight * (i + 1) - (holeSize / 2),
-        height: holeSize
-      }));
+      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => {
+        const shrinkFactor = Math.pow(0.8, i); // Each subsequent hole shrinks by 20%
+        const adjustedSize = holeSize * shrinkFactor;
+        return {
+          y: wall.startY! + segmentHeight * (i + 1) - (adjustedSize / 2),
+          height: adjustedSize
+        };
+      });
     }
   }
 
