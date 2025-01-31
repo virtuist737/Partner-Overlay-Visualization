@@ -260,9 +260,9 @@ export default function Home() {
                     Based on {stats.length > 0 ? stats[0].total : 0} total potential customers
                   </p>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </Card>
     </div>
