@@ -82,7 +82,10 @@ export default function Home() {
                 {showingCustomers ? 'Hide Customers' : 'Show Customers'}
               </Button>
               <Button 
-                onClick={() => visualization?.reset()}
+                onClick={() => {
+                  visualization?.reset();
+                  setShowingCustomers(false);
+                }}
                 variant="destructive"
               >
                 Reset
