@@ -95,137 +95,147 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-full p-4 bg-background">
-      <Card className="mx-auto max-w-6xl">
-        <CardContent className="p-6">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-6">
           <h1 className="text-2xl font-bold mb-4">Customer Journey Visualization</h1>
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleCustomersToggle} 
+              variant={showingCustomers ? "secondary" : "default"}
+            >
+              {showingCustomers ? 'Stop Journey' : 'Start Customer Journey'}
+            </Button>
+            <Button 
+              onClick={() => {
+                visualization?.reset();
+                setShowingCustomers(false);
+              }}
+              variant="destructive"
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
 
-          <div className="flex flex-col gap-4 mb-4">
-            <div className="flex gap-2">
-              <Button 
-                onClick={handleCustomersToggle} 
-                variant={showingCustomers ? "secondary" : "default"}
-              >
-                {showingCustomers ? 'Stop Journey' : 'Start Customer Journey'}
-              </Button>
-              <Button 
-                onClick={() => {
-                  visualization?.reset();
-                  setShowingCustomers(false);
-                }}
-                variant="destructive"
-              >
-                Reset
-              </Button>
-            </div>
+        <div className="flex gap-4">
+          <div className="flex-1 space-y-4">
+            <Card>
+              <CardContent className="p-6">
 
-            <div>
-              <h2 className="text-lg font-semibold mb-2">Partner Actions</h2>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  onClick={() => handlePartnerAction('seo_listicle')}
-                  variant="outline"
-                  className="flex-grow"
-                >
-                  SEO Listicle
-                </Button>
-                <Button
-                  onClick={() => handlePartnerAction('youtube_walkthrough')}
-                  variant="outline"
-                  className="flex-grow"
-                >
-                  YouTube Video
-                </Button>
-                <Button
-                  onClick={() => handlePartnerAction('reference_call')}
-                  variant="outline"
-                  className="flex-grow"
-                >
-                  Customer Reference Call
-                </Button>
-                <Button
-                  onClick={() => handlePartnerAction('onboarding_services')}
-                  variant="outline"
-                  className="flex-grow"
-                >
-                  Onboarding Services
-                </Button>
-                <Button
-                  onClick={() => handlePartnerAction('solution_management')}
-                  variant="outline"
-                  className="flex-grow"
-                >
-                  Management Services
-                </Button>
+            <h2 className="text-lg font-semibold mb-2">Partner Actions</h2>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    onClick={() => handlePartnerAction('seo_listicle')}
+                    variant="outline"
+                    className="flex-grow"
+                  >
+                    SEO Listicle
+                  </Button>
+                  <Button
+                    onClick={() => handlePartnerAction('youtube_walkthrough')}
+                    variant="outline"
+                    className="flex-grow"
+                  >
+                    YouTube Video
+                  </Button>
+                  <Button
+                    onClick={() => handlePartnerAction('reference_call')}
+                    variant="outline"
+                    className="flex-grow"
+                  >
+                    Customer Reference Call
+                  </Button>
+                  <Button
+                    onClick={() => handlePartnerAction('onboarding_services')}
+                    variant="outline"
+                    className="flex-grow"
+                  >
+                    Onboarding Services
+                  </Button>
+                  <Button
+                    onClick={() => handlePartnerAction('solution_management')}
+                    variant="outline"
+                    className="flex-grow"
+                  >
+                    Management Services
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="relative w-full h-[60vh] bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
+                  <canvas 
+                    ref={canvasRef}
+                    className="w-full h-full"
+                  />
+                </div>
+
+                <div className="mt-4 grid grid-cols-7 gap-4">
+                  {STAGES.map((stage) => (
+                    <div key={stage.name} className="text-center">
+                      <h3 className="text-lg font-semibold">{stage.name}</h3>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card className="w-80">
+            <CardContent className="p-6 space-y-8">
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Stage Statistics</h2>
+                <div className="space-y-2">
+                  {stats.map((stat: any) => (
+                    <div key={stat.name} className="flex justify-between items-center">
+                      <span>{stat.name}</span>
+                      <span className="text-muted-foreground">
+                        Current: {stat.current} | Total: {stat.total}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div className="relative w-full h-[60vh] bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
-            <canvas 
-              ref={canvasRef}
-              className="w-full h-full"
-            />
-          </div>
-
-          <div className="mt-4 grid grid-cols-7 gap-4">
-            {STAGES.map((stage) => (
-              <div key={stage.name} className="text-center">
-                <h3 className="text-lg font-semibold">{stage.name}</h3>
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Conversion Rates</h2>
+                <div className="space-y-2">
+                  {conversionRates.map((rate: any) => (
+                    <div key={`${rate.from}-${rate.to}`} className="flex justify-between items-center">
+                      <span>{rate.from} → {rate.to}</span>
+                      <span className="text-muted-foreground">{rate.rate}%</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
 
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Stage Statistics</h2>
-              <div className="space-y-2">
-                {stats.map((stat: any) => (
-                  <div key={stat.name} className="flex justify-between items-center">
-                    <span>{stat.name}</span>
-                    <span className="text-muted-foreground">
-                      Current: {stat.current} | Total: {stat.total}
-                    </span>
+              <div>
+                <h2 className="text-xl font-semibold mb-2">Revenue Statistics</h2>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span>Total Revenue</span>
+                    <span className="text-muted-foreground">{formatCurrency(revenue.totalRevenue)}</span>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Conversion Rates</h2>
-              <div className="space-y-2">
-                {conversionRates.map((rate: any) => (
-                  <div key={`${rate.from}-${rate.to}`} className="flex justify-between items-center">
-                    <span>{rate.from} → {rate.to}</span>
-                    <span className="text-muted-foreground">{rate.rate}%</span>
+                  <div className="flex justify-between items-center">
+                    <span>From Commits</span>
+                    <span className="text-muted-foreground">{formatCurrency(revenue.commitRevenue)}</span>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Revenue Statistics</h2>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span>Total Revenue</span>
-                  <span className="text-muted-foreground">{formatCurrency(revenue.totalRevenue)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>From Commits</span>
-                  <span className="text-muted-foreground">{formatCurrency(revenue.commitRevenue)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>From Adoptions</span>
-                  <span className="text-muted-foreground">{formatCurrency(revenue.adoptionRevenue)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>From Expansions</span>
-                  <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
+                  <div className="flex justify-between items-center">
+                    <span>From Adoptions</span>
+                    <span className="text-muted-foreground">{formatCurrency(revenue.adoptionRevenue)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span>From Expansions</span>
+                    <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
