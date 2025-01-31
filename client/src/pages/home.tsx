@@ -88,8 +88,8 @@ export default function Home() {
   return (
     <div className="flex-1 flex p-4 h-full">
       <Card className="w-full flex flex-col p-6 overflow-hidden">
-        <h1 className="text-3xl font-bold mb-6 text-primary">Customer Journey Visualization</h1>
-        <div className="flex gap-3 mb-6">
+        <h1 className="text-2xl font-bold mb-4 text-primary">Customer Journey Visualization</h1>
+        <div className="flex gap-2 mb-4">
           <Button
             onClick={() => {
               if (!showingCustomers) {
@@ -132,15 +132,15 @@ export default function Home() {
         <div className="flex gap-6 mb-4">
           <div className="flex-1 space-y-6">
             <Card className="border-none shadow-lg bg-card/80">
-              <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4 text-primary">Partner Actions</h2>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+              <CardContent className="p-4">
+                <h2 className="text-lg font-semibold mb-3 text-primary">Partner Actions</h2>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
                   {PARTNER_ACTIONS.map((action) => (
                     <Button
                       key={action.action}
                       onClick={() => handlePartnerAction(action.action)}
                       variant="outline"
-                      className="w-full h-full py-4 hover:bg-primary/10"
+                      className="w-full h-full py-2 hover:bg-primary/10"
                     >
                       <div className="flex flex-col items-center gap-2">
                         <span>{action.name}</span>
