@@ -112,8 +112,8 @@ export class Visualization {
 
     const wallIndex = Math.floor(x / (this.canvas.width / STAGES.length));
     if (wallIndex > 0 && wallIndex < STAGES.length) {
-      const holeY = y < this.canvas.height / 2 ? 
-        this.canvas.height * 0.2 + Math.random() * 0.2 : 
+      const holeY = y < this.canvas.height / 2 ?
+        this.canvas.height * 0.2 + Math.random() * 0.2 :
         this.canvas.height * 0.6 + Math.random() * 0.2;
       this.funnel.addHole(wallIndex - 1, holeY, this.canvas.height * 0.03);
     }
@@ -258,8 +258,8 @@ export class Visualization {
       const wallIndex = Math.floor(x / (this.canvas.width / STAGES.length));
       if (wallIndex > 0 && wallIndex < STAGES.length) {
         // Use particle's y position to determine hole position
-        const holeY = y < this.canvas.height / 2 ? 
-          this.canvas.height * 0.2 + Math.random() * 0.2 : 
+        const holeY = y < this.canvas.height / 2 ?
+          this.canvas.height * 0.2 + Math.random() * 0.2 :
           this.canvas.height * 0.6 + Math.random() * 0.2;
         this.funnel.addHole(wallIndex - 1, holeY, this.canvas.height * 0.1);
       }
@@ -297,5 +297,23 @@ export class Visualization {
     window.removeEventListener('resize', this.handleResize);
     if (this.particleGenerators.customer) clearTimeout(this.particleGenerators.customer);
     if (this.particleGenerators.partner) clearTimeout(this.particleGenerators.partner);
+  }
+
+  executePartnerAction(action: string) {
+    switch (action) {
+      case 'seo_listicle':
+      case 'youtube_walkthrough':
+        this.funnel.createEducationSelectionHoles();
+        break;
+      case 'onboarding_services':
+        this.funnel.createCommitOnboardingHoles();
+        break;
+      case 'reference_call':
+        this.funnel.patchSelectionStageHoles();
+        break;
+      case 'solution_management':
+        this.funnel.manageAdoptionExpansionHoles();
+        break;
+    }
   }
 }

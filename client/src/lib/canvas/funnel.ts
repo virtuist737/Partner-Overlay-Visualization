@@ -129,6 +129,76 @@ export class Funnel {
     }
   }
 
+  getWallsBetweenStages(fromStage: string, toStage: string): Wall[] {
+    const fromIndex = STAGES.findIndex(s => s.name === fromStage);
+    const toIndex = STAGES.findIndex(s => s.name === toStage);
+
+    if (fromIndex === -1 || toIndex === -1) return [];
+
+    const wallIndex = Math.min(fromIndex, toIndex);
+    return this.walls.filter((_, index) => 
+      index === wallIndex * 3 || // Vertical wall
+      index === wallIndex * 3 + 1 || // Top horizontal wall
+      index === wallIndex * 3 + 2 // Bottom horizontal wall
+    );
+  }
+
+  getStageWalls(stageName: string): Wall[] {
+    const stageIndex = STAGES.findIndex(s => s.name === stageName);
+    if (stageIndex === -1) return [];
+
+    return this.walls.filter((_, index) => 
+      Math.floor(index / 3) === stageIndex
+    );
+  }
+
+  openHolesInWall(wall: Wall, count: number = 3) {
+    if (wall.horizontal) {
+      const segmentWidth = (wall.endX! - wall.startX!) / (count + 1);
+      wall.holes = Array.from({ length: count }, (_, i) => ({
+        x: wall.startX! + segmentWidth * (i + 1),
+        width: this.stageWidth * 0.1
+      }));
+    } else {
+      const segmentHeight = (wall.endY! - wall.startY!) / (count + 1);
+      wall.holes = Array.from({ length: count }, (_, i) => ({
+        y: wall.startY! + segmentHeight * (i + 1),
+        height: this.height * 0.1
+      }));
+    }
+  }
+
+  closeHoles(walls: Wall[]) {
+    walls.forEach(wall => {
+      wall.holes = [];
+    });
+  }
+
+  createEducationSelectionHoles() {
+    const walls = this.getWallsBetweenStages('Education', 'Selection');
+    walls.forEach(wall => this.openHolesInWall(wall));
+  }
+
+  createCommitOnboardingHoles() {
+    const walls = this.getWallsBetweenStages('Commit', 'Onboarding');
+    walls.forEach(wall => this.openHolesInWall(wall));
+  }
+
+  patchSelectionStageHoles() {
+    const walls = this.getStageWalls('Selection');
+    this.closeHoles(walls);
+  }
+
+  manageAdoptionExpansionHoles() {
+    // Close Adoption stage holes
+    const adoptionWalls = this.getStageWalls('Adoption');
+    this.closeHoles(adoptionWalls);
+
+    // Open Adoption-Expansion partition holes
+    const expansionWalls = this.getWallsBetweenStages('Adoption', 'Expansion');
+    expansionWalls.forEach(wall => this.openHolesInWall(wall));
+  }
+
   draw() {
     this.ctx.clearRect(0, 0, this.width, this.height);
 

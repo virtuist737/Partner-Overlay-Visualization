@@ -54,6 +54,12 @@ export default function Home() {
     }
   };
 
+  const handlePartnerAction = (action: string) => {
+    if (visualization) {
+      visualization.executePartnerAction(action);
+    }
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -67,7 +73,7 @@ export default function Home() {
         <CardContent className="p-6">
           <h1 className="text-2xl font-bold mb-4">Customer Journey Visualization</h1>
 
-          <div className="flex gap-4 mb-4">
+          <div className="flex flex-col gap-4 mb-4">
             <div className="flex gap-2">
               <Button 
                 onClick={handleCustomersToggle} 
@@ -76,22 +82,48 @@ export default function Home() {
                 {showingCustomers ? 'Hide Customers' : 'Show Customers'}
               </Button>
               <Button 
-                onClick={() => visualization?.addPartner()}
-                variant="default"
-              >
-                Add Partner
-              </Button>
-              <Button 
-                onClick={() => visualization?.removePartner()}
-                variant="outline"
-              >
-                Remove Partner
-              </Button>
-              <Button 
                 onClick={() => visualization?.reset()}
                 variant="destructive"
               >
                 Reset
+              </Button>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Button
+                onClick={() => handlePartnerAction('seo_listicle')}
+                variant="outline"
+                className="flex-grow"
+              >
+                Publish SEO Listicle
+              </Button>
+              <Button
+                onClick={() => handlePartnerAction('youtube_walkthrough')}
+                variant="outline"
+                className="flex-grow"
+              >
+                Create YouTube Walkthrough
+              </Button>
+              <Button
+                onClick={() => handlePartnerAction('onboarding_services')}
+                variant="outline"
+                className="flex-grow"
+              >
+                Sell Onboarding Services
+              </Button>
+              <Button
+                onClick={() => handlePartnerAction('reference_call')}
+                variant="outline"
+                className="flex-grow"
+              >
+                Customer Reference Call
+              </Button>
+              <Button
+                onClick={() => handlePartnerAction('solution_management')}
+                variant="outline"
+                className="flex-grow"
+              >
+                Solution Management Services
               </Button>
             </div>
           </div>
