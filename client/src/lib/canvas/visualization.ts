@@ -301,6 +301,16 @@ export class Visualization {
     // Draw funnel
     this.funnel.draw();
 
+    // Draw partition
+    const partitionWidth = this.canvas.width * 0.1;
+    this.ctx.fillStyle = 'rgba(20, 184, 166, 0.1)';
+    this.ctx.fillRect(this.canvas.width - partitionWidth, 0, partitionWidth, this.canvas.height);
+    this.ctx.strokeStyle = 'rgba(20, 184, 166, 0.3)';
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.canvas.width - partitionWidth, 0);
+    this.ctx.lineTo(this.canvas.width - partitionWidth, this.canvas.height);
+    this.ctx.stroke();
+
     // Update and draw particles
     this.particles = this.particles.filter(p => p.active);
     this.particles.forEach(particle => {
@@ -308,6 +318,13 @@ export class Visualization {
         const stageIndex = Math.floor((particle.x / this.canvas.width) * STAGES.length);
         if (stageIndex >= 0 && stageIndex < STAGES.length) {
           this.updateParticleStage(particle, STAGES[stageIndex].name);
+        }
+        // Store particles that reach the end in the partition
+        if (particle.x >= this.canvas.width - partitionWidth) {
+          particle.x = this.canvas.width - partitionWidth + (Math.random() * partitionWidth * 0.8);
+          particle.y = Math.random() * this.canvas.height;
+          particle.speed = 0;
+          particle.verticalSpeed = 0;
         }
       }
       particle.update(this.canvas.height, this.funnel.walls);
