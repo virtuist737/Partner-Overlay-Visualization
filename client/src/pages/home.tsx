@@ -61,6 +61,11 @@ export default function Home() {
       walls.forEach(wall => {
         visualization.funnel.openHolesInWall(wall, 1);
       });
+    } else if (action === 'reference_call') {
+      const walls = visualization.funnel.getWallsBetweenStages('Selection', 'Commit');
+      walls.forEach(wall => {
+        visualization.funnel.openHolesInWall(wall, 1);
+      });
     } else {
       visualization.executePartnerAction(action);
     }
