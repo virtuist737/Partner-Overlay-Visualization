@@ -214,12 +214,12 @@ export default function Home() {
                   <span className="text-muted-foreground">{formatCurrency(revenue.commitRevenue)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span>From Expansions</span>
-                  <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
-                </div>
-                <div className="flex justify-between items-center">
                   <span>From Adoptions</span>
                   <span className="text-muted-foreground">{formatCurrency(revenue.adoptionRevenue)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>From Expansions</span>
+                  <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
                 </div>
               </div>
             </div>
