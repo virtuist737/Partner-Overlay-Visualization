@@ -62,19 +62,26 @@ export class Visualization {
   }
 
   setupCanvas() {
-    const rect = this.canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
+    const updateDimensions = () => {
+      const rect = this.canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
 
-    // Set the canvas dimensions to match the container size
-    this.canvas.width = rect.width * dpr;
-    this.canvas.height = rect.height * dpr;
+      this.canvas.width = rect.width * dpr;
+      this.canvas.height = rect.height * dpr;
+      this.ctx.scale(dpr, dpr);
+      
+      this.canvas.style.width = `${rect.width}px`;
+      this.canvas.style.height = `${rect.height}px`;
+    };
 
-    // Scale the canvas context
-    this.ctx.scale(dpr, dpr);
+    updateDimensions();
 
-    // Set the display dimensions of the canvas via CSS
-    this.canvas.style.width = `${rect.width}px`;
-    this.canvas.style.height = `${rect.height}px`;
+    // Listen for zoom changes
+    window.visualViewport?.addEventListener('resize', updateDimensions);
+    window.visualViewport?.addEventListener('scale', updateDimensions);
+
+    // Add regular resize listener as fallback
+    window.addEventListener('resize', updateDimensions);
   }
 
   handleResize = () => {
