@@ -51,18 +51,25 @@ export default function Home() {
           <h1 className="text-2xl font-bold mb-4">Customer Journey Visualization</h1>
 
           <div className="flex gap-4 mb-4">
-            <Button 
-              onClick={handleCustomersToggle} 
-              variant={showingCustomers ? "secondary" : "default"}
-            >
-              {showingCustomers ? 'Hide Customers' : 'Show Customers'}
-            </Button>
-            <Button 
-              onClick={handlePartnersToggle} 
-              variant={showingPartners ? "secondary" : "default"}
-            >
-              {showingPartners ? 'Hide Partners' : 'Show Partners'}
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleCustomersToggle} 
+                variant={showingCustomers ? "secondary" : "default"}
+              >
+                {showingCustomers ? 'Hide Customers' : 'Show Customers'}
+              </Button>
+              <Button 
+                onClick={handlePartnersToggle} 
+                variant={showingPartners ? "secondary" : "default"}
+              >
+                {showingPartners ? 'Hide Partners' : 'Show Partners'}
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={() => visualization?.zoomOut()} variant="outline">-</Button>
+              <Button onClick={() => visualization?.resetZoom()} variant="outline">Reset</Button>
+              <Button onClick={() => visualization?.zoomIn()} variant="outline">+</Button>
+            </div>
           </div>
 
           <div className="relative w-full h-[60vh] min-h-[400px] bg-black/5 rounded-lg overflow-hidden">
