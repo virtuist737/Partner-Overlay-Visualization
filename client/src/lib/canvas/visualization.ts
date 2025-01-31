@@ -63,21 +63,14 @@ export class Visualization {
     this.handleResize = this.handleResize.bind(this);
     this.animationFrame = requestAnimationFrame(this.animate);
 
-    // Set up resize observer
-    this.resizeObserver = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        if (entry.target === this.canvas.parentElement) {
-          this.handleResize();
-        }
-      }
+    this.resizeObserver = new ResizeObserver(() => {
+      this.handleResize();
     });
 
-    // Observe the canvas parent element
     if (this.canvas.parentElement) {
       this.resizeObserver.observe(this.canvas.parentElement);
     }
 
-    // Handle visual viewport changes (zoom)
     this.visualViewportHandler = () => {
       this.handleResize();
     };
@@ -90,24 +83,19 @@ export class Visualization {
 
   setupCanvas() {
     const updateDimensions = () => {
+      this.dpr = Math.max(1, window.devicePixelRatio || 1);
       const rect = this.canvas.parentElement?.getBoundingClientRect() || { width: 800, height: 600 };
 
-      // Set the canvas size accounting for device pixel ratio
       const displayWidth = rect.width;
       const displayHeight = rect.height;
 
-      // Set CSS size
       this.canvas.style.width = `${displayWidth}px`;
       this.canvas.style.height = `${displayHeight}px`;
 
-      // Set actual size accounting for DPR
       this.canvas.width = Math.floor(displayWidth * this.dpr);
       this.canvas.height = Math.floor(displayHeight * this.dpr);
 
-      // Scale the context to ensure correct drawing operations
       this.ctx.scale(this.dpr, this.dpr);
-
-      // Clear any transforms
       this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     };
 
@@ -115,15 +103,24 @@ export class Visualization {
   }
 
   handleResize() {
+    const oldWidth = this.canvas.width / this.dpr;
+    const oldHeight = this.canvas.height / this.dpr;
+
     this.setupCanvas();
 
-    // Recreate the funnel with new dimensions
-    this.funnel = new Funnel(this.canvas);
+    const newWidth = this.canvas.width / this.dpr;
+    const newHeight = this.canvas.height / this.dpr;
 
-    // Update particle scales
+    const scaleX = newWidth / oldWidth;
+    const scaleY = newHeight / oldHeight;
+
     this.particles.forEach(particle => {
+      particle.x *= scaleX;
+      particle.y *= scaleY;
       particle.updateScale(this.canvas);
     });
+
+    this.funnel = new Funnel(this.canvas);
   }
 
   toggleCustomers() {
@@ -213,31 +210,26 @@ export class Visualization {
     const createParticle = () => {
       if (!this.showingCustomers) return;
 
-      // Update Awareness stage count when creating new particle
       const awarenessStats = this.stageStats.get('Awareness')!;
       awarenessStats.total++;
       awarenessStats.current++;
       this.stageStats.set('Awareness', awarenessStats);
 
-      // Calculate the funnel height at the start (Awareness stage)
-      const startNarrowing = Math.sin(0) * 0.15; // At x = 0, progress = 0
-      const minY = this.canvas.height * startNarrowing + 20; // Add offset to avoid top edge
-      const maxY = this.canvas.height * (1 - startNarrowing) - 20; // Subtract offset to avoid bottom edge
+      const startNarrowing = Math.sin(0) * 0.15;
+      const minY = this.canvas.height * startNarrowing + 20;
+      const maxY = this.canvas.height * (1 - startNarrowing) - 20;
 
-      // Randomize starting position within the first 10% of the canvas width
       const startX = Math.random() * (this.canvas.width * 0.1);
       const y = minY + Math.random() * (maxY - minY);
 
-      // Randomize initial speed and direction
-      // Slower base speed with more randomness in direction
-      const baseSpeed = 1.5 + Math.random() * 2; // Speed between 1.5 and 3.5
-      const verticalVariation = (Math.random() - 0.5) * 2; // More vertical variation
+      const baseSpeed = 1.5 + Math.random() * 2;
+      const verticalVariation = (Math.random() - 0.5) * 2;
       
       this.particles.push(new Particle({
         x: startX,
         y,
         radius: 3,
-        speed: Math.random() < 0.2 ? -baseSpeed : baseSpeed, // Sometimes start moving left
+        speed: Math.random() < 0.2 ? -baseSpeed : baseSpeed,
         color: 'rgba(0, 0, 0, 0.8)',
         type: 'customer',
         currentStage: 'Awareness',
@@ -256,18 +248,15 @@ export class Visualization {
   updateParticleStage(particle: Particle, newStage: string) {
     if (particle.type !== 'customer' || particle.currentStage === newStage) return;
 
-    // Decrease count in old stage
     const oldStageStats = this.stageStats.get(particle.currentStage!)!;
     oldStageStats.current--;
     this.stageStats.set(particle.currentStage!, oldStageStats);
 
-    // Increase count in new stage
     const newStageStats = this.stageStats.get(newStage)!;
     newStageStats.total++;
     newStageStats.current++;
     this.stageStats.set(newStage, newStageStats);
 
-    // Update revenue when reaching Commit, Expansion, or Adoption stages
     if (newStage === 'Commit') {
       this.revenue.commitRevenue += 1000;
       this.revenue.totalRevenue += 1000;
@@ -279,7 +268,6 @@ export class Visualization {
       this.revenue.totalRevenue += 1000;
     }
 
-    // Update net revenue after any revenue changes
     this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
 
     particle.currentStage = newStage;
@@ -321,12 +309,10 @@ export class Visualization {
     const createPartner = () => {
       if (!this.showingPartners) return;
 
-      // Create partners at random positions inside the funnel
       const stageWidth = this.canvas.width / STAGES.length;
       const randomStage = Math.floor(Math.random() * STAGES.length);
       const x = (randomStage * stageWidth) + (Math.random() * stageWidth);
 
-      // Calculate y position within the funnel's narrowing shape
       const progress = randomStage / (STAGES.length - 1);
       const narrowing = Math.sin(progress * Math.PI) * 0.15;
       const minY = this.canvas.height * narrowing;
@@ -344,10 +330,8 @@ export class Visualization {
 
       this.particles.push(particle);
 
-      // Create new holes in nearby walls when partners are added
       const wallIndex = Math.floor(x / (this.canvas.width / STAGES.length));
       if (wallIndex > 0 && wallIndex < STAGES.length) {
-        // Use particle's y position to determine hole position
         const holeY = y < this.canvas.height / 2 ?
           this.canvas.height * 0.2 + Math.random() * 0.2 :
           this.canvas.height * 0.6 + Math.random() * 0.2;
@@ -363,10 +347,8 @@ export class Visualization {
   animate() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Draw funnel
     this.funnel.draw();
 
-    // Update and draw particles
     this.particles = this.particles.filter(p => p.active);
     this.particles.forEach(particle => {
       if (particle.type === 'customer') {
@@ -404,9 +386,7 @@ export class Visualization {
       'solution_management': 500
     };
 
-    // Add cost to partner costs
     this.revenue.partnerCosts += costs[action] || 0;
-    // Update net revenue
     this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
 
     switch (action) {

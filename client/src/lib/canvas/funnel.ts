@@ -58,10 +58,12 @@ export class Funnel {
   stageWidth: number;
   walls: Wall[];
   scale: number;
+  dpr: number;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
+    this.dpr = Math.max(1, window.devicePixelRatio || 1);
 
     // Get the actual drawing dimensions (accounting for device pixel ratio)
     const rect = canvas.getBoundingClientRect();
@@ -71,7 +73,10 @@ export class Funnel {
     // Calculate stage width based on actual dimensions
     this.stageWidth = this.width / STAGES.length;
     this.walls = [];
-    this.scale = Math.min(this.width / 1000, this.height / 600); // Base scale on a reference size
+
+    // Base scale on the smaller dimension
+    this.scale = Math.min(this.width / 1000, this.height / 600);
+
     this.setupWalls();
   }
 
