@@ -7,6 +7,13 @@ export interface ParticleOptions {
   type: 'customer' | 'partner';
 }
 
+interface Wall {
+  x?: number;
+  y?: number;
+  horizontal: boolean;
+  holes: { x?: number; y?: number; width?: number; height?: number; }[];
+}
+
 export class Particle {
   x: number;
   y: number;
@@ -30,50 +37,68 @@ export class Particle {
     this.hasCreatedHole = false;
   }
 
-  update(canvasHeight: number, walls: {x: number, holes: {y: number, height: number}[]}[]) {
+  update(canvasHeight: number, walls: Wall[]) {
     if (!this.active) return;
 
     // Update position
     this.x += this.speed;
     this.y += this.verticalSpeed;
 
-    // Check vertical bounds
-    if (this.y - this.radius < 0 || this.y + this.radius > canvasHeight) {
-      if (this.type === 'customer') {
-        this.active = false; // Customer leaked
-      } else {
-        this.verticalSpeed *= -1; // Partner bounces
-      }
-    }
-
-    // Check horizontal bounds
+    // Check canvas bounds
     if (this.x < 0 || this.x > canvasHeight * 2) {
       this.active = false;
     }
 
     // Check wall collisions
-    walls.forEach((wall, index) => {
-      if (Math.abs(this.x - wall.x) < this.radius) {
-        let canPass = false;
-        wall.holes.forEach(hole => {
-          if (this.y > hole.y && this.y < hole.y + hole.height) {
-            canPass = true;
-          }
-        });
+    walls.forEach(wall => {
+      if (wall.horizontal) {
+        // Horizontal wall collision
+        if (Math.abs(this.y - wall.y!) < this.radius) {
+          let canPass = false;
+          wall.holes.forEach(hole => {
+            if (this.x > hole.x! && this.x < hole.x! + hole.width!) {
+              canPass = true;
+            }
+          });
 
-        if (!canPass) {
-          if (this.type === 'partner' && !this.hasCreatedHole) {
-            // Create a new hole when partner hits wall
-            wall.holes.push({
-              y: Math.max(0, this.y - 15),
-              height: 15
-            });
-            this.hasCreatedHole = true;
-            this.speed *= -0.5; // Bounce with reduced speed
-          } else {
-            // Regular bounce for customers or partners that already created a hole
-            this.x = wall.x - (this.speed > 0 ? this.radius + 1 : -this.radius - 1);
-            this.speed *= -0.5; // Bounce with reduced speed
+          if (!canPass) {
+            if (this.type === 'partner') {
+              // Create a new hole when partner hits wall
+              wall.holes.push({
+                x: Math.max(0, this.x - 15),
+                width: 30
+              });
+              this.verticalSpeed *= -0.5; // Bounce with reduced speed
+            } else {
+              // Regular bounce for customers
+              this.y = wall.y! - (this.verticalSpeed > 0 ? this.radius + 1 : -this.radius - 1);
+              this.verticalSpeed *= -0.5; // Bounce with reduced speed
+            }
+          }
+        }
+      } else {
+        // Vertical wall collision
+        if (Math.abs(this.x - wall.x!) < this.radius) {
+          let canPass = false;
+          wall.holes.forEach(hole => {
+            if (this.y > hole.y! && this.y < hole.y! + hole.height!) {
+              canPass = true;
+            }
+          });
+
+          if (!canPass) {
+            if (this.type === 'partner') {
+              // Create a new hole when partner hits wall
+              wall.holes.push({
+                y: Math.max(0, this.y - 15),
+                height: 30
+              });
+              this.speed *= -0.5; // Bounce with reduced speed
+            } else {
+              // Regular bounce for customers
+              this.x = wall.x! - (this.speed > 0 ? this.radius + 1 : -this.radius - 1);
+              this.speed *= -0.5; // Bounce with reduced speed
+            }
           }
         }
       }

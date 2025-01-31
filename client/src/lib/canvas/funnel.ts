@@ -38,13 +38,20 @@ export const STAGES: Stage[] = [
   }
 ];
 
+interface Wall {
+  x?: number;
+  y?: number;
+  horizontal: boolean;
+  holes: { x?: number; y?: number; width?: number; height?: number; }[];
+}
+
 export class Funnel {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   width: number;
   height: number;
   stageWidth: number;
-  walls: { x: number; holes: { y: number; height: number; }[]; }[];
+  walls: Wall[];
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -57,20 +64,50 @@ export class Funnel {
   }
 
   setupWalls() {
-    // Create walls between stages with initial holes
+    // Create vertical walls between stages
     for (let i = 1; i < STAGES.length; i++) {
       this.walls.push({
         x: i * this.stageWidth,
+        horizontal: false,
         holes: [
           { y: this.height * 0.4, height: this.height * 0.2 }
         ]
       });
     }
+
+    // Create horizontal walls for each stage
+    for (let i = 0; i < STAGES.length; i++) {
+      const x = i * this.stageWidth;
+      const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
+
+      // Top wall
+      this.walls.push({
+        y: this.height * narrowing,
+        horizontal: true,
+        holes: [
+          { x: x + this.stageWidth * 0.4, width: this.stageWidth * 0.2 }
+        ]
+      });
+
+      // Bottom wall
+      this.walls.push({
+        y: this.height * (1 - narrowing),
+        horizontal: true,
+        holes: [
+          { x: x + this.stageWidth * 0.4, width: this.stageWidth * 0.2 }
+        ]
+      });
+    }
   }
 
-  addHole(wallIndex: number, y: number, height: number) {
+  addHole(wallIndex: number, position: number, size: number) {
     if (wallIndex >= 0 && wallIndex < this.walls.length) {
-      this.walls[wallIndex].holes.push({ y, height });
+      const wall = this.walls[wallIndex];
+      if (wall.horizontal) {
+        wall.holes.push({ x: position, width: size });
+      } else {
+        wall.holes.push({ y: position, height: size });
+      }
     }
   }
 
@@ -80,7 +117,6 @@ export class Funnel {
     // Draw funnel segments
     STAGES.forEach((stage, i) => {
       const x = i * this.stageWidth;
-      // Adjust the hourglass shape to be more subtle
       const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
 
       const gradient = this.ctx.createLinearGradient(x, 0, x, this.height);
@@ -97,26 +133,49 @@ export class Funnel {
       this.ctx.fill();
     });
 
-    // Draw partition walls and holes
+    // Draw walls and holes
     this.walls.forEach(wall => {
-      this.ctx.beginPath();
-      this.ctx.moveTo(wall.x, 0);
-      this.ctx.lineTo(wall.x, this.height);
-      this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-      this.ctx.lineWidth = 2;
-      this.ctx.stroke();
-
-      // Draw holes as lighter sections
-      wall.holes.forEach(hole => {
+      if (wall.horizontal) {
+        // Draw horizontal wall
         this.ctx.beginPath();
-        this.ctx.moveTo(wall.x - 2, hole.y);
-        this.ctx.lineTo(wall.x + 2, hole.y);
-        this.ctx.lineTo(wall.x + 2, hole.y + hole.height);
-        this.ctx.lineTo(wall.x - 2, hole.y + hole.height);
-        this.ctx.closePath();
-        this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
-        this.ctx.fill();
-      });
+        this.ctx.moveTo(0, wall.y!);
+        this.ctx.lineTo(this.width, wall.y!);
+        this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
+
+        // Draw holes
+        wall.holes.forEach(hole => {
+          this.ctx.beginPath();
+          this.ctx.moveTo(hole.x!, wall.y! - 2);
+          this.ctx.lineTo(hole.x! + hole.width!, wall.y! - 2);
+          this.ctx.lineTo(hole.x! + hole.width!, wall.y! + 2);
+          this.ctx.lineTo(hole.x!, wall.y! + 2);
+          this.ctx.closePath();
+          this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
+          this.ctx.fill();
+        });
+      } else {
+        // Draw vertical wall
+        this.ctx.beginPath();
+        this.ctx.moveTo(wall.x!, 0);
+        this.ctx.lineTo(wall.x!, this.height);
+        this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
+
+        // Draw holes
+        wall.holes.forEach(hole => {
+          this.ctx.beginPath();
+          this.ctx.moveTo(wall.x! - 2, hole.y!);
+          this.ctx.lineTo(wall.x! + 2, hole.y!);
+          this.ctx.lineTo(wall.x! + 2, hole.y! + hole.height!);
+          this.ctx.lineTo(wall.x! - 2, hole.y! + hole.height!);
+          this.ctx.closePath();
+          this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
+          this.ctx.fill();
+        });
+      }
     });
   }
 }
