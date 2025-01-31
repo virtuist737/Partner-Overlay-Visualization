@@ -160,69 +160,79 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative w-full h-[60vh] bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
-            <canvas 
-              ref={canvasRef}
-              className="w-full h-full"
-            />
-          </div>
+          <div className="flex gap-4">
+            <Card className="flex-grow">
+              <CardContent className="p-6">
+                <div className="relative w-full h-[60vh] bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
+                  <canvas 
+                    ref={canvasRef}
+                    className="w-full h-full"
+                  />
+                </div>
 
-          <div className="mt-4 grid grid-cols-7 gap-4">
-            {STAGES.map((stage) => (
-              <div key={stage.name} className="text-center">
-                <h3 className="text-lg font-semibold">{stage.name}</h3>
-              </div>
-            ))}
-          </div>
+                <div className="mt-4 grid grid-cols-7 gap-4">
+                  {STAGES.map((stage) => (
+                    <div key={stage.name} className="text-center">
+                      <h3 className="text-lg font-semibold">{stage.name}</h3>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Stage Statistics</h2>
-              <div className="space-y-2">
-                {stats.map((stat: any) => (
-                  <div key={stat.name} className="flex justify-between items-center">
-                    <span>{stat.name}</span>
-                    <span className="text-muted-foreground">
-                      Current: {stat.current} | Total: {stat.total}
-                    </span>
+            <Card className="w-80">
+              <CardContent className="p-6">
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-xl font-semibold mb-2">Stage Statistics</h2>
+                    <div className="space-y-2">
+                      {stats.map((stat: any) => (
+                        <div key={stat.name} className="flex justify-between items-center">
+                          <span>{stat.name}</span>
+                          <span className="text-muted-foreground">
+                            Current: {stat.current} | Total: {stat.total}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
 
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Conversion Rates</h2>
-              <div className="space-y-2">
-                {conversionRates.map((rate: any) => (
-                  <div key={`${rate.from}-${rate.to}`} className="flex justify-between items-center">
-                    <span>{rate.from} → {rate.to}</span>
-                    <span className="text-muted-foreground">{rate.rate}%</span>
+                  <div>
+                    <h2 className="text-xl font-semibold mb-2">Conversion Rates</h2>
+                    <div className="space-y-2">
+                      {conversionRates.map((rate: any) => (
+                        <div key={`${rate.from}-${rate.to}`} className="flex justify-between items-center">
+                          <span>{rate.from} → {rate.to}</span>
+                          <span className="text-muted-foreground">{rate.rate}%</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
 
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Revenue Statistics</h2>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span>Total Revenue</span>
-                  <span className="text-muted-foreground">{formatCurrency(revenue.totalRevenue)}</span>
+                  <div>
+                    <h2 className="text-xl font-semibold mb-2">Revenue Statistics</h2>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span>Total Revenue</span>
+                        <span className="text-muted-foreground">{formatCurrency(revenue.totalRevenue)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>From Commits</span>
+                        <span className="text-muted-foreground">{formatCurrency(revenue.commitRevenue)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>From Adoptions</span>
+                        <span className="text-muted-foreground">{formatCurrency(revenue.adoptionRevenue)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>From Expansions</span>
+                        <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span>From Commits</span>
-                  <span className="text-muted-foreground">{formatCurrency(revenue.commitRevenue)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>From Adoptions</span>
-                  <span className="text-muted-foreground">{formatCurrency(revenue.adoptionRevenue)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>From Expansions</span>
-                  <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </CardContent>
       </Card>
