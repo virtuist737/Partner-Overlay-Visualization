@@ -150,6 +150,18 @@ export class Funnel {
         holes: [],
         holeCount: 0
       });
+
+      // Add bottom blocking wall for the Awareness stage (first stage)
+      if (i === 0) {
+        this.walls.push({
+          x: x,
+          startY: bottomY,
+          endY: this.height, // Extend to full canvas height
+          horizontal: false,
+          holes: [],
+          holeCount: 0
+        });
+      }
     }
   }
 
