@@ -85,7 +85,7 @@ export default function Home() {
   }, [stats, visualization, showingCustomers]);
 
   return (
-    <div className="flex-1 flex p-4 h-full">
+    <div className="flex-1 flex p-4 h-full overflow-hidden">
       <Card className="w-full flex flex-col p-4 bg-card/50 backdrop-blur-sm border-none shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-lg font-bold text-primary">Partner Overlay Visualization</h1>
@@ -132,12 +132,12 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex gap-4 flex-1 min-h-0">
-          <div className="flex-1 flex flex-col gap-3">
+        <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
+          <div className="flex-1 flex flex-col gap-3 min-w-0">
             <Card className="border-none shadow-lg bg-card/80">
               <CardContent className="p-3">
                 <h2 className="text-sm font-semibold mb-2 text-primary">Partner Actions</h2>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                   {PARTNER_ACTIONS.map((action) => (
                     <Button
                       key={action.action}
@@ -159,18 +159,19 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="border-none shadow-lg bg-card/80 flex-1">
+            <Card className="border-none shadow-lg bg-card/80 flex-1 min-h-0">
               <CardContent className="p-3 h-full flex flex-col">
                 <div className="relative flex-1 bg-black/10 rounded-lg overflow-hidden">
                   <canvas
                     ref={canvasRef}
                     className="w-full h-full"
+                    style={{ touchAction: 'none' }}
                   />
                 </div>
-                <div className="mt-2 grid grid-cols-7 gap-2">
+                <div className="mt-2 grid grid-cols-7 gap-2 text-center">
                   {STAGES.map((stage) => (
                     <div key={stage.name} className="text-center">
-                      <h3 className="text-sm font-medium text-primary/80">
+                      <h3 className="text-sm font-medium text-primary/80 truncate">
                         {stage.name}
                       </h3>
                     </div>
@@ -180,7 +181,7 @@ export default function Home() {
             </Card>
           </div>
 
-          <Card className="w-72 border-none shadow-lg bg-card/80">
+          <Card className="lg:w-72 border-none shadow-lg bg-card/80 flex-shrink-0">
             <CardContent className="p-3 space-y-4">
               <div>
                 <h2 className="text-sm font-semibold mb-2 text-primary">Statistics</h2>

@@ -38,26 +38,20 @@ export class Particle {
     this.currentStage = options.currentStage;
     this.canvas = options.canvas!;
 
-    // Calculate initial scale
-    const canvasWidth = options.canvasWidth || 1000;
-    const canvasHeight = options.canvasHeight || 600;
-    this.scale = Math.min(canvasWidth / 1000, canvasHeight / 600);
+    // Calculate initial scale based on canvas size relative to base dimensions
+    const rect = this.canvas.getBoundingClientRect();
+    const baseWidth = 1000;
+    const baseHeight = 600;
+    this.scale = Math.min(rect.width / baseWidth, rect.height / baseHeight);
     this.radius = this.baseRadius * this.scale;
   }
 
   updateScale(canvas: HTMLCanvasElement) {
     const rect = canvas.getBoundingClientRect();
-    const baseWidth = 1000; // Reference width
-    const baseHeight = 600; // Reference height
+    const baseWidth = 1000;
+    const baseHeight = 600;
 
-    // Calculate scale based on both dimensions
-    const widthScale = rect.width / baseWidth;
-    const heightScale = rect.height / baseHeight;
-
-    // Use the smaller scale to maintain proportions
-    this.scale = Math.min(widthScale, heightScale);
-
-    // Update radius with new scale
+    this.scale = Math.min(rect.width / baseWidth, rect.height / baseHeight);
     this.radius = this.baseRadius * this.scale;
   }
 
@@ -69,7 +63,8 @@ export class Particle {
     const scaledRadius = this.radius;
 
     // Calculate funnel boundaries based on x position with tighter constraints
-    const progress = this.x / this.canvas.width;
+    const rect = this.canvas.getBoundingClientRect();
+    const progress = this.x / rect.width;
     const narrowing = Math.sin(progress * Math.PI) * 0.15;
     const minY = canvasHeight * narrowing + (scaledRadius * 2);
     const maxY = canvasHeight * (1 - narrowing) - (scaledRadius * 2);
@@ -80,19 +75,19 @@ export class Particle {
 
     // Enforce funnel boundaries with elastic collisions
     if (newY > maxY - scaledRadius || newY < minY + scaledRadius) {
-      this.verticalSpeed *= -0.8; // Elastic collision with slight energy loss
+      this.verticalSpeed *= -0.8;
       this.y = newY > maxY - scaledRadius ? maxY - scaledRadius : minY + scaledRadius;
     } else {
       this.y = newY;
     }
 
     // Check canvas bounds
-    if (this.x < 0 || this.x > this.canvas.width) {
+    if (this.x < 0 || this.x > rect.width) {
       this.active = false;
       return;
     }
 
-    // Handle wall collisions
+    // Handle wall collisions with proper scaling
     walls.forEach(wall => {
       if (wall.horizontal) {
         if (this.x >= wall.startX! && this.x <= wall.endX! && Math.abs(this.y - wall.y!) < scaledRadius) {
@@ -111,7 +106,6 @@ export class Particle {
               });
               this.verticalSpeed *= -0.8;
             } else {
-              // Elastic collision for customers
               this.verticalSpeed *= -0.8;
               this.y = wall.y! + (this.verticalSpeed > 0 ? scaledRadius : -scaledRadius);
             }
