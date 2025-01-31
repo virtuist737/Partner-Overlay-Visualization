@@ -238,15 +238,13 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="mt-4 bg-primary/5 p-3 rounded-lg">
-                      <h2 className="text-sm font-semibold text-center mb-1 text-primary">Average Revenue per Customer</h2>
+                      <h2 className="text-sm font-semibold text-center mb-1 text-primary">Net Revenue</h2>
                       <p className="text-xl text-center font-bold"
                          style={{ color: revenue.netRevenue >= 0 ? 'hsl(var(--primary))' : 'hsl(var(--destructive))' }}>
-                        {stats.length > 0 && stats[0].total > 0
-                          ? formatCurrency(revenue.netRevenue / stats[0].total)
-                          : '$0.00'}
+                        {formatCurrency(revenue.netRevenue)}
                       </p>
                       <p className="text-xs text-center text-muted-foreground mt-1">
-                        Based on {stats.length > 0 ? stats[0].total : 0}/100 total potential customers
+                        From {stats.length > 0 ? stats[0].total : 0}/100 total potential customers
                       </p>
                     </div>
                   </div>
