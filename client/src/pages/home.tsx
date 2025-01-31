@@ -138,6 +138,14 @@ export default function Home() {
             onClick={() => {
               visualization?.reset();
               setShowingCustomers(false);
+              setStats([]);
+              setConversionRates([]);
+              setRevenue({
+                totalRevenue: 0,
+                commitRevenue: 0,
+                expansionRevenue: 0,
+                adoptionRevenue: 0
+              });
             }}
             variant="destructive"
           >
