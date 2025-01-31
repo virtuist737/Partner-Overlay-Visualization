@@ -97,29 +97,7 @@ export class Funnel {
       this.ctx.fill();
     });
 
-    // Draw horizontal partition walls at the narrowing points
-    STAGES.forEach((stage, i) => {
-      const x = i * this.stageWidth;
-      const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
-      
-      // Draw top wall
-      this.ctx.beginPath();
-      this.ctx.moveTo(x, this.height * narrowing);
-      this.ctx.lineTo(x + this.stageWidth, this.height * narrowing);
-      this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-      this.ctx.lineWidth = 2;
-      this.ctx.stroke();
-
-      // Draw bottom wall
-      this.ctx.beginPath();
-      this.ctx.moveTo(x, this.height * (1 - narrowing));
-      this.ctx.lineTo(x + this.stageWidth, this.height * (1 - narrowing));
-      this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-      this.ctx.lineWidth = 2;
-      this.ctx.stroke();
-    });
-
-    // Draw vertical partition walls and holes
+    // Draw partition walls and holes
     this.walls.forEach(wall => {
       this.ctx.beginPath();
       this.ctx.moveTo(wall.x, 0);
