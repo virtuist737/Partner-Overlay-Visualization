@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Visualization } from '@/lib/canvas/visualization';
+import { ZoomIn, ZoomOut } from 'lucide-react';
 
 const STAGES = [
   { name: 'Awareness' },
@@ -24,10 +25,11 @@ export default function Home() {
     commitRevenue: 0,
     expansionRevenue: 0
   });
+  const [zoom, setZoom] = useState(2); // Start with 2x zoom
 
   useEffect(() => {
     if (canvasRef.current) {
-      const viz = new Visualization(canvasRef.current);
+      const viz = new Visualization(canvasRef.current, zoom);
       setVisualization(viz);
 
       const updateStats = () => {
@@ -46,6 +48,14 @@ export default function Home() {
     }
   }, []);
 
+  const handleZoom = (delta: number) => {
+    const newZoom = Math.max(0.5, Math.min(4, zoom + delta));
+    setZoom(newZoom);
+    if (visualization) {
+      visualization.setZoom(newZoom);
+    }
+  };
+
   const handleCustomersToggle = () => {
     if (visualization) {
       visualization.toggleCustomers();
@@ -55,15 +65,7 @@ export default function Home() {
 
   const handlePartnerAction = (action: string) => {
     if (!visualization) return;
-
-    if (action === 'seo_listicle') {
-      const walls = visualization.funnel.getWallsBetweenStages('Education', 'Selection');
-      walls.forEach(wall => {
-        visualization.funnel.openHolesInWall(wall, 1);
-      });
-    } else {
-      visualization.executePartnerAction(action);
-    }
+    visualization.executePartnerAction(action);
   };
 
   const formatCurrency = (amount: number) => {
@@ -96,6 +98,22 @@ export default function Home() {
               >
                 Reset
               </Button>
+              <div className="flex gap-2 ml-auto">
+                <Button
+                  onClick={() => handleZoom(-0.25)}
+                  variant="outline"
+                  size="icon"
+                >
+                  <ZoomOut className="h-4 w-4" />
+                </Button>
+                <Button
+                  onClick={() => handleZoom(0.25)}
+                  variant="outline"
+                  size="icon"
+                >
+                  <ZoomIn className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             <div>

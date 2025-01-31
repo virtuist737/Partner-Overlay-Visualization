@@ -29,10 +29,12 @@ export class Visualization {
   particleGenerators: { customer?: NodeJS.Timeout; partner?: NodeJS.Timeout };
   stageStats: Map<string, StageStats>;
   revenue: RevenueStats;
+  zoom: number;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, initialZoom: number = 2) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
+    this.zoom = initialZoom;
     this.setupCanvas();
 
     this.funnel = new Funnel(canvas);
@@ -64,11 +66,17 @@ export class Visualization {
     this.canvas.height = rect.height * dpr;
 
     // Scale the canvas context
-    this.ctx.scale(dpr, dpr);
+    this.ctx.scale(dpr * this.zoom, dpr * this.zoom);
 
     // Set the display dimensions of the canvas via CSS
     this.canvas.style.width = `${rect.width}px`;
     this.canvas.style.height = `${rect.height}px`;
+  }
+
+  setZoom(zoom: number) {
+    this.zoom = zoom;
+    this.setupCanvas();
+    this.funnel = new Funnel(this.canvas);
   }
 
   handleResize = () => {
@@ -101,7 +109,7 @@ export class Visualization {
     this.canvas.height = height * dpr;
 
     // Reset scale and update funnel
-    this.ctx.scale(dpr, dpr);
+    this.ctx.scale(dpr * this.zoom, dpr * this.zoom);
     this.funnel = new Funnel(this.canvas);
   };
 
