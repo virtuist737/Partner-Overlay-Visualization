@@ -97,9 +97,6 @@ export class Visualization {
 
   toggleCustomers() {
     this.showingCustomers = !this.showingCustomers;
-    // Clear existing customer particles
-    this.particles = this.particles.filter(p => p.type !== 'customer');
-
     if (this.showingCustomers) {
       this.startCustomerParticles();
     } else {
@@ -107,6 +104,20 @@ export class Visualization {
         clearTimeout(this.particleGenerators.customer);
       }
     }
+  }
+
+  pause() {
+    if (this.particleGenerators.customer) {
+      clearTimeout(this.particleGenerators.customer);
+    }
+    cancelAnimationFrame(this.animationFrame);
+  }
+
+  resume() {
+    if (this.showingCustomers) {
+      this.startCustomerParticles();
+    }
+    this.animate();
   }
 
   addPartner() {

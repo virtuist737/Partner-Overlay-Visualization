@@ -113,15 +113,18 @@ export default function Home() {
             </Button>
             <Button 
               onClick={() => {
-                if (visualization && showingCustomers) {
-                  visualization.toggleCustomers();
-                  setShowingCustomers(false);
+                if (visualization) {
+                  if (showingCustomers) {
+                    visualization.pause();
+                  } else {
+                    visualization.resume();
+                  }
+                  setShowingCustomers(!showingCustomers);
                 }
               }}
               variant="outline"
-              disabled={!showingCustomers}
             >
-              Pause
+              {showingCustomers ? 'Pause' : 'Resume'}
             </Button>
             <Button 
               onClick={() => {
