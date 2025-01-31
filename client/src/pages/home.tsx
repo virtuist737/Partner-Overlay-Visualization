@@ -94,56 +94,52 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen w-full p-4 bg-background">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-4">Customer Journey Visualization</h1>
-          <div className="flex gap-2">
-            <Button 
-              onClick={() => {
-                if (!showingCustomers) {
-                  visualization?.toggleCustomers();
-                  setShowingCustomers(true);
+    <div className="flex-1 flex items-center justify-center p-4 max-h-[100vh]">
+      <Card className="w-full h-full max-w-4xl flex flex-col p-6 overflow-hidden">
+        <h1 className="text-2xl font-bold mb-4">Customer Journey Visualization</h1>
+        <div className="flex gap-2 mb-4">
+          <Button
+            onClick={() => {
+              if (!showingCustomers) {
+                visualization?.toggleCustomers();
+                setShowingCustomers(true);
+              }
+            }}
+            variant={showingCustomers ? "secondary" : "default"}
+            disabled={showingCustomers}
+          >
+            Start
+          </Button>
+          <Button
+            onClick={() => {
+              if (visualization) {
+                if (showingCustomers) {
+                  visualization.pause();
+                } else {
+                  visualization.resume();
                 }
-              }} 
-              variant={showingCustomers ? "secondary" : "default"}
-              disabled={showingCustomers}
-            >
-              Start
-            </Button>
-            <Button 
-              onClick={() => {
-                if (visualization) {
-                  if (showingCustomers) {
-                    visualization.pause();
-                  } else {
-                    visualization.resume();
-                  }
-                  setShowingCustomers(!showingCustomers);
-                }
-              }}
-              variant="outline"
-            >
-              {showingCustomers ? 'Pause' : 'Resume'}
-            </Button>
-            <Button 
-              onClick={() => {
-                visualization?.reset();
-                setShowingCustomers(false);
-              }}
-              variant="destructive"
-            >
-              Stop
-            </Button>
-          </div>
+                setShowingCustomers(!showingCustomers);
+              }
+            }}
+            variant="outline"
+          >
+            {showingCustomers ? 'Pause' : 'Resume'}
+          </Button>
+          <Button
+            onClick={() => {
+              visualization?.reset();
+              setShowingCustomers(false);
+            }}
+            variant="destructive"
+          >
+            Stop
+          </Button>
         </div>
-
-        <div className="flex gap-4">
+        <div className="flex gap-4 mb-4">
           <div className="flex-1 space-y-4">
             <Card>
               <CardContent className="p-6">
-
-            <h2 className="text-lg font-semibold mb-2">Partner Actions</h2>
+                <h2 className="text-lg font-semibold mb-2">Partner Actions</h2>
                 <div className="flex flex-wrap gap-2">
                   <Button
                     onClick={() => handlePartnerAction('seo_listicle')}
@@ -187,7 +183,7 @@ export default function Home() {
             <Card>
               <CardContent className="p-6">
                 <div className="relative w-full h-[60vh] bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
-                  <canvas 
+                  <canvas
                     ref={canvasRef}
                     className="w-full h-full"
                   />
@@ -256,7 +252,7 @@ export default function Home() {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
