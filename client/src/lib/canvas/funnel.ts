@@ -90,7 +90,20 @@ export class Funnel {
 
       // Add vertical wall at the end of each segment (except last)
       if (i < STAGES.length - 1) {
-        const verticalWall: Wall = {
+        // Add two vertical walls to ensure no gaps
+        // First wall: from current top to next top
+        const topVerticalWall: Wall = {
+          x: nextX,
+          startY: topY,
+          endY: nextTopY,
+          horizontal: false,
+          holes: [],
+          holeCount: 0
+        };
+        this.walls.push(topVerticalWall);
+
+        // Second wall: from next top to next bottom
+        const middleVerticalWall: Wall = {
           x: nextX,
           startY: nextTopY,
           endY: nextBottomY,
@@ -98,11 +111,23 @@ export class Funnel {
           holes: [],
           holeCount: 0
         };
-        this.walls.push(verticalWall);
-        this.openHolesInWall(verticalWall, 1);
+        this.walls.push(middleVerticalWall);
+        this.openHolesInWall(middleVerticalWall, 1);
+
+        // Third wall: from next bottom to current bottom
+        const bottomVerticalWall: Wall = {
+          x: nextX,
+          startY: nextBottomY,
+          endY: bottomY,
+          horizontal: false,
+          holes: [],
+          holeCount: 0
+        };
+        this.walls.push(bottomVerticalWall);
       }
 
       // Add horizontal walls for each segment
+      // Top wall
       this.walls.push({
         y: topY,
         startX: x,
@@ -112,6 +137,7 @@ export class Funnel {
         holeCount: 0
       });
 
+      // Bottom wall
       this.walls.push({
         y: bottomY,
         startX: x,
@@ -230,19 +256,23 @@ export class Funnel {
     if (fromIndex === -1 || toIndex === -1) return [];
 
     const wallIndex = Math.min(fromIndex, toIndex);
-    return this.walls.filter((_, index) => 
-      index === wallIndex * 3 // Vertical wall only
-    );
+    // Return middle vertical wall only (every third wall after horizontal walls)
+    return this.walls.filter((wall, index) => {
+      const stageWallGroup = Math.floor(index / 5); // 5 walls per stage (3 vertical + 2 horizontal)
+      const wallTypeInGroup = index % 5;
+      return stageWallGroup === wallIndex && wallTypeInGroup === 1; // middle vertical wall
+    });
   }
 
   getStageHorizontalWalls(stageName: string): Wall[] {
     const stageIndex = STAGES.findIndex(s => s.name === stageName);
     if (stageIndex === -1) return [];
 
-    return this.walls.filter((_, index) => 
-      Math.floor(index / 3) === stageIndex && 
-      (index % 3 === 1 || index % 3 === 2) // Only horizontal walls (top and bottom)
-    );
+    return this.walls.filter((_, index) => {
+      const stageWallGroup = Math.floor(index / 5);
+      const wallTypeInGroup = index % 5;
+      return stageWallGroup === stageIndex && (wallTypeInGroup === 3 || wallTypeInGroup === 4);
+    });
   }
 
   closeHoles(walls: Wall[]) {
