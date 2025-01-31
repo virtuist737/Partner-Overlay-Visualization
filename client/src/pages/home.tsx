@@ -100,10 +100,28 @@ export default function Home() {
           <h1 className="text-2xl font-bold mb-4">Customer Journey Visualization</h1>
           <div className="flex gap-2">
             <Button 
-              onClick={handleCustomersToggle} 
+              onClick={() => {
+                if (!showingCustomers) {
+                  visualization?.toggleCustomers();
+                  setShowingCustomers(true);
+                }
+              }} 
               variant={showingCustomers ? "secondary" : "default"}
+              disabled={showingCustomers}
             >
-              {showingCustomers ? 'Stop Journey' : 'Start Customer Journey'}
+              Start
+            </Button>
+            <Button 
+              onClick={() => {
+                if (visualization && showingCustomers) {
+                  visualization.toggleCustomers();
+                  setShowingCustomers(false);
+                }
+              }}
+              variant="outline"
+              disabled={!showingCustomers}
+            >
+              Pause
             </Button>
             <Button 
               onClick={() => {
@@ -112,7 +130,7 @@ export default function Home() {
               }}
               variant="destructive"
             >
-              Reset
+              Stop
             </Button>
           </div>
         </div>
