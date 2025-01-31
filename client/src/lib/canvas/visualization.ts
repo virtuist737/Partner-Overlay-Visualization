@@ -359,10 +359,10 @@ export class Visualization {
       'solution_management': 300
     };
 
-    // Add cost to partner costs
-    this.revenue.partnerCosts += costs[action] || 0;
+    // Add cost to partner costs (as a negative number)
+    this.revenue.partnerCosts -= costs[action] || 0;
     // Update net revenue
-    this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
+    this.revenue.netRevenue = this.revenue.totalRevenue + this.revenue.partnerCosts;
 
     switch (action) {
       case 'seo_listicle': {
