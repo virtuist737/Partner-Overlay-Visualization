@@ -30,10 +30,9 @@ export class Particle {
     this.speed = options.speed;
     this.color = options.color;
     this.type = options.type;
-    this.verticalSpeed = this.type === 'partner' ? options.speed : (Math.random() - 0.5) * 2;
+    this.verticalSpeed = this.type === 'partner' ? options.speed : (Math.random() - 0.5);
     this.active = true;
     this.currentStage = options.currentStage;
-    // Calculate scale based on canvas size
     const canvasWidth = options.canvasWidth || 1000;
     const canvasHeight = options.canvasHeight || 600;
     this.scale = Math.min(canvasWidth / 1000, canvasHeight / 600);
@@ -42,17 +41,31 @@ export class Particle {
   update(canvasHeight: number, walls: Wall[]) {
     if (!this.active) return;
 
-    // Scale movement based on canvas size
     const scaledSpeed = this.speed * this.scale;
     const scaledVerticalSpeed = this.verticalSpeed * this.scale;
 
+    // Calculate funnel boundaries based on x position
+    const progress = this.x / (canvasHeight * 2); // Using canvas height * 2 as width approximation
+    const narrowing = Math.sin(progress * Math.PI) * 0.15;
+    const minY = canvasHeight * narrowing;
+    const maxY = canvasHeight * (1 - narrowing);
+
     // Update position
     this.x += scaledSpeed;
-    this.y += scaledVerticalSpeed;
+
+    // Update vertical position with boundary checking
+    const newY = this.y + scaledVerticalSpeed;
+    if (newY < minY || newY > maxY) {
+      this.verticalSpeed *= -0.5; // Bounce with reduced speed
+      this.y = newY < minY ? minY : maxY;
+    } else {
+      this.y = newY;
+    }
 
     // Check canvas bounds
     if (this.x < 0 || this.x > canvasHeight * 2) {
       this.active = false;
+      return;
     }
 
     // Check wall collisions with scaled values
