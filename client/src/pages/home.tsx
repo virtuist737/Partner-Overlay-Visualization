@@ -59,7 +59,7 @@ export default function Home() {
     if (action === 'seo_listicle') {
       const walls = visualization.funnel.getWallsBetweenStages('Education', 'Selection');
       walls.forEach(wall => {
-        visualization.funnel.openHolesInWall(wall, 2);
+        visualization.funnel.openHolesInWall(wall, 1);
       });
     } else {
       visualization.executePartnerAction(action);

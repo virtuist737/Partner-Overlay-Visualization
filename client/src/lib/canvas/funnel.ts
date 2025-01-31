@@ -47,6 +47,7 @@ interface Wall {
   endY?: number;
   horizontal: boolean;
   holes: { x?: number; y?: number; width?: number; height?: number; }[];
+  holeCount?: number;
 }
 
 export class Funnel {
@@ -82,13 +83,17 @@ export class Funnel {
 
       // Add vertical wall at the end of each segment (except last)
       if (i < STAGES.length - 1) {
-        this.walls.push({
+        const verticalWall: Wall = {
           x: nextX,
           startY: nextTopY,
           endY: nextBottomY,
           horizontal: false,
-          holes: []
-        });
+          holes: [],
+          holeCount: 0
+        };
+        this.walls.push(verticalWall);
+        // Add initial hole
+        this.openHolesInWall(verticalWall, 1);
       }
 
       // Add horizontal walls for each segment
@@ -97,7 +102,8 @@ export class Funnel {
         startX: x,
         endX: nextX,
         horizontal: true,
-        holes: []
+        holes: [],
+        holeCount: 0
       });
 
       this.walls.push({
@@ -105,33 +111,35 @@ export class Funnel {
         startX: x,
         endX: nextX,
         horizontal: true,
-        holes: []
+        holes: [],
+        holeCount: 0
       });
     }
   }
 
   getHoleSize(count: number): number {
-    // Calculate hole size based on count
     switch (count) {
       case 1: return 50;
       case 2: return 30;
       case 3: return 25;
-      default: return Math.max(20, 50 / count); // Minimum size of 20px
+      default: return Math.max(20, 50 / count);
     }
   }
 
   openHolesInWall(wall: Wall, count: number) {
-    const holeSize = this.getHoleSize(count);
+    if (!wall.holeCount) wall.holeCount = 0;
+    wall.holeCount += count;
+    const holeSize = this.getHoleSize(wall.holeCount);
 
     if (wall.horizontal) {
-      const segmentWidth = (wall.endX! - wall.startX!) / (count + 1);
-      wall.holes = Array.from({ length: count }, (_, i) => ({
+      const segmentWidth = (wall.endX! - wall.startX!) / (wall.holeCount + 1);
+      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
         x: wall.startX! + segmentWidth * (i + 1) - (holeSize / 2),
         width: holeSize
       }));
     } else {
-      const segmentHeight = (wall.endY! - wall.startY!) / (count + 1);
-      wall.holes = Array.from({ length: count }, (_, i) => ({
+      const segmentHeight = (wall.endY! - wall.startY!) / (wall.holeCount + 1);
+      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
         y: wall.startY! + segmentHeight * (i + 1) - (holeSize / 2),
         height: holeSize
       }));
@@ -145,7 +153,6 @@ export class Funnel {
     if (fromIndex === -1 || toIndex === -1) return [];
 
     const wallIndex = Math.min(fromIndex, toIndex);
-    // Only return the vertical wall between stages
     return this.walls.filter((_, index) => 
       index === wallIndex * 3 // Vertical wall only
     );
@@ -164,17 +171,18 @@ export class Funnel {
   closeHoles(walls: Wall[]) {
     walls.forEach(wall => {
       wall.holes = [];
+      wall.holeCount = 0;
     });
   }
 
   createEducationSelectionHoles() {
     const verticalWalls = this.getWallsBetweenStages('Education', 'Selection');
-    verticalWalls.forEach(wall => this.openHolesInWall(wall, 2));
+    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1)); // Add one more hole each time
   }
 
   createCommitOnboardingHoles() {
     const verticalWalls = this.getWallsBetweenStages('Commit', 'Onboarding');
-    verticalWalls.forEach(wall => this.openHolesInWall(wall, 3));
+    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
   }
 
   patchSelectionStageHoles() {
@@ -183,11 +191,6 @@ export class Funnel {
   }
 
   manageAdoptionExpansionHoles() {
-    // Close Adoption stage horizontal walls
-    const adoptionHorizontalWalls = this.getStageHorizontalWalls('Adoption');
-    this.closeHoles(adoptionHorizontalWalls);
-
-    // Open Adoption-Expansion vertical partition wall
     const verticalWalls = this.getWallsBetweenStages('Adoption', 'Expansion');
     verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
   }
