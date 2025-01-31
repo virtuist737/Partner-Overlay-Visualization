@@ -199,7 +199,7 @@ export default function Home() {
 
                 <div className="mt-4 grid grid-cols-7 gap-4">
                   {STAGES.map((stage) => (
-                    <div key={stage.name} className="text-center">
+                    <div key={stage.name} className="text-center cursor-pointer">
                       <h3 className="text-lg font-semibold">{stage.name}</h3>
                     </div>
                   ))}
