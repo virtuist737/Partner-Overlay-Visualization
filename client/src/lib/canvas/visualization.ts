@@ -87,7 +87,7 @@ export class Visualization {
       const holeY = y < this.canvas.height / 2 ? 
         this.canvas.height * 0.2 + Math.random() * 0.2 : 
         this.canvas.height * 0.6 + Math.random() * 0.2;
-      this.funnel.addHole(wallIndex - 1, holeY, this.canvas.height * 0.1);
+      this.funnel.addHole(wallIndex - 1, holeY, this.canvas.height * 0.05);
     }
   }
 

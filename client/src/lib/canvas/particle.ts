@@ -65,8 +65,8 @@ export class Particle {
           if (this.type === 'partner' && !this.hasCreatedHole) {
             // Create a new hole when partner hits wall
             wall.holes.push({
-              y: Math.max(0, this.y - 30),
-              height: 60
+              y: Math.max(0, this.y - 15),
+              height: 30
             });
             this.hasCreatedHole = true;
             this.speed *= -0.5; // Bounce with reduced speed
