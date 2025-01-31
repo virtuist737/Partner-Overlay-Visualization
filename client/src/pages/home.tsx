@@ -248,9 +248,21 @@ export default function Home() {
                     <span className="text-muted-foreground">{formatCurrency(revenue.expansionRevenue)}</span>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+
+                <div className="mt-8 bg-blue-50 p-6 rounded-lg">
+                  <h2 className="text-2xl font-bold text-center mb-2">Average Revenue per Potential Customer</h2>
+                  <p className="text-3xl text-center text-blue-600 font-bold">
+                    {stats.length > 0 && stats[0].total > 0
+                      ? formatCurrency(revenue.totalRevenue / stats[0].total)
+                      : '$0.00'}
+                  </p>
+                  <p className="text-sm text-center text-gray-600 mt-1">
+                    Based on {stats.length > 0 ? stats[0].total : 0} total potential customers
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </Card>
     </div>
