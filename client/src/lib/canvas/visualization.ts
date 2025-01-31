@@ -410,11 +410,12 @@ export class Visualization {
         const walls = this.funnel.getWallsBetweenStages('Awareness', 'Education');
         walls.forEach(wall => {
           const newHoleCount = wall.holes.length + 1;
-          const effectiveHeight = wall.endY - wall.startY - holeSize;
+          const effectiveHeight = wall.endY - wall.startY;
           const spacing = effectiveHeight / (newHoleCount);
+          const currentHoleSize = holeSize * Math.pow(0.5, newHoleCount - 1);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + (holeSize/2) + spacing * i,
-            height: holeSize
+            y: wall.startY + (currentHoleSize/2) + spacing * i,
+            height: currentHoleSize
           }));
         });
         break;
@@ -423,11 +424,12 @@ export class Visualization {
         const walls = this.funnel.getWallsBetweenStages('Education', 'Selection');
         walls.forEach(wall => {
           const newHoleCount = wall.holes.length + 1;
-          const effectiveHeight = wall.endY - wall.startY - holeSize;
+          const effectiveHeight = wall.endY - wall.startY;
           const spacing = effectiveHeight / (newHoleCount);
+          const currentHoleSize = holeSize * Math.pow(0.5, newHoleCount - 1);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + (holeSize/2) + spacing * i,
-            height: holeSize
+            y: wall.startY + (currentHoleSize/2) + spacing * i,
+            height: currentHoleSize
           }));
         });
         break;
@@ -436,11 +438,12 @@ export class Visualization {
         const walls = this.funnel.getWallsBetweenStages('Selection', 'Commit');
         walls.forEach(wall => {
           const newHoleCount = wall.holes.length + 1;
-          const effectiveHeight = wall.endY - wall.startY - holeSize;
+          const effectiveHeight = wall.endY - wall.startY;
           const spacing = effectiveHeight / (newHoleCount);
+          const currentHoleSize = holeSize * Math.pow(0.5, newHoleCount - 1);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + (holeSize/2) + spacing * i,
-            height: holeSize
+            y: wall.startY + (currentHoleSize/2) + spacing * i,
+            height: currentHoleSize
           }));
         });
         break;
@@ -449,11 +452,12 @@ export class Visualization {
         const walls = this.funnel.getWallsBetweenStages('Commit', 'Onboarding');
         walls.forEach(wall => {
           const newHoleCount = wall.holes.length + 1;
-          const effectiveHeight = wall.endY - wall.startY - holeSize;
+          const effectiveHeight = wall.endY - wall.startY;
           const spacing = effectiveHeight / (newHoleCount);
+          const currentHoleSize = holeSize * Math.pow(0.5, newHoleCount - 1);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + (holeSize/2) + spacing * i,
-            height: holeSize
+            y: wall.startY + (currentHoleSize/2) + spacing * i,
+            height: currentHoleSize
           }));
         });
         break;
@@ -462,21 +466,23 @@ export class Visualization {
         const onboardingWalls = this.funnel.getWallsBetweenStages('Onboarding', 'Adoption');
         onboardingWalls.forEach(wall => {
           const newHoleCount = wall.holes.length + 1;
-          const effectiveHeight = wall.endY - wall.startY - holeSize;
+          const effectiveHeight = wall.endY - wall.startY;
           const spacing = effectiveHeight / (newHoleCount);
+          const currentHoleSize = holeSize * Math.pow(0.5, newHoleCount - 1);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + (holeSize/2) + spacing * i,
-            height: holeSize
+            y: wall.startY + (currentHoleSize/2) + spacing * i,
+            height: currentHoleSize
           }));
         });
         const expansionWalls = this.funnel.getWallsBetweenStages('Adoption', 'Expansion');
         expansionWalls.forEach(wall => {
           const newHoleCount = wall.holes.length + 1;
-          const effectiveHeight = wall.endY - wall.startY - holeSize;
+          const effectiveHeight = wall.endY - wall.startY;
           const spacing = effectiveHeight / (newHoleCount);
+          const currentHoleSize = holeSize * Math.pow(0.5, newHoleCount - 1);
           wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + (holeSize/2) + spacing * i,
-            height: holeSize
+            y: wall.startY + (currentHoleSize/2) + spacing * i,
+            height: currentHoleSize
           }));
         });
         break;
