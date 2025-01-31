@@ -101,7 +101,7 @@ export class Visualization {
       const stageWidth = this.canvas.width / STAGES.length;
       const randomStage = Math.floor(Math.random() * STAGES.length);
       const x = (randomStage * stageWidth) + (Math.random() * stageWidth);
-      
+
       // Calculate y position within the funnel's narrowing shape
       const progress = randomStage / (STAGES.length - 1);
       const narrowing = Math.sin(progress * Math.PI) * 0.15;
@@ -123,7 +123,8 @@ export class Visualization {
       // Create new holes in nearby walls when partners are added
       const wallIndex = Math.floor(x / (this.canvas.width / STAGES.length));
       if (wallIndex > 0 && wallIndex < STAGES.length) {
-        const holeY = edge === 0 ? 
+        // Use particle's y position to determine hole position
+        const holeY = y < this.canvas.height / 2 ? 
           this.canvas.height * 0.2 + Math.random() * 0.2 : 
           this.canvas.height * 0.6 + Math.random() * 0.2;
         this.funnel.addHole(wallIndex - 1, holeY, this.canvas.height * 0.1);
