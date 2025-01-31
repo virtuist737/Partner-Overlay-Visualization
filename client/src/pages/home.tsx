@@ -144,6 +144,7 @@ export default function Home() {
                       variant="outline"
                       size="sm"
                       className="h-14"
+                      disabled={!showingCustomers}
                     >
                       <div className="flex flex-col items-center text-sm gap-1">
                         <span className="text-center">{action.name}</span>
