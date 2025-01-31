@@ -59,7 +59,7 @@ export class Visualization {
     const rect = this.canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
 
-    // Set the actual pixel dimensions of the canvas
+    // Set the canvas dimensions to match the container size
     this.canvas.width = rect.width * dpr;
     this.canvas.height = rect.height * dpr;
 
@@ -72,24 +72,12 @@ export class Visualization {
   }
 
   handleResize = () => {
-    // Get the container dimensions
     const rect = this.canvas.parentElement?.getBoundingClientRect();
     if (!rect) return;
 
-    // Maintain aspect ratio while fitting container
-    const containerAspectRatio = rect.width / rect.height;
-    const targetAspectRatio = 16 / 9; // Desired aspect ratio
-
-    let width, height;
-    if (containerAspectRatio > targetAspectRatio) {
-      // Container is wider than target ratio
-      height = rect.height;
-      width = height * targetAspectRatio;
-    } else {
-      // Container is taller than target ratio
-      width = rect.width;
-      height = width / targetAspectRatio;
-    }
+    // Use the container dimensions directly
+    const width = rect.width;
+    const height = rect.height;
 
     // Update canvas style dimensions
     this.canvas.style.width = `${width}px`;

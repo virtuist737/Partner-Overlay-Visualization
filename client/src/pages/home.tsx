@@ -140,10 +140,10 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative w-full aspect-[16/9] max-h-[70vh] bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
+          <div className="relative w-full h-[60vh] bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
             <canvas 
               ref={canvasRef}
-              className="max-w-full max-h-full object-contain"
+              className="w-full h-full"
             />
           </div>
 
