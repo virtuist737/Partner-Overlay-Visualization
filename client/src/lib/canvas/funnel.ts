@@ -57,14 +57,21 @@ export class Funnel {
   height: number;
   stageWidth: number;
   walls: Wall[];
+  scale: number;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
-    this.width = canvas.width;
-    this.height = canvas.height;
+
+    // Get the actual drawing dimensions (accounting for device pixel ratio)
+    const rect = canvas.getBoundingClientRect();
+    this.width = rect.width;
+    this.height = rect.height;
+
+    // Calculate stage width based on actual dimensions
     this.stageWidth = this.width / STAGES.length;
     this.walls = [];
+    this.scale = Math.min(this.width / 1000, this.height / 600); // Base scale on a reference size
     this.setupWalls();
   }
 
@@ -92,7 +99,6 @@ export class Funnel {
           holeCount: 0
         };
         this.walls.push(verticalWall);
-        // Add initial hole
         this.openHolesInWall(verticalWall, 1);
       }
 
@@ -118,11 +124,12 @@ export class Funnel {
   }
 
   getHoleSize(count: number): number {
+    const baseSize = Math.min(this.width, this.height) * 0.05; // Make hole size relative to canvas size
     switch (count) {
-      case 1: return 80;
-      case 2: return 45;
-      case 3: return 35;
-      default: return Math.max(25, 80 / count);
+      case 1: return baseSize;
+      case 2: return baseSize * 0.7;
+      case 3: return baseSize * 0.5;
+      default: return Math.max(baseSize * 0.3, baseSize / count);
     }
   }
 
@@ -144,6 +151,81 @@ export class Funnel {
         height: holeSize
       }));
     }
+  }
+
+  draw() {
+    // Save the current transformation state
+    this.ctx.save();
+
+    // Clear the entire canvas
+    this.ctx.clearRect(0, 0, this.width, this.height);
+
+    // Draw funnel segments
+    STAGES.forEach((stage, i) => {
+      const x = i * this.stageWidth;
+      const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
+
+      const gradient = this.ctx.createLinearGradient(x, 0, x, this.height);
+      gradient.addColorStop(0, stage.gradient[0]);
+      gradient.addColorStop(1, stage.gradient[1]);
+
+      this.ctx.fillStyle = gradient;
+      this.ctx.beginPath();
+      this.ctx.moveTo(x, this.height * narrowing);
+      this.ctx.lineTo(x + this.stageWidth, this.height * narrowing);
+      this.ctx.lineTo(x + this.stageWidth, this.height * (1 - narrowing));
+      this.ctx.lineTo(x, this.height * (1 - narrowing));
+      this.ctx.closePath();
+      this.ctx.fill();
+    });
+
+    // Draw walls and holes with proper scaling
+    this.ctx.lineWidth = 2 * this.scale;
+
+    this.walls.forEach(wall => {
+      if (wall.horizontal) {
+        // Draw horizontal wall
+        this.ctx.beginPath();
+        this.ctx.moveTo(wall.startX!, wall.y!);
+        this.ctx.lineTo(wall.endX!, wall.y!);
+        this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+        this.ctx.stroke();
+
+        // Draw holes
+        wall.holes.forEach(hole => {
+          this.ctx.beginPath();
+          this.ctx.moveTo(hole.x!, wall.y! - 2 * this.scale);
+          this.ctx.lineTo(hole.x! + hole.width!, wall.y! - 2 * this.scale);
+          this.ctx.lineTo(hole.x! + hole.width!, wall.y! + 2 * this.scale);
+          this.ctx.lineTo(hole.x!, wall.y! + 2 * this.scale);
+          this.ctx.closePath();
+          this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
+          this.ctx.fill();
+        });
+      } else {
+        // Draw vertical wall
+        this.ctx.beginPath();
+        this.ctx.moveTo(wall.x!, wall.startY!);
+        this.ctx.lineTo(wall.x!, wall.endY!);
+        this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+        this.ctx.stroke();
+
+        // Draw holes
+        wall.holes.forEach(hole => {
+          this.ctx.beginPath();
+          this.ctx.moveTo(wall.x! - 2 * this.scale, hole.y!);
+          this.ctx.lineTo(wall.x! + 2 * this.scale, hole.y!);
+          this.ctx.lineTo(wall.x! + 2 * this.scale, hole.y! + hole.height!);
+          this.ctx.lineTo(wall.x! - 2 * this.scale, hole.y! + hole.height!);
+          this.ctx.closePath();
+          this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
+          this.ctx.fill();
+        });
+      }
+    });
+
+    // Restore the transformation state
+    this.ctx.restore();
   }
 
   getWallsBetweenStages(fromStage: string, toStage: string): Wall[] {
@@ -193,71 +275,5 @@ export class Funnel {
   manageAdoptionExpansionHoles() {
     const verticalWalls = this.getWallsBetweenStages('Adoption', 'Expansion');
     verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
-  }
-
-  draw() {
-    // Draw funnel segments
-    STAGES.forEach((stage, i) => {
-      const x = i * this.stageWidth;
-      const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
-
-      const gradient = this.ctx.createLinearGradient(x, 0, x, this.height);
-      gradient.addColorStop(0, stage.gradient[0]);
-      gradient.addColorStop(1, stage.gradient[1]);
-
-      this.ctx.fillStyle = gradient;
-      this.ctx.beginPath();
-      this.ctx.moveTo(x, this.height * narrowing);
-      this.ctx.lineTo(x + this.stageWidth, this.height * narrowing);
-      this.ctx.lineTo(x + this.stageWidth, this.height * (1 - narrowing));
-      this.ctx.lineTo(x, this.height * (1 - narrowing));
-      this.ctx.closePath();
-      this.ctx.fill();
-    });
-
-    // Draw walls and holes
-    this.walls.forEach(wall => {
-      if (wall.horizontal) {
-        // Draw horizontal wall
-        this.ctx.beginPath();
-        this.ctx.moveTo(wall.startX!, wall.y!);
-        this.ctx.lineTo(wall.endX!, wall.y!);
-        this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-        this.ctx.lineWidth = 2;
-        this.ctx.stroke();
-
-        // Draw holes
-        wall.holes.forEach(hole => {
-          this.ctx.beginPath();
-          this.ctx.moveTo(hole.x!, wall.y! - 2);
-          this.ctx.lineTo(hole.x! + hole.width!, wall.y! - 2);
-          this.ctx.lineTo(hole.x! + hole.width!, wall.y! + 2);
-          this.ctx.lineTo(hole.x!, wall.y! + 2);
-          this.ctx.closePath();
-          this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
-          this.ctx.fill();
-        });
-      } else {
-        // Draw vertical wall
-        this.ctx.beginPath();
-        this.ctx.moveTo(wall.x!, wall.startY!);
-        this.ctx.lineTo(wall.x!, wall.endY!);
-        this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-        this.ctx.lineWidth = 2;
-        this.ctx.stroke();
-
-        // Draw holes
-        wall.holes.forEach(hole => {
-          this.ctx.beginPath();
-          this.ctx.moveTo(wall.x! - 2, hole.y!);
-          this.ctx.lineTo(wall.x! + 2, hole.y!);
-          this.ctx.lineTo(wall.x! + 2, hole.y! + hole.height!);
-          this.ctx.lineTo(wall.x! - 2, hole.y! + hole.height!);
-          this.ctx.closePath();
-          this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
-          this.ctx.fill();
-        });
-      }
-    });
   }
 }
