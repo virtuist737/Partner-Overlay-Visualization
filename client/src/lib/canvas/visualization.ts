@@ -16,6 +16,7 @@ interface RevenueStats {
   totalRevenue: number;
   commitRevenue: number;
   expansionRevenue: number;
+  adoptionRevenue: number;
 }
 
 export class Visualization {
@@ -46,7 +47,8 @@ export class Visualization {
     this.revenue = {
       totalRevenue: 0,
       commitRevenue: 0,
-      expansionRevenue: 0
+      expansionRevenue: 0,
+      adoptionRevenue: 0
     };
 
     this.animate = this.animate.bind(this);
@@ -158,7 +160,8 @@ export class Visualization {
     this.revenue = {
       totalRevenue: 0,
       commitRevenue: 0,
-      expansionRevenue: 0
+      expansionRevenue: 0,
+      adoptionRevenue: 0
     };
   }
 
@@ -202,12 +205,15 @@ export class Visualization {
     newStageStats.current++;
     this.stageStats.set(newStage, newStageStats);
 
-    // Update revenue when reaching Commit or Expansion stages
+    // Update revenue when reaching Commit, Expansion, or Adoption stages
     if (newStage === 'Commit') {
       this.revenue.commitRevenue += 1000;
       this.revenue.totalRevenue += 1000;
     } else if (newStage === 'Expansion') {
       this.revenue.expansionRevenue += 1000;
+      this.revenue.totalRevenue += 1000;
+    } else if (newStage === 'Adoption') {
+      this.revenue.adoptionRevenue += 1000;
       this.revenue.totalRevenue += 1000;
     }
 
