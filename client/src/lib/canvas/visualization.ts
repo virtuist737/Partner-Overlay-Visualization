@@ -209,14 +209,18 @@ export class Visualization {
       const y = minY + Math.random() * (maxY - minY);
 
       // Randomize initial speed and direction
-      const baseSpeed = 4 + Math.random() * 3; // Speed between 4 and 7
-      const verticalVariation = (Math.random() - 0.5) * 0.8; // More vertical variation
-
+      // Slower base speed with more randomness in direction
+      const baseSpeed = 1.5 + Math.random() * 2; // Speed between 1.5 and 3.5
+      const verticalVariation = (Math.random() - 0.5) * 2; // More vertical variation
+      
+      // Use wider initial area (first 20% of canvas)
+      const startX = Math.random() * (this.canvas.width * 0.2);
+      
       this.particles.push(new Particle({
         x: startX,
         y,
         radius: 3,
-        speed: baseSpeed,
+        speed: Math.random() < 0.2 ? -baseSpeed : baseSpeed, // Sometimes start moving left
         color: 'rgba(0, 0, 0, 0.8)',
         type: 'customer',
         currentStage: 'Awareness',
