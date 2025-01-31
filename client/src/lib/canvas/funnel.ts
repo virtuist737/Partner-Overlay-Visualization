@@ -145,15 +145,14 @@ export class Funnel {
     }
   }
 
-  getHoleSize(count: number): number {
-    const baseSize = this.height * 0.05;
-    return baseSize * Math.pow(0.95, count - 1);
+  getHoleSize(): number {
+    return this.height * 0.05;
   }
 
   openHolesInWall(wall: Wall, count: number) {
     if (!wall.holeCount) wall.holeCount = 0;
     wall.holeCount += count;
-    const holeSize = this.getHoleSize(wall.holeCount);
+    const holeSize = this.getHoleSize();
 
     if (wall.horizontal) {
       const segmentWidth = (wall.endX! - wall.startX!) / (wall.holeCount + 1);
