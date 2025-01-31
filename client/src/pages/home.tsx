@@ -138,7 +138,20 @@ export default function Home() {
             />
           </div>
 
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="mt-4 grid grid-cols-7 gap-4">
+            {STAGES.map((stage) => (
+              <div key={stage.name} className="text-center">
+                <h3 
+                  className="text-lg font-semibold" 
+                  style={{ color: stage.color }}
+                >
+                  {stage.name}
+                </h3>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <h2 className="text-xl font-semibold mb-2">Stage Statistics</h2>
               <div className="space-y-2">
@@ -182,12 +195,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="mt-4 flex justify-between text-sm text-muted-foreground">
-            {STAGES.map((stage) => (
-              <span key={stage.name}>{stage.name}</span>
-            ))}
           </div>
         </CardContent>
       </Card>
