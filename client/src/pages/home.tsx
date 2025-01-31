@@ -86,8 +86,8 @@ export default function Home() {
   }, [stats, visualization, showingCustomers]);
 
   return (
-    <div className="flex-1 flex items-stretch p-4 max-h-[100vh] bg-background">
-      <Card className="w-full h-full flex flex-col p-6 overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm">
+    <div className="flex-1 flex p-4 h-full">
+      <Card className="w-full flex flex-col p-6 overflow-hidden">
         <h1 className="text-3xl font-bold mb-6 text-primary">Customer Journey Visualization</h1>
         <div className="flex gap-3 mb-6">
           <Button

@@ -8,7 +8,7 @@ import Home from "@/pages/home";
 
 function Router() {
   return (
-    <div className="h-[100vh] w-full overflow-hidden">
+    <div className="h-full w-full overflow-hidden">
       <Switch>
         <Route path="/" component={Home} />
         <Route component={NotFound} />
