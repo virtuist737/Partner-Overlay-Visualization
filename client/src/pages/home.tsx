@@ -117,7 +117,7 @@ export default function Home() {
               variant="outline"
               size="sm"
             >
-              Resume
+              {showingCustomers ? 'Pause' : 'Resume'}
             </Button>
             <Button
               onClick={() => {
