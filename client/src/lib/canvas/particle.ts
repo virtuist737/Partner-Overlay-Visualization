@@ -45,21 +45,41 @@ export class Particle {
     const scaledVerticalSpeed = this.verticalSpeed * this.scale;
 
     // Calculate funnel boundaries based on x position
-    const progress = this.x / (canvasHeight * 2); // Using canvas height * 2 as width approximation
+    const progress = this.x / (canvasHeight * 2);
     const narrowing = Math.sin(progress * Math.PI) * 0.15;
     const minY = canvasHeight * narrowing;
     const maxY = canvasHeight * (1 - narrowing);
 
-    // Update position
+    // Update horizontal position
     this.x += scaledSpeed;
 
-    // Update vertical position with boundary checking
-    const newY = this.y + scaledVerticalSpeed;
-    if (newY < minY || newY > maxY) {
-      this.verticalSpeed *= -0.5; // Bounce with reduced speed
-      this.y = newY < minY ? minY : maxY;
+    // For customer particles, strictly enforce funnel boundaries and prevent downward movement at bottom
+    if (this.type === 'customer') {
+      // Update vertical position with strict boundary enforcement
+      const newY = this.y + scaledVerticalSpeed;
+
+      // If particle hits bottom boundary, force it upward
+      if (newY > maxY - this.radius) {
+        this.y = maxY - this.radius;
+        this.verticalSpeed = -Math.abs(this.verticalSpeed); // Force upward movement
+      }
+      // If particle hits top boundary, bounce
+      else if (newY < minY + this.radius) {
+        this.y = minY + this.radius;
+        this.verticalSpeed *= -0.5;
+      }
+      else {
+        this.y = newY;
+      }
     } else {
-      this.y = newY;
+      // Partner particles retain original behavior
+      const newY = this.y + scaledVerticalSpeed;
+      if (newY < minY || newY > maxY) {
+        this.verticalSpeed *= -0.5;
+        this.y = newY < minY ? minY : maxY;
+      } else {
+        this.y = newY;
+      }
     }
 
     // Check canvas bounds
@@ -68,7 +88,7 @@ export class Particle {
       return;
     }
 
-    // Check wall collisions with scaled values
+    // Handle wall collisions
     walls.forEach(wall => {
       const scaledRadius = this.radius * this.scale;
 
@@ -89,8 +109,11 @@ export class Particle {
               });
               this.verticalSpeed *= -0.5;
             } else {
-              this.y = wall.y! - (this.verticalSpeed > 0 ? scaledRadius + 1 : -scaledRadius - 1);
-              this.verticalSpeed *= -0.5;
+              // For customers, ensure they bounce up from bottom walls
+              if (this.verticalSpeed > 0) {
+                this.verticalSpeed = -Math.abs(this.verticalSpeed);
+              }
+              this.y = wall.y! - scaledRadius;
             }
           }
         }
@@ -99,11 +122,10 @@ export class Particle {
           let canPass = false;
           wall.holes.forEach(hole => {
             if (this.y > hole.y! && this.y < hole.y! + hole.height!) {
-              // For customer particles, only allow left-to-right movement through holes
               if (this.type === 'customer') {
-                canPass = this.speed > 0; // Only allow passage if moving right
+                canPass = this.speed > 0;
               } else {
-                canPass = true; // Partners can move both ways
+                canPass = true;
               }
             }
           });
