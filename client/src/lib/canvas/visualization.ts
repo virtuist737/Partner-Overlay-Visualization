@@ -166,8 +166,8 @@ export class Visualization {
       const startX = rect.width * 0.02;
       const y = minY + Math.random() * (maxY - minY);
 
-      // Reduce particle size significantly while keeping them visible
-      const baseRadius = Math.min(rect.width, rect.height) * 0.003; // Reduced from 0.01
+      // Reduce particle size to 1/3 of previous size
+      const baseRadius = Math.min(rect.width, rect.height) * 0.001; // Reduced from 0.003
       const baseSpeed = rect.width * 0.002;
       const verticalVariation = (Math.random() - 0.5) * baseSpeed * 0.5;
 
