@@ -77,9 +77,9 @@ export default function Home() {
   return (
     <div className="flex-1 flex p-4 h-full overflow-hidden">
       <Card className="w-full flex flex-col p-4 bg-card/50 backdrop-blur-sm border-none shadow-2xl overflow-hidden">
-<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center mb-4 gap-4">
           <h1 className="text-lg md:text-xl font-bold text-primary whitespace-nowrap">Partner Overlay Visualization</h1>
-          <div className="flex gap-2">
+          <div className="flex gap-2 ml-4">
             <Button
               onClick={() => {
                 if (!showingCustomers) {
@@ -142,11 +142,7 @@ export default function Home() {
                       <span className="absolute top-1 right-1.5 text-xs font-mono text-muted-foreground">
                         ${action.cost}
                       </span>
-<<<<<<< HEAD
-<span className="text-xs sm:text-sm md:text-base font-medium text-primary mt-2">
-=======
                       <span className="text-xs sm:text-sm md:text-base font-bold text-primary mt-2">
->>>>>>> dev
                         {action.name}
                       </span>
                     </Button>
@@ -172,11 +168,7 @@ export default function Home() {
                 <div className="mt-2 grid grid-cols-7 gap-1 text-center">
                   {STAGES.map((stage) => (
                     <div key={stage.name} className="text-center px-1">
-<<<<<<< HEAD
-<h3 className="text-xs sm:text-sm md:text-base font-medium text-primary truncate pt-1">
-=======
                       <h3 className="text-sm sm:text-base md:text-lg font-bold text-primary truncate pt-1">
->>>>>>> dev
                         {stage.name}
                       </h3>
                     </div>
@@ -202,7 +194,7 @@ export default function Home() {
                         <div key={stat.name} className="flex justify-between items-center text-xs sm:text-sm">
                           <span className="text-primary/90">{stat.name}</span>
                           <span className="text-muted-foreground font-mono">
-                            {stat.current} / {stat.total}
+                            {stat.total}
                           </span>
                         </div>
                       ))}
