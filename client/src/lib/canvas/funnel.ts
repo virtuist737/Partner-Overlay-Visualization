@@ -158,7 +158,7 @@ export class Funnel {
       const availableWidth = wall.endX! - wall.startX!;
       // Calculate hole sizes first (10% smaller each time)
       const holeSizes = Array.from({ length: wall.holeCount }, (_, i) => 
-        this.width * 0.1 * Math.pow(0.8, i)
+        this.width * 0.1 * Math.pow(0.9, i)
       );
 
       // Calculate total holes width
@@ -182,7 +182,7 @@ export class Funnel {
       const availableHeight = wall.endY! - wall.startY!;
       // Calculate hole sizes first (10% smaller each time)
       const holeSizes = Array.from({ length: wall.holeCount }, (_, i) => 
-        this.height * 0.1 * Math.pow(0.8, i)
+        this.height * 0.1 * Math.pow(0.9, i)
       );
 
       // Calculate total holes height
