@@ -28,10 +28,10 @@ export class Particle {
     this.x = options.x;
     this.y = options.y;
     this.radius = options.radius;
-    this.speed = options.speed;
+    this.speed = options.speed * 1.2;
     this.color = options.color;
     this.type = options.type;
-    this.verticalSpeed = options.verticalSpeed ? options.verticalSpeed : 
+    this.verticalSpeed = options.verticalSpeed ? options.verticalSpeed * 1.2 : 
       (this.type === 'partner' ? this.speed : (Math.random() - 0.5) * this.speed);
     this.active = true;
     this.currentStage = options.currentStage;
