@@ -424,9 +424,6 @@ export class Visualization {
 
     const holeSize = rect.height * 0.1;
 
-    // Increased hole size for better particle flow
-    const holeSize = rect.height * 0.1;
-
     switch (action) {
       case 'seo_listicle': {
         const walls = this.funnel.getWallsBetweenStages('Awareness', 'Education');
