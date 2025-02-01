@@ -181,15 +181,12 @@ export default function Home() {
             <CardContent className="p-3">
               <ScrollArea className="h-[calc(100vh-8rem)] pr-4">
                 <div className="space-y-4">
-<<<<<<< HEAD
-=======
                   <div className="bg-primary/5 p-3 rounded-lg mb-4">
                     <h2 className="text-base md:text-lg font-semibold text-center mb-1 text-primary">Potential Customers</h2>
                     <p className="text-xl text-center font-bold text-primary/90">
                       {stats[0]?.total || 0}/100
                     </p>
                   </div>
->>>>>>> dev
                   <div>
                     <h2 className="text-sm md:text-base font-semibold mb-2 text-primary">Statistics</h2>
                     <div className="space-y-1.5">
@@ -197,11 +194,7 @@ export default function Home() {
                         <div key={stat.name} className="flex justify-between items-center text-xs sm:text-sm">
                           <span className="text-primary/90">{stat.name}</span>
                           <span className="text-muted-foreground font-mono">
-<<<<<<< HEAD
                             {stat.current} / {stat.total}
-=======
-                            {stat.total}
->>>>>>> dev
                           </span>
                         </div>
                       ))}
