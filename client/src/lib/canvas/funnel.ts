@@ -151,40 +151,48 @@ export class Funnel {
 
   canAddHole(wall: Wall, holeY: number, holeHeight: number): boolean {
     if (!wall.holes) return true;
-    
+
     // Check if hole would pass boundaries
     if (holeY < wall.startY! || holeY + holeHeight > wall.endY!) {
       return false;
     }
-    
+
     // Check for overlap with existing holes
     for (const hole of wall.holes) {
       if (hole.y! < holeY + holeHeight && hole.y! + hole.height! > holeY) {
         return false;
       }
     }
-    
+
     return true;
+  }
+
+  redistributeHoles(wall: Wall) {
+    if (!wall.holeCount || wall.holeCount === 0) return;
+
+    const holeSize = this.getHoleSize();
+
+    if (wall.horizontal) {
+      const availableWidth = wall.endX! - wall.startX!;
+      const segmentWidth = availableWidth / (wall.holeCount + 1);
+      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
+        x: wall.startX! + segmentWidth * (i + 1) - (holeSize / 2),
+        width: holeSize
+      }));
+    } else {
+      const availableHeight = wall.endY! - wall.startY!;
+      const segmentHeight = availableHeight / (wall.holeCount + 1);
+      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
+        y: wall.startY! + segmentHeight * (i + 1) - (holeSize / 2),
+        height: holeSize
+      }));
+    }
   }
 
   openHolesInWall(wall: Wall, count: number) {
     if (!wall.holeCount) wall.holeCount = 0;
     wall.holeCount += count;
-    const holeSize = this.getHoleSize();
-
-    if (wall.horizontal) {
-      const segmentWidth = (wall.endX! - wall.startX!) / (wall.holeCount + 1);
-      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
-            x: wall.startX! + segmentWidth * (i + 1) - (holeSize / 2),
-            width: holeSize
-          }));
-    } else {
-      const segmentHeight = (wall.endY! - wall.startY!) / (wall.holeCount + 1);
-      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
-            y: wall.startY! + segmentHeight * (i + 1) - (holeSize / 2),
-            height: holeSize
-          }));
-    }
+    this.redistributeHoles(wall);
   }
 
   draw() {
