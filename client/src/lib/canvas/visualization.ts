@@ -482,18 +482,9 @@ export class Visualization {
     }
 
     walls.forEach(wall => {
-      const effectiveHeight = wall.endY! - wall.startY!;
-      const newHoleCount = (wall.holes?.length || 0) + 1;
-      const spacing = effectiveHeight / (newHoleCount);
-
-      // Find first valid position for the new hole
-      for (let i = 0; i < newHoleCount; i++) {
-        const y = wall.startY! + spacing * i;
-        if (this.funnel.canAddHole(wall, y, holeSize)) {
-          wall.holes.push({ y, height: holeSize });
-          break;
-        }
-      }
+      if (!wall.holeCount) wall.holeCount = 0;
+      wall.holeCount += 1;
+      this.funnel.redistributeHoles(wall);
     });
 
     this.revenue.partnerCosts += PARTNER_ACTIONS.find(a => a.action === action)?.cost || 0;
