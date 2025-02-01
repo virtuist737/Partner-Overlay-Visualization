@@ -439,8 +439,8 @@ export class Visualization {
         walls = this.funnel.getWallsBetweenStages('Commit', 'Onboarding');
         break;
       case 'solution_management':
-        walls = this.funnel.getWallsBetweenStages('Adoption', 'Expansion')
-          .concat(this.funnel.getWallsBetweenStages('Onboarding', 'Adoption'));
+        walls = this.funnel.getWallsBetweenStages('Onboarding', 'Adoption')
+          .concat(this.funnel.getWallsBetweenStages('Adoption', 'Expansion'));
         break;
     }
 
