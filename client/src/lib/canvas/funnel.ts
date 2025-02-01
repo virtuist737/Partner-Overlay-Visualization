@@ -71,84 +71,59 @@ export class Funnel {
     this.stageWidth = this.width / STAGES.length;
     this.walls = [];
 
-    this.setupWalls();
+    this.initWalls();
   }
 
-  setupWalls() {
-    const maxNarrowing = 0.15;
+  initWalls() {
+    this.walls = [];
 
-    for (let i = 0; i < STAGES.length; i++) {
-      const x = i * this.stageWidth;
-      const nextX = (i + 1) * this.stageWidth;
-      const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * maxNarrowing;
-      const nextNarrowing = Math.sin(((i + 1) / (STAGES.length - 1)) * Math.PI) * maxNarrowing;
+    // Add walls for the Awareness section
+    const firstNarrowing = Math.sin(0) * 0.15;
 
-      const topY = this.height * narrowing;
-      const bottomY = this.height * (1 - narrowing);
-      const nextTopY = this.height * nextNarrowing;
-      const nextBottomY = this.height * (1 - nextNarrowing);
+    // Left wall
+    this.walls.push({
+      horizontal: false,
+      x: 0,
+      startY: this.height * firstNarrowing,
+      endY: this.height * (1 - firstNarrowing),
+      holes: []
+    });
 
-      if (i < STAGES.length - 1 || i === STAGES.length - 1) {
-        const verticalWall: Wall = {
-          x: nextX,
-          startY: nextTopY,
-          endY: nextBottomY,
-          horizontal: false,
-          holes: [],
-          holeCount: 0,
-          nextHoleSize: this.height * 0.1 // Initial hole size is 10% of height
-        };
-        this.walls.push(verticalWall);
+    // Top wall
+    this.walls.push({
+      horizontal: true,
+      y: this.height * firstNarrowing,
+      startX: 0,
+      endX: this.stageWidth,
+      holes: []
+    });
 
-        if (i < STAGES.length - 1) {
-          this.openHolesInWall(verticalWall, 1);
-        }
+    // Bottom wall
+    this.walls.push({
+      horizontal: true,
+      y: this.height * (1 - firstNarrowing),
+      startX: 0,
+      endX: this.stageWidth,
+      holes: []
+    });
 
-        if (Math.abs(topY - nextTopY) > this.height * 0.01) {
-          this.walls.push({
-            x: nextX,
-            startY: Math.min(topY, nextTopY),
-            endY: Math.max(topY, nextTopY),
-            horizontal: false,
-            holes: [],
-            holeCount: 0,
-            nextHoleSize: this.height * 0.1
-          });
-        }
+    // Add walls between stages
+    STAGES.forEach((_, i) => {
+      if (i === STAGES.length - 1) return;
 
-        if (Math.abs(bottomY - nextBottomY) > this.height * 0.01) {
-          this.walls.push({
-            x: nextX,
-            startY: Math.min(bottomY, nextBottomY),
-            endY: Math.max(bottomY, nextBottomY),
-            horizontal: false,
-            holes: [],
-            holeCount: 0,
-            nextHoleSize: this.height * 0.1
-          });
-        }
-      }
+      const x = (i + 1) * this.stageWidth;
+      const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
+      const nextNarrowing = Math.sin(((i + 1) / (STAGES.length - 1)) * Math.PI) * 0.15;
 
+      // Vertical wall between stages
       this.walls.push({
-        y: topY,
-        startX: x,
-        endX: nextX,
-        horizontal: true,
-        holes: [],
-        holeCount: 0,
-        nextHoleSize: this.width * 0.1
+        horizontal: false,
+        x,
+        startY: this.height * Math.min(narrowing, nextNarrowing),
+        endY: this.height * (1 - Math.min(narrowing, nextNarrowing)),
+        holes: []
       });
-
-      this.walls.push({
-        y: bottomY,
-        startX: x,
-        endX: nextX,
-        horizontal: true,
-        holes: [],
-        holeCount: 0,
-        nextHoleSize: this.width * 0.1
-      });
-    }
+    });
   }
 
   redistributeHoles(wall: Wall) {
@@ -218,7 +193,7 @@ export class Funnel {
     if (fromIndex === -1 || toIndex === -1) return [];
 
     const wallIndex = Math.min(fromIndex, toIndex);
-    const verticalWallIndex = wallIndex * 5;
+    const verticalWallIndex = wallIndex * 5 + 3; //adjust index to account for added walls
 
     return this.walls.filter((wall, index) => {
       return wall.horizontal === false && 
@@ -230,10 +205,8 @@ export class Funnel {
     const stageIndex = STAGES.findIndex(s => s.name === stageName);
     if (stageIndex === -1) return [];
 
-    return this.walls.filter((_, index) => 
-      Math.floor(index / 5) === stageIndex && 
-      (index % 5 === 1 || index % 5 === 2)
-    );
+    const startIndex = stageIndex * 5;
+    return this.walls.filter((_, index) => index >= startIndex && index < startIndex + 5 && index !== startIndex + 3);
   }
 
   closeHoles(walls: Wall[]) {
