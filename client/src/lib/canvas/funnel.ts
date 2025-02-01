@@ -48,6 +48,7 @@ interface Wall {
   horizontal: boolean;
   holes: { x?: number; y?: number; width?: number; height?: number; }[];
   holeCount?: number;
+  nextHoleSize?: number;
 }
 
 export class Funnel {
@@ -57,135 +58,204 @@ export class Funnel {
   height: number;
   stageWidth: number;
   walls: Wall[];
-  scale: number;
+  dpr: number;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
+    this.dpr = Math.max(1, window.devicePixelRatio || 1);
 
-    // Get the actual drawing dimensions (accounting for device pixel ratio)
     const rect = canvas.getBoundingClientRect();
     this.width = rect.width;
     this.height = rect.height;
-
-    // Calculate stage width based on actual dimensions
     this.stageWidth = this.width / STAGES.length;
     this.walls = [];
-    this.scale = Math.min(this.width / 1000, this.height / 600); // Base scale on a reference size
-    this.setupWalls();
+
+    this.initWalls();
   }
 
-  setupWalls() {
-    // Create walls for each stage
-    for (let i = 0; i < STAGES.length; i++) {
-      const x = i * this.stageWidth;
-      const nextX = (i + 1) * this.stageWidth;
+  initWalls() {
+    this.walls = [];
+
+    // Add walls for the Awareness section
+    const firstNarrowing = Math.sin(0) * 0.15;
+
+    // Left wall
+    this.walls.push({
+      horizontal: false,
+      x: 0,
+      startY: this.height * firstNarrowing,
+      endY: this.height * (1 - firstNarrowing),
+      holes: []
+    });
+
+    // Top wall
+    this.walls.push({
+      horizontal: true,
+      y: this.height * firstNarrowing,
+      startX: 0,
+      endX: this.stageWidth,
+      holes: []
+    });
+
+    // Bottom wall
+    this.walls.push({
+      horizontal: true,
+      y: this.height * (1 - firstNarrowing),
+      startX: 0,
+      endX: this.stageWidth,
+      holes: []
+    });
+
+    // Add walls between stages
+    STAGES.forEach((_, i) => {
+      if (i === STAGES.length - 1) return;
+
+      const x = (i + 1) * this.stageWidth;
       const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
       const nextNarrowing = Math.sin(((i + 1) / (STAGES.length - 1)) * Math.PI) * 0.15;
 
-      const topY = this.height * narrowing;
-      const bottomY = this.height * (1 - narrowing);
-      const nextTopY = this.height * nextNarrowing;
-      const nextBottomY = this.height * (1 - nextNarrowing);
-
-      // Add vertical wall at the end of each segment (including last)
-      if (i < STAGES.length - 1 || i === STAGES.length - 1) {
-        // Main vertical wall
-        const verticalWall: Wall = {
-          x: nextX,
-          startY: nextTopY,
-          endY: nextBottomY,
-          horizontal: false,
-          holes: [],
-          holeCount: 0
-        };
-        this.walls.push(verticalWall);
-
-        // Only add holes if it's not the final wall
-        if (i < STAGES.length - 1) {
-          this.openHolesInWall(verticalWall, 1);
-        }
-
-        // Add connecting vertical walls at the top and bottom if there's a height difference
-        if (Math.abs(topY - nextTopY) > 1) {
-          // Top connecting wall
-          this.walls.push({
-            x: nextX,
-            startY: Math.min(topY, nextTopY),
-            endY: Math.max(topY, nextTopY),
-            horizontal: false,
-            holes: [],
-            holeCount: 0
-          });
-        }
-
-        if (Math.abs(bottomY - nextBottomY) > 1) {
-          // Bottom connecting wall
-          this.walls.push({
-            x: nextX,
-            startY: Math.min(bottomY, nextBottomY),
-            endY: Math.max(bottomY, nextBottomY),
-            horizontal: false,
-            holes: [],
-            holeCount: 0
-          });
-        }
-      }
-
-      // Add horizontal walls for each segment
+      // Vertical wall between stages with initial hole
       this.walls.push({
-        y: topY,
-        startX: x,
-        endX: nextX,
-        horizontal: true,
-        holes: [],
-        holeCount: 0
+        horizontal: false,
+        x,
+        startY: this.height * Math.min(narrowing, nextNarrowing),
+        endY: this.height * (1 - Math.min(narrowing, nextNarrowing)),
+        holes: [{
+          y: this.height * 0.45,
+          height: this.height * 0.1
+        }],
+        holeCount: 1
       });
+    });
 
-      this.walls.push({
-        y: bottomY,
-        startX: x,
-        endX: nextX,
-        horizontal: true,
-        holes: [],
-        holeCount: 0
-      });
-    }
+    // Add walls for the Expansion section (last stage)
+    const expansionNarrowing = Math.sin(0) * 0.15; // Use same narrowing as Awareness
+    const lastX = (STAGES.length - 1) * this.stageWidth;
+
+    // Right wall
+    this.walls.push({
+      horizontal: false,
+      x: this.width,
+      startY: this.height * expansionNarrowing,
+      endY: this.height * (1 - expansionNarrowing),
+      holes: []
+    });
+
+    // Top wall
+    this.walls.push({
+      horizontal: true,
+      y: this.height * expansionNarrowing,
+      startX: lastX,
+      endX: this.width,
+      holes: []
+    });
+
+    // Bottom wall
+    this.walls.push({
+      horizontal: true,
+      y: this.height * (1 - expansionNarrowing),
+      startX: lastX,
+      endX: this.width,
+      holes: []
+    });
   }
 
-  getHoleSize(count: number): number {
-    const baseSize = Math.min(this.width, this.height) * 0.08;
-    return baseSize * Math.pow(0.95, count - 1); // Reduce by 5% for each additional hole
+  redistributeHoles(wall: Wall) {
+    if (!wall.holeCount || wall.holeCount === 0) return;
+
+    if (wall.horizontal) {
+      const availableWidth = wall.endX! - wall.startX!;
+      // Calculate hole sizes first (15% smaller each time)
+      const holeSizes = Array.from({ length: wall.holeCount }, (_, i) => 
+        this.width * 0.1 * Math.pow(0.85, i)
+      );
+
+      // Calculate total holes width
+      const totalHolesWidth = holeSizes.reduce((sum, size) => sum + size, 0);
+
+      // Calculate equal spacing between holes and edges
+      const remainingSpace = availableWidth - totalHolesWidth;
+      const spacing = remainingSpace / (wall.holeCount + 1);
+
+      // Position holes with equal un-holed wall lengths
+      let currentX = wall.startX! + spacing;
+      wall.holes = holeSizes.map(holeSize => {
+        const hole = {
+          x: currentX,
+          width: holeSize
+        };
+        currentX += holeSize + spacing;
+        return hole;
+      });
+    } else {
+      const availableHeight = wall.endY! - wall.startY!;
+      // Calculate hole sizes first (15% smaller each time)
+      const holeSizes = Array.from({ length: wall.holeCount }, (_, i) => 
+        this.height * 0.1 * Math.pow(0.85, i)
+      );
+
+      // Calculate total holes height
+      const totalHolesHeight = holeSizes.reduce((sum, size) => sum + size, 0);
+
+      // Calculate equal spacing between holes and edges
+      const remainingSpace = availableHeight - totalHolesHeight;
+      const spacing = remainingSpace / (wall.holeCount + 1);
+
+      // Position holes with equal un-holed wall lengths
+      let currentY = wall.startY! + spacing;
+      wall.holes = holeSizes.map(holeSize => {
+        const hole = {
+          y: currentY,
+          height: holeSize
+        };
+        currentY += holeSize + spacing;
+        return hole;
+      });
+    }
   }
 
   openHolesInWall(wall: Wall, count: number) {
     if (!wall.holeCount) wall.holeCount = 0;
     wall.holeCount += count;
-    const holeSize = this.getHoleSize(wall.holeCount);
+    this.redistributeHoles(wall);
+  }
 
-    if (wall.horizontal) {
-      const segmentWidth = (wall.endX! - wall.startX!) / (wall.holeCount + 1);
-      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
-        x: wall.startX! + segmentWidth * (i + 1) - (holeSize / 2),
-        width: holeSize
-      }));
-    } else {
-      const segmentHeight = (wall.endY! - wall.startY!) / (wall.holeCount + 1);
-      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
-        y: wall.startY! + segmentHeight * (i + 1) - (holeSize / 2),
-        height: holeSize
-      }));
-    }
+  getWallsBetweenStages(fromStage: string, toStage: string): Wall[] {
+    const fromIndex = STAGES.findIndex(s => s.name === fromStage);
+    const toIndex = STAGES.findIndex(s => s.name === toStage);
+
+    if (fromIndex === -1 || toIndex === -1) return [];
+
+    const wallIndex = Math.min(fromIndex, toIndex);
+    // Account for 3 initial walls + 3 end walls
+    const verticalWallIndex = wallIndex + 3;
+
+    return this.walls.filter((wall, index) => {
+      return wall.horizontal === false && 
+             index === verticalWallIndex;
+    });
+  }
+
+  getStageHorizontalWalls(stageName: string): Wall[] {
+    const stageIndex = STAGES.findIndex(s => s.name === stageName);
+    if (stageIndex === -1) return [];
+
+    const startIndex = stageIndex * 5;
+    return this.walls.filter((_, index) => index >= startIndex && index < startIndex + 5 && index !== startIndex + 3);
+  }
+
+  closeHoles(walls: Wall[]) {
+    walls.forEach(wall => {
+      wall.holes = [];
+      wall.holeCount = 0;
+    });
   }
 
   draw() {
-    // Save the current transformation state
     this.ctx.save();
-
-    // Clear the entire canvas
     this.ctx.clearRect(0, 0, this.width, this.height);
 
-    // Draw funnel segments
     STAGES.forEach((stage, i) => {
       const x = i * this.stageWidth;
       const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
@@ -204,44 +274,40 @@ export class Funnel {
       this.ctx.fill();
     });
 
-    // Draw walls and holes with proper scaling
-    this.ctx.lineWidth = 2 * this.scale;
+    const lineWidth = Math.max(1, this.height * 0.002);
+    this.ctx.lineWidth = lineWidth;
 
     this.walls.forEach(wall => {
       if (wall.horizontal) {
-        // Draw horizontal wall
         this.ctx.beginPath();
         this.ctx.moveTo(wall.startX!, wall.y!);
         this.ctx.lineTo(wall.endX!, wall.y!);
         this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
         this.ctx.stroke();
 
-        // Draw holes
         wall.holes.forEach(hole => {
           this.ctx.beginPath();
-          this.ctx.moveTo(hole.x!, wall.y! - 2 * this.scale);
-          this.ctx.lineTo(hole.x! + hole.width!, wall.y! - 2 * this.scale);
-          this.ctx.lineTo(hole.x! + hole.width!, wall.y! + 2 * this.scale);
-          this.ctx.lineTo(hole.x!, wall.y! + 2 * this.scale);
+          this.ctx.moveTo(hole.x!, wall.y! - lineWidth);
+          this.ctx.lineTo(hole.x! + hole.width!, wall.y! - lineWidth);
+          this.ctx.lineTo(hole.x! + hole.width!, wall.y! + lineWidth);
+          this.ctx.lineTo(hole.x!, wall.y! + lineWidth);
           this.ctx.closePath();
           this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
           this.ctx.fill();
         });
       } else {
-        // Draw vertical wall
         this.ctx.beginPath();
         this.ctx.moveTo(wall.x!, wall.startY!);
         this.ctx.lineTo(wall.x!, wall.endY!);
         this.ctx.strokeStyle = 'rgba(0,0,0,0.2)';
         this.ctx.stroke();
 
-        // Draw holes
         wall.holes.forEach(hole => {
           this.ctx.beginPath();
-          this.ctx.moveTo(wall.x! - 2 * this.scale, hole.y!);
-          this.ctx.lineTo(wall.x! + 2 * this.scale, hole.y!);
-          this.ctx.lineTo(wall.x! + 2 * this.scale, hole.y! + hole.height!);
-          this.ctx.lineTo(wall.x! - 2 * this.scale, hole.y! + hole.height!);
+          this.ctx.moveTo(wall.x! - lineWidth, hole.y!);
+          this.ctx.lineTo(wall.x! + lineWidth, hole.y!);
+          this.ctx.lineTo(wall.x! + lineWidth, hole.y! + hole.height!);
+          this.ctx.lineTo(wall.x! - lineWidth, hole.y! + hole.height!);
           this.ctx.closePath();
           this.ctx.fillStyle = 'rgba(255,255,255,0.5)';
           this.ctx.fill();
@@ -249,62 +315,6 @@ export class Funnel {
       }
     });
 
-    // Restore the transformation state
     this.ctx.restore();
-  }
-
-  getWallsBetweenStages(fromStage: string, toStage: string): Wall[] {
-    const fromIndex = STAGES.findIndex(s => s.name === fromStage);
-    const toIndex = STAGES.findIndex(s => s.name === toStage);
-
-    if (fromIndex === -1 || toIndex === -1) return [];
-
-    // Calculate the wall index considering the additional walls we added
-    // For each stage we have: 1 vertical wall + 2 horizontal walls + 2 connecting walls (if needed)
-    const wallIndex = Math.min(fromIndex, toIndex);
-    const verticalWallIndex = wallIndex * 5; // 5 walls per stage (1 vertical + 2 horizontal + 2 connecting)
-
-    return this.walls.filter((wall, index) => {
-      // Return the main vertical wall between stages
-      return wall.horizontal === false && 
-             index === verticalWallIndex;
-    });
-  }
-
-  getStageHorizontalWalls(stageName: string): Wall[] {
-    const stageIndex = STAGES.findIndex(s => s.name === stageName);
-    if (stageIndex === -1) return [];
-
-    return this.walls.filter((_, index) => 
-      Math.floor(index / 5) === stageIndex && 
-      (index % 5 === 1 || index % 5 === 2) // Only horizontal walls (top and bottom)
-    );
-  }
-
-  closeHoles(walls: Wall[]) {
-    walls.forEach(wall => {
-      wall.holes = [];
-      wall.holeCount = 0;
-    });
-  }
-
-  createEducationSelectionHoles() {
-    const verticalWalls = this.getWallsBetweenStages('Education', 'Selection');
-    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1)); // Add one more hole each time
-  }
-
-  createCommitOnboardingHoles() {
-    const verticalWalls = this.getWallsBetweenStages('Commit', 'Onboarding');
-    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
-  }
-
-  patchSelectionStageHoles() {
-    const horizontalWalls = this.getStageHorizontalWalls('Selection');
-    this.closeHoles(horizontalWalls);
-  }
-
-  manageAdoptionExpansionHoles() {
-    const verticalWalls = this.getWallsBetweenStages('Adoption', 'Expansion');
-    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
   }
 }
