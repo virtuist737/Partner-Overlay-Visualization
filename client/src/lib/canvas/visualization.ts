@@ -231,11 +231,11 @@ export class Visualization {
       this.revenue.commitRevenue += 1000;
       this.revenue.totalRevenue += 1000;
     } else if (newStage === 'Expansion') {
-      this.revenue.expansionRevenue += 1000;
-      this.revenue.totalRevenue += 1000;
+      this.revenue.expansionRevenue += 5000;
+      this.revenue.totalRevenue += 5000;
     } else if (newStage === 'Adoption') {
-      this.revenue.adoptionRevenue += 1000;
-      this.revenue.totalRevenue += 1000;
+      this.revenue.adoptionRevenue += 2000;
+      this.revenue.totalRevenue += 2000;
     }
 
     this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
