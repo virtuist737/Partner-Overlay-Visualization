@@ -137,13 +137,7 @@ export default function Home() {
                       variant="outline"
                       size="sm"
                       className="h-14 relative text-xs sm:text-sm"
-                      //The following line is incomplete and needs further implementation.  
-                      disabled={!showingCustomers || !visualization?.canExecutePartnerAction(
-                        visualization.funnel.getWallsBetweenStages(action.name.split(' ')[0], action.name.split(' ')[1]),
-                        //rect.height is undefined here.  A rect object needs to be defined and passed appropriately.
-                        0,
-                        0
-                      )}
+                      disabled={!showingCustomers || !visualization?.canExecutePartnerAction(action.action)}
                     >
                       <span className="absolute top-1 right-1.5 text-xs font-mono text-muted-foreground">
                         ${action.cost}

@@ -21,6 +21,14 @@ interface RevenueStats {
   netRevenue: number;
 }
 
+export const PARTNER_ACTIONS = [
+  { action: 'seo_listicle', cost: 500, label: 'SEO Listicle' },
+  { action: 'youtube_walkthrough', cost: 750, label: 'YouTube Walkthrough' },
+  { action: 'reference_call', cost: 500, label: 'Reference Call' },
+  { action: 'onboarding_services', cost: 1000, label: 'Onboarding Services' },
+  { action: 'solution_management', cost: 2500, label: 'Solution Management' },
+];
+
 export class Visualization {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -408,98 +416,87 @@ export class Visualization {
     return { ...this.revenue };
   }
 
-  canExecutePartnerAction(walls: Wall[], holeY: number, holeSize: number): boolean {
-    return walls.every(wall => this.funnel.canAddHole(wall, holeY, holeSize));
-  }
-
-  executePartnerAction(action: string): boolean {
+  canExecutePartnerAction(action: string): boolean {
     const rect = this.canvas.getBoundingClientRect();
-    const costs: Record<string, number> = {
-      'seo_listicle': 500,
-      'youtube_walkthrough': 750,
-      'reference_call': 500,
-      'onboarding_services': 1000,
-      'solution_management': 2500
-    };
-
     const holeSize = rect.height * 0.1;
+    let walls: Wall[] = [];
 
     switch (action) {
-      case 'seo_listicle': {
-        const walls = this.funnel.getWallsBetweenStages('Awareness', 'Education');
-        walls.forEach(wall => {
-          const newHoleCount = wall.holes.length + 1;
-          const effectiveHeight = wall.endY - wall.startY;
-          const spacing = effectiveHeight / (newHoleCount);
-          wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + (holeSize/2) + spacing * i,
-            height: holeSize
-          }));
-        });
+      case 'seo_listicle':
+        walls = this.funnel.getWallsBetweenStages('Awareness', 'Education');
         break;
-      }
-      case 'youtube_walkthrough': {
-        const walls = this.funnel.getWallsBetweenStages('Education', 'Selection');
-        walls.forEach(wall => {
-          const newHoleCount = wall.holes.length + 1;
-          const effectiveHeight = wall.endY - wall.startY;
-          const spacing = effectiveHeight / (newHoleCount);
-          wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + (holeSize/2) + spacing * i,
-            height: holeSize
-          }));
-        });
+      case 'youtube_walkthrough':
+        walls = this.funnel.getWallsBetweenStages('Education', 'Selection');
         break;
-      }
-      case 'reference_call': {
-        const walls = this.funnel.getWallsBetweenStages('Selection', 'Commit');
-        walls.forEach(wall => {
-          const newHoleCount = wall.holes.length + 1;
-          const effectiveHeight = wall.endY - wall.startY;
-          const spacing = effectiveHeight / (newHoleCount);
-          wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + (holeSize/2) + spacing * i,
-            height: holeSize
-          }));
-        });
+      case 'reference_call':
+        walls = this.funnel.getWallsBetweenStages('Selection', 'Commit');
         break;
-      }
-      case 'onboarding_services': {
-        const walls = this.funnel.getWallsBetweenStages('Commit', 'Onboarding');
-        walls.forEach(wall => {
-          const newHoleCount = wall.holes.length + 1;
-          const effectiveHeight = wall.endY - wall.startY;
-          const spacing = effectiveHeight / (newHoleCount);
-          wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + (holeSize/2) + spacing * i,
-            height: holeSize
-          }));
-        });
+      case 'onboarding_services':
+        walls = this.funnel.getWallsBetweenStages('Commit', 'Onboarding');
         break;
-      }
-      case 'solution_management': {
-        const onboardingWalls = this.funnel.getWallsBetweenStages('Onboarding', 'Adoption');
-        onboardingWalls.forEach(wall => {
-          const newHoleCount = wall.holes.length + 1;
-          const effectiveHeight = wall.endY - wall.startY;
-          const spacing = effectiveHeight / (newHoleCount);
-          wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + (holeSize/2) + spacing * i,
-            height: holeSize
-          }));
-        });
-        const expansionWalls = this.funnel.getWallsBetweenStages('Adoption', 'Expansion');
-        expansionWalls.forEach(wall => {
-          const newHoleCount = wall.holes.length + 1;
-          const effectiveHeight = wall.endY - wall.startY;
-          const spacing = effectiveHeight / (newHoleCount);
-          wall.holes = Array.from({ length: newHoleCount }, (_, i) => ({
-            y: wall.startY + (holeSize/2) + spacing * i,
-            height: holeSize
-          }));
-        });
+      case 'solution_management':
+        walls = this.funnel.getWallsBetweenStages('Adoption', 'Expansion')
+          .concat(this.funnel.getWallsBetweenStages('Onboarding', 'Adoption'));
         break;
-      }
     }
+
+    return walls.every(wall => {
+      const effectiveHeight = wall.endY! - wall.startY!;
+      const newHoleCount = (wall.holes?.length || 0) + 1;
+      const spacing = effectiveHeight / (newHoleCount);
+      // Try to find a valid position for the new hole
+      let canAdd = false;
+      for (let i = 0; i < newHoleCount; i++) {
+        const y = wall.startY! + spacing * i;
+        if (this.funnel.canAddHole(wall, y, holeSize)) {
+          canAdd = true;
+          break;
+        }
+      }
+      return canAdd;
+    });
+  }
+
+  executePartnerAction(action: string): void {
+    const rect = this.canvas.getBoundingClientRect();
+    const holeSize = rect.height * 0.1;
+    let walls: Wall[] = [];
+
+    switch (action) {
+      case 'seo_listicle':
+        walls = this.funnel.getWallsBetweenStages('Awareness', 'Education');
+        break;
+      case 'youtube_walkthrough':
+        walls = this.funnel.getWallsBetweenStages('Education', 'Selection');
+        break;
+      case 'reference_call':
+        walls = this.funnel.getWallsBetweenStages('Selection', 'Commit');
+        break;
+      case 'onboarding_services':
+        walls = this.funnel.getWallsBetweenStages('Commit', 'Onboarding');
+        break;
+      case 'solution_management':
+        walls = this.funnel.getWallsBetweenStages('Adoption', 'Expansion')
+          .concat(this.funnel.getWallsBetweenStages('Onboarding', 'Adoption'));
+        break;
+    }
+
+    walls.forEach(wall => {
+      const effectiveHeight = wall.endY! - wall.startY!;
+      const newHoleCount = (wall.holes?.length || 0) + 1;
+      const spacing = effectiveHeight / (newHoleCount);
+
+      // Find first valid position for the new hole
+      for (let i = 0; i < newHoleCount; i++) {
+        const y = wall.startY! + spacing * i;
+        if (this.funnel.canAddHole(wall, y, holeSize)) {
+          wall.holes.push({ y, height: holeSize });
+          break;
+        }
+      }
+    });
+
+    this.revenue.partnerCosts += PARTNER_ACTIONS.find(a => a.action === action)?.cost || 0;
+    this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
   }
 }
