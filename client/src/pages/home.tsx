@@ -142,7 +142,7 @@ export default function Home() {
                       <span className="absolute top-1 right-1.5 text-xs font-mono text-muted-foreground">
                         ${action.cost}
                       </span>
-                      <span className="text-[11px] sm:text-xs md:text-sm font-medium mt-2">
+                      <span className="text-xs sm:text-sm md:text-base font-bold text-primary mt-2">
                         {action.name}
                       </span>
                     </Button>
@@ -168,7 +168,7 @@ export default function Home() {
                 <div className="mt-2 grid grid-cols-7 gap-1 text-center">
                   {STAGES.map((stage) => (
                     <div key={stage.name} className="text-center px-1">
-                      <h3 className="text-[10px] sm:text-xs md:text-sm font-medium text-primary/80 truncate">
+                      <h3 className="text-sm sm:text-base md:text-lg font-bold text-primary truncate pt-1">
                         {stage.name}
                       </h3>
                     </div>
