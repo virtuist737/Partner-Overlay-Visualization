@@ -115,13 +115,17 @@ export class Funnel {
       const narrowing = Math.sin((i / (STAGES.length - 1)) * Math.PI) * 0.15;
       const nextNarrowing = Math.sin(((i + 1) / (STAGES.length - 1)) * Math.PI) * 0.15;
 
-      // Vertical wall between stages
+      // Vertical wall between stages with initial hole
       this.walls.push({
         horizontal: false,
         x,
         startY: this.height * Math.min(narrowing, nextNarrowing),
         endY: this.height * (1 - Math.min(narrowing, nextNarrowing)),
-        holes: []
+        holes: [{
+          y: this.height * 0.45,
+          height: this.height * 0.1
+        }],
+        holeCount: 1
       });
     });
 
