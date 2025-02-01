@@ -408,7 +408,11 @@ export class Visualization {
     return { ...this.revenue };
   }
 
-  executePartnerAction(action: string) {
+  canExecutePartnerAction(walls: Wall[], holeY: number, holeSize: number): boolean {
+    return walls.every(wall => this.funnel.canAddHole(wall, holeY, holeSize));
+  }
+
+  executePartnerAction(action: string): boolean {
     const rect = this.canvas.getBoundingClientRect();
     const costs: Record<string, number> = {
       'seo_listicle': 500,
@@ -418,8 +422,7 @@ export class Visualization {
       'solution_management': 2500
     };
 
-    this.revenue.partnerCosts += costs[action] || 0;
-    this.revenue.netRevenue = this.revenue.totalRevenue - this.revenue.partnerCosts;
+    const holeSize = rect.height * 0.1;
 
     // Increased hole size for better particle flow
     const holeSize = rect.height * 0.1;

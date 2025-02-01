@@ -149,6 +149,24 @@ export class Funnel {
     return this.height * 0.05;
   }
 
+  canAddHole(wall: Wall, holeY: number, holeHeight: number): boolean {
+    if (!wall.holes) return true;
+    
+    // Check if hole would pass boundaries
+    if (holeY < wall.startY! || holeY + holeHeight > wall.endY!) {
+      return false;
+    }
+    
+    // Check for overlap with existing holes
+    for (const hole of wall.holes) {
+      if (hole.y! < holeY + holeHeight && hole.y! + hole.height! > holeY) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
   openHolesInWall(wall: Wall, count: number) {
     if (!wall.holeCount) wall.holeCount = 0;
     wall.holeCount += count;
