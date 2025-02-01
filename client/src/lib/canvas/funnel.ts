@@ -124,6 +124,37 @@ export class Funnel {
         holes: []
       });
     });
+
+    // Add walls for the Expansion section (last stage)
+    const lastNarrowing = Math.sin(1) * 0.15;
+    const lastX = (STAGES.length - 1) * this.stageWidth;
+
+    // Right wall
+    this.walls.push({
+      horizontal: false,
+      x: this.width,
+      startY: this.height * lastNarrowing,
+      endY: this.height * (1 - lastNarrowing),
+      holes: []
+    });
+
+    // Top wall
+    this.walls.push({
+      horizontal: true,
+      y: this.height * lastNarrowing,
+      startX: lastX,
+      endX: this.width,
+      holes: []
+    });
+
+    // Bottom wall
+    this.walls.push({
+      horizontal: true,
+      y: this.height * (1 - lastNarrowing),
+      startX: lastX,
+      endX: this.width,
+      holes: []
+    });
   }
 
   redistributeHoles(wall: Wall) {
@@ -193,7 +224,8 @@ export class Funnel {
     if (fromIndex === -1 || toIndex === -1) return [];
 
     const wallIndex = Math.min(fromIndex, toIndex);
-    const verticalWallIndex = wallIndex + 3; //adjust index to account for added walls
+    // Account for 3 initial walls + 3 end walls
+    const verticalWallIndex = wallIndex + 3;
 
     return this.walls.filter((wall, index) => {
       return wall.horizontal === false && 
