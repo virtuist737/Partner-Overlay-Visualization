@@ -71,41 +71,10 @@ export class Funnel {
     this.stageWidth = this.width / STAGES.length;
     this.walls = [];
 
-    this.createWalls();
+    this.setupWalls();
   }
 
-  createWalls() {
-    const rect = this.canvas.getBoundingClientRect();
-    const numStages = STAGES.length;
-    const stageWidth = rect.width / numStages;
-
-    // Add left wall for awareness section
-    this.walls.push({
-      horizontal: false,
-      x: 0,
-      startY: 0,
-      endY: rect.height,
-      holes: []
-    });
-
-    // Add top wall for awareness section
-    this.walls.push({
-      horizontal: true,
-      y: 0,
-      startX: 0,
-      endX: stageWidth,
-      holes: []
-    });
-
-    // Add bottom wall for awareness section
-    this.walls.push({
-      horizontal: true,
-      y: rect.height,
-      startX: 0,
-      endX: stageWidth,
-      holes: []
-    });
-
+  setupWalls() {
     const maxNarrowing = 0.15;
 
     for (let i = 0; i < STAGES.length; i++) {
