@@ -156,23 +156,51 @@ export class Funnel {
 
     if (wall.horizontal) {
       const availableWidth = wall.endX! - wall.startX!;
-      const segmentWidth = availableWidth / (wall.holeCount + 1);
-      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => {
-        const holeSize = this.height * 0.1 * Math.pow(0.9, i); // Each hole is 90% the size of the previous
-        return {
-          x: wall.startX! + segmentWidth * (i + 1) - (holeSize / 2),
+      // Calculate hole sizes first (10% smaller each time)
+      const holeSizes = Array.from({ length: wall.holeCount }, (_, i) => 
+        this.width * 0.1 * Math.pow(0.9, i)
+      );
+
+      // Calculate total holes width
+      const totalHolesWidth = holeSizes.reduce((sum, size) => sum + size, 0);
+
+      // Calculate equal spacing between holes and edges
+      const remainingSpace = availableWidth - totalHolesWidth;
+      const spacing = remainingSpace / (wall.holeCount + 1);
+
+      // Position holes with equal un-holed wall lengths
+      let currentX = wall.startX! + spacing;
+      wall.holes = holeSizes.map(holeSize => {
+        const hole = {
+          x: currentX,
           width: holeSize
         };
+        currentX += holeSize + spacing;
+        return hole;
       });
     } else {
       const availableHeight = wall.endY! - wall.startY!;
-      const segmentHeight = availableHeight / (wall.holeCount + 1);
-      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => {
-        const holeSize = this.height * 0.1 * Math.pow(0.9, i); // Each hole is 90% the size of the previous
-        return {
-          y: wall.startY! + segmentHeight * (i + 1) - (holeSize / 2),
+      // Calculate hole sizes first (10% smaller each time)
+      const holeSizes = Array.from({ length: wall.holeCount }, (_, i) => 
+        this.height * 0.1 * Math.pow(0.9, i)
+      );
+
+      // Calculate total holes height
+      const totalHolesHeight = holeSizes.reduce((sum, size) => sum + size, 0);
+
+      // Calculate equal spacing between holes and edges
+      const remainingSpace = availableHeight - totalHolesHeight;
+      const spacing = remainingSpace / (wall.holeCount + 1);
+
+      // Position holes with equal un-holed wall lengths
+      let currentY = wall.startY! + spacing;
+      wall.holes = holeSizes.map(holeSize => {
+        const hole = {
+          y: currentY,
           height: holeSize
         };
+        currentY += holeSize + spacing;
+        return hole;
       });
     }
   }
