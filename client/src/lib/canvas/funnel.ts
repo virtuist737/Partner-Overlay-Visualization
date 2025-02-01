@@ -126,22 +126,22 @@ export class Funnel {
     });
 
     // Add walls for the Expansion section (last stage)
-    const firstNarrowing = Math.sin(0) * 0.15; // Use same narrowing as Awareness
+    const expansionNarrowing = Math.sin(0) * 0.15; // Use same narrowing as Awareness
     const lastX = (STAGES.length - 1) * this.stageWidth;
 
     // Right wall
     this.walls.push({
       horizontal: false,
       x: this.width,
-      startY: this.height * firstNarrowing,
-      endY: this.height * (1 - firstNarrowing),
+      startY: this.height * expansionNarrowing,
+      endY: this.height * (1 - expansionNarrowing),
       holes: []
     });
 
     // Top wall
     this.walls.push({
       horizontal: true,
-      y: this.height * firstNarrowing,
+      y: this.height * expansionNarrowing,
       startX: lastX,
       endX: this.width,
       holes: []
@@ -150,7 +150,7 @@ export class Funnel {
     // Bottom wall
     this.walls.push({
       horizontal: true,
-      y: this.height * (1 - firstNarrowing),
+      y: this.height * (1 - expansionNarrowing),
       startX: lastX,
       endX: this.width,
       holes: []
