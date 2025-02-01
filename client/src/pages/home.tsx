@@ -188,7 +188,7 @@ export default function Home() {
                         <div key={stat.name} className="flex justify-between items-center text-xs sm:text-sm">
                           <span className="text-primary/90">{stat.name}</span>
                           <span className="text-muted-foreground font-mono">
-                            {stat.current} / {stat.total}
+                            {stat.total}
                           </span>
                         </div>
                       ))}
