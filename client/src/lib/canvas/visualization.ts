@@ -442,18 +442,12 @@ export class Visualization {
 
     return walls.every(wall => {
       const effectiveHeight = wall.endY! - wall.startY!;
-      const newHoleCount = (wall.holes?.length || 0) + 1;
-      const spacing = effectiveHeight / (newHoleCount);
-      // Try to find a valid position for the new hole
-      let canAdd = false;
-      for (let i = 0; i < newHoleCount; i++) {
-        const y = wall.startY! + spacing * i;
-        if (this.funnel.canAddHole(wall, y, holeSize)) {
-          canAdd = true;
-          break;
-        }
-      }
-      return canAdd;
+      const totalHolesSpace = ((wall.holes?.length || 0) + 1) * holeSize;
+      const minSpaceBetweenHoles = holeSize * 0.5; // Minimum gap between holes
+      const totalSpacingNeeded = ((wall.holes?.length || 0)) * minSpaceBetweenHoles;
+
+      // Check if there's enough total space for holes plus minimum spacing
+      return totalHolesSpace + totalSpacingNeeded <= effectiveHeight;
     });
   }
 
