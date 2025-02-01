@@ -48,6 +48,7 @@ interface Wall {
   horizontal: boolean;
   holes: { x?: number; y?: number; width?: number; height?: number; }[];
   holeCount?: number;
+  nextHoleSize?: number;
 }
 
 export class Funnel {
@@ -74,7 +75,7 @@ export class Funnel {
   }
 
   setupWalls() {
-    const maxNarrowing = 0.15; // 15% of height
+    const maxNarrowing = 0.15;
 
     for (let i = 0; i < STAGES.length; i++) {
       const x = i * this.stageWidth;
@@ -94,7 +95,8 @@ export class Funnel {
           endY: nextBottomY,
           horizontal: false,
           holes: [],
-          holeCount: 0
+          holeCount: 0,
+          nextHoleSize: this.height * 0.1 // Initial hole size is 10% of height
         };
         this.walls.push(verticalWall);
 
@@ -109,7 +111,8 @@ export class Funnel {
             endY: Math.max(topY, nextTopY),
             horizontal: false,
             holes: [],
-            holeCount: 0
+            holeCount: 0,
+            nextHoleSize: this.height * 0.1
           });
         }
 
@@ -120,7 +123,8 @@ export class Funnel {
             endY: Math.max(bottomY, nextBottomY),
             horizontal: false,
             holes: [],
-            holeCount: 0
+            holeCount: 0,
+            nextHoleSize: this.height * 0.1
           });
         }
       }
@@ -131,7 +135,8 @@ export class Funnel {
         endX: nextX,
         horizontal: true,
         holes: [],
-        holeCount: 0
+        holeCount: 0,
+        nextHoleSize: this.width * 0.1
       });
 
       this.walls.push({
@@ -140,52 +145,35 @@ export class Funnel {
         endX: nextX,
         horizontal: true,
         holes: [],
-        holeCount: 0
+        holeCount: 0,
+        nextHoleSize: this.width * 0.1
       });
     }
-  }
-
-  getHoleSize(): number {
-    return this.height * 0.05;
-  }
-
-  canAddHole(wall: Wall, holeY: number, holeHeight: number): boolean {
-    if (!wall.holes) return true;
-
-    // Check if hole would pass boundaries
-    if (holeY < wall.startY! || holeY + holeHeight > wall.endY!) {
-      return false;
-    }
-
-    // Check for overlap with existing holes
-    for (const hole of wall.holes) {
-      if (hole.y! < holeY + holeHeight && hole.y! + hole.height! > holeY) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   redistributeHoles(wall: Wall) {
     if (!wall.holeCount || wall.holeCount === 0) return;
 
-    const holeSize = this.getHoleSize();
-
     if (wall.horizontal) {
       const availableWidth = wall.endX! - wall.startX!;
       const segmentWidth = availableWidth / (wall.holeCount + 1);
-      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
-        x: wall.startX! + segmentWidth * (i + 1) - (holeSize / 2),
-        width: holeSize
-      }));
+      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => {
+        const holeSize = this.height * 0.1 * Math.pow(0.9, i); // Each hole is 90% the size of the previous
+        return {
+          x: wall.startX! + segmentWidth * (i + 1) - (holeSize / 2),
+          width: holeSize
+        };
+      });
     } else {
       const availableHeight = wall.endY! - wall.startY!;
       const segmentHeight = availableHeight / (wall.holeCount + 1);
-      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => ({
-        y: wall.startY! + segmentHeight * (i + 1) - (holeSize / 2),
-        height: holeSize
-      }));
+      wall.holes = Array.from({ length: wall.holeCount }, (_, i) => {
+        const holeSize = this.height * 0.1 * Math.pow(0.9, i); // Each hole is 90% the size of the previous
+        return {
+          y: wall.startY! + segmentHeight * (i + 1) - (holeSize / 2),
+          height: holeSize
+        };
+      });
     }
   }
 
@@ -193,6 +181,38 @@ export class Funnel {
     if (!wall.holeCount) wall.holeCount = 0;
     wall.holeCount += count;
     this.redistributeHoles(wall);
+  }
+
+  getWallsBetweenStages(fromStage: string, toStage: string): Wall[] {
+    const fromIndex = STAGES.findIndex(s => s.name === fromStage);
+    const toIndex = STAGES.findIndex(s => s.name === toStage);
+
+    if (fromIndex === -1 || toIndex === -1) return [];
+
+    const wallIndex = Math.min(fromIndex, toIndex);
+    const verticalWallIndex = wallIndex * 5;
+
+    return this.walls.filter((wall, index) => {
+      return wall.horizontal === false && 
+             index === verticalWallIndex;
+    });
+  }
+
+  getStageHorizontalWalls(stageName: string): Wall[] {
+    const stageIndex = STAGES.findIndex(s => s.name === stageName);
+    if (stageIndex === -1) return [];
+
+    return this.walls.filter((_, index) => 
+      Math.floor(index / 5) === stageIndex && 
+      (index % 5 === 1 || index % 5 === 2)
+    );
+  }
+
+  closeHoles(walls: Wall[]) {
+    walls.forEach(wall => {
+      wall.holes = [];
+      wall.holeCount = 0;
+    });
   }
 
   draw() {
@@ -259,57 +279,5 @@ export class Funnel {
     });
 
     this.ctx.restore();
-  }
-
-  getWallsBetweenStages(fromStage: string, toStage: string): Wall[] {
-    const fromIndex = STAGES.findIndex(s => s.name === fromStage);
-    const toIndex = STAGES.findIndex(s => s.name === toStage);
-
-    if (fromIndex === -1 || toIndex === -1) return [];
-
-    const wallIndex = Math.min(fromIndex, toIndex);
-    const verticalWallIndex = wallIndex * 5;
-
-    return this.walls.filter((wall, index) => {
-      return wall.horizontal === false && 
-             index === verticalWallIndex;
-    });
-  }
-
-  getStageHorizontalWalls(stageName: string): Wall[] {
-    const stageIndex = STAGES.findIndex(s => s.name === stageName);
-    if (stageIndex === -1) return [];
-
-    return this.walls.filter((_, index) => 
-      Math.floor(index / 5) === stageIndex && 
-      (index % 5 === 1 || index % 5 === 2)
-    );
-  }
-
-  closeHoles(walls: Wall[]) {
-    walls.forEach(wall => {
-      wall.holes = [];
-      wall.holeCount = 0;
-    });
-  }
-
-  createEducationSelectionHoles() {
-    const verticalWalls = this.getWallsBetweenStages('Education', 'Selection');
-    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
-  }
-
-  createCommitOnboardingHoles() {
-    const verticalWalls = this.getWallsBetweenStages('Commit', 'Onboarding');
-    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
-  }
-
-  patchSelectionStageHoles() {
-    const horizontalWalls = this.getStageHorizontalWalls('Selection');
-    this.closeHoles(horizontalWalls);
-  }
-
-  manageAdoptionExpansionHoles() {
-    const verticalWalls = this.getWallsBetweenStages('Adoption', 'Expansion');
-    verticalWalls.forEach(wall => this.openHolesInWall(wall, 1));
   }
 }

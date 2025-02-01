@@ -417,43 +417,12 @@ export class Visualization {
   }
 
   canExecutePartnerAction(action: string): boolean {
-    const rect = this.canvas.getBoundingClientRect();
-    const holeSize = rect.height * 0.1;
-    let walls: Wall[] = [];
-
-    switch (action) {
-      case 'seo_listicle':
-        walls = this.funnel.getWallsBetweenStages('Awareness', 'Education');
-        break;
-      case 'youtube_walkthrough':
-        walls = this.funnel.getWallsBetweenStages('Education', 'Selection');
-        break;
-      case 'reference_call':
-        walls = this.funnel.getWallsBetweenStages('Selection', 'Commit');
-        break;
-      case 'onboarding_services':
-        walls = this.funnel.getWallsBetweenStages('Commit', 'Onboarding');
-        break;
-      case 'solution_management':
-        walls = this.funnel.getWallsBetweenStages('Adoption', 'Expansion')
-          .concat(this.funnel.getWallsBetweenStages('Onboarding', 'Adoption'));
-        break;
-    }
-
-    return walls.every(wall => {
-      const effectiveHeight = wall.endY! - wall.startY!;
-      const totalHolesSpace = ((wall.holes?.length || 0) + 1) * holeSize;
-      const minSpaceBetweenHoles = holeSize * 0.5; // Minimum gap between holes
-      const totalSpacingNeeded = ((wall.holes?.length || 0)) * minSpaceBetweenHoles;
-
-      // Check if there's enough total space for holes plus minimum spacing
-      return totalHolesSpace + totalSpacingNeeded <= effectiveHeight;
-    });
+    // Always return true since we're using dynamic sizing now
+    return true;
   }
 
   executePartnerAction(action: string): void {
     const rect = this.canvas.getBoundingClientRect();
-    const holeSize = rect.height * 0.1;
     let walls: Wall[] = [];
 
     switch (action) {
