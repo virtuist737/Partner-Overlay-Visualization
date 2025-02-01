@@ -193,7 +193,7 @@ export class Funnel {
     if (fromIndex === -1 || toIndex === -1) return [];
 
     const wallIndex = Math.min(fromIndex, toIndex);
-    const verticalWallIndex = wallIndex * 5 + 3; //adjust index to account for added walls
+    const verticalWallIndex = wallIndex + 3; //adjust index to account for added walls
 
     return this.walls.filter((wall, index) => {
       return wall.horizontal === false && 
