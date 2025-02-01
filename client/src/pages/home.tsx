@@ -234,7 +234,7 @@ export default function Home() {
                     <div className="mt-4 bg-primary/5 p-3 rounded-lg">
                       <h2 className="text-sm font-semibold text-center mb-1 text-primary">Net Revenue</h2>
                       <p className="text-xl text-center font-bold"
-                         style={{ color: revenue.netRevenue >= 0 ? 'hsl(var(--primary))' : 'hsl(var(--destructive))' }}>
+                         style={{ color: revenue.netRevenue >= 0 ? '#22c55e' : '#ef4444' }}>
                         {formatCurrency(revenue.netRevenue)}
                       </p>
                       <p className="text-xs text-center text-muted-foreground mt-1">
