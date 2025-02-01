@@ -411,11 +411,11 @@ export class Visualization {
   executePartnerAction(action: string) {
     const rect = this.canvas.getBoundingClientRect();
     const costs: Record<string, number> = {
-      'seo_listicle': 100,
-      'youtube_walkthrough': 100,
-      'reference_call': 200,
-      'onboarding_services': 300,
-      'solution_management': 500
+      'seo_listicle': 500,
+      'youtube_walkthrough': 750,
+      'reference_call': 500,
+      'onboarding_services': 1000,
+      'solution_management': 2500
     };
 
     this.revenue.partnerCosts += costs[action] || 0;

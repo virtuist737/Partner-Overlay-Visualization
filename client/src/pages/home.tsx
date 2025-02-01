@@ -13,11 +13,11 @@ const STAGES = [
   { name: 'Expansion' },
 ];
 const PARTNER_ACTIONS = [
-  { name: 'SEO Listicle', action: 'seo_listicle', cost: 100 },
-  { name: 'YouTube Video', action: 'youtube_walkthrough', cost: 100 },
-  { name: 'Customer Reference Call', action: 'reference_call', cost: 200 },
-  { name: 'Onboarding Services', action: 'onboarding_services', cost: 300 },
-  { name: 'Management Services', action: 'solution_management', cost: 500 },
+  { name: 'SEO Listicle', action: 'seo_listicle', cost: 500 },
+  { name: 'YouTube Video', action: 'youtube_walkthrough', cost: 750 },
+  { name: 'Customer Reference Call', action: 'reference_call', cost: 500 },
+  { name: 'Onboarding Services', action: 'onboarding_services', cost: 1000 },
+  { name: 'Management Services', action: 'solution_management', cost: 2500 },
 ];
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
