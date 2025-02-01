@@ -78,8 +78,8 @@ export default function Home() {
     <div className="flex-1 flex p-4 h-full overflow-hidden">
       <Card className="w-full flex flex-col p-4 bg-card/50 backdrop-blur-sm border-none shadow-2xl overflow-hidden">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-          <div className="flex-1 text-lg md:text-xl font-bold text-primary whitespace-nowrap">Partner Overlay Visualization</div>
-          <div className="flex gap-2">
+          <h1 className="text-lg md:text-xl font-bold text-primary whitespace-nowrap">Partner Overlay Visualization</h1>
+          <div className="flex flex-wrap gap-2">
             <Button
               onClick={() => {
                 if (!showingCustomers) {
