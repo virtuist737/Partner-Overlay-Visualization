@@ -28,7 +28,7 @@ export class Particle {
     this.x = options.x;
     this.y = options.y;
     this.radius = options.radius;
-    this.speed = options.speed * 1.2;
+    this.speed = options.speed * 1.44;
     this.color = options.color;
     this.type = options.type;
     this.verticalSpeed = options.verticalSpeed ? options.verticalSpeed * 1.2 : 
